@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="width: 90%; margin: 0px auto;margin-left: auto ;margin-right: auto ;">
+<h2>Welcome!</h2>
+<div class="info" >This is a webpage for simulating PBPK Models using Model Predictive Control. <br><br>
+</div>
+<div style="display: none">
+	<table>
+			<tr>
+				<td><a href="/NewModel">Create a New Model</a></td>
+			</tr>
+			<tr>
+				<td><a href="/oldIntermediate">Use a pre-extisted Model</a></td>
+			</tr>
+			<tr>
+				<td><a href="/editIntermediate">Edit and use a pre-existed Model</a></td>
+			</tr>
+			<tr>
+				<td><a href="/default">Use the Default Model</a></td>
+			</tr>
+		</table>
+</div>
+
+<div class="row demo-tiles">
+        <div class="col-xs-3 initial">
+          <div class="tile">
+            <img src="/static/img/check.png" alt="Compas" class="tile-image big-illustration">
+            <h3 class="tile-title">Step 1</h3>
+            <p>Use Default model.</p>
+            <a class="btn btn-primary btn-large btn-block" href="/default">Default model</a>
+          </div>
+        </div>
+
+        <div class="col-xs-3 initial">
+          <div class="tile">
+            <img src="/static/img/compose.png" alt="Infinity-Loop" class="tile-image">
+            <h3 class="tile-title">Step 2</h3>
+            <p>Create your model.</p>
+            <a class="btn btn-primary btn-large btn-block" href="/NewModel">Create model </a>
+          </div>
+        </div>
+
+        <div class="col-xs-3 initial">
+          <div class="tile">
+            <img src="/static/img/barchart.png" alt="Pensils" class="tile-image">
+            <h3 class="tile-title">Step 3</h3>
+            <p>Enjoy the results! </p>
+            <a class="btn btn-primary btn-large btn-block" href="/editIntermediate">Enjoy</a>
+          </div>
+        </div>
+
+ </div>
+
+ {% if not user.is_authenticated %}
+ <div class="row demo-tiles" style="margin-left:-5px">
+        <div class="col-xs-3 initial2">
+          <div class="tile">
+            <img src="/static/img/pencils.svg" alt="Compas" class="tile-image big-illustration">
+            <h3 class="tile-title">Already have account?</h3>
+            <p></p>
+            <a class="btn btn-primary btn-large btn-block" href="/accounts/login/">Login</a>
+          </div>
+        </div>
+
+        <div class="col-xs-3 initial2">
+          <div class="tile">
+            <img src="/static/img/retina.svg" alt="Infinity-Loop" class="tile-image">
+            <h3 class="tile-title">Create new account</h3>
+            <p></p>
+            <a class="btn btn-primary btn-large btn-block" href="/accounts/signup">Create account </a>
+          </div>
+        </div>
+</div>
+</div>
+{% endif %}
+
+{% endblock %}

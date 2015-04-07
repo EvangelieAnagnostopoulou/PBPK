@@ -1,0 +1,8 @@
+django==1.7
+django-allauth
+numpy
+matplot
+matplotlib
+scipy
+slycot
+cvxopt

@@ -1,0 +1,34 @@
+<div id="dialog-skin" class="organ-dialog" style="display: none;">
+    <form method="post" name="frm">
+
+        <table>
+            <tr><td>Skin Flow:</td>
+                {% if default %}
+                <td>{{form.skin_flow_factor.value}}</td>
+                {% else %}
+                <td><input type="text" id="sk_f_f" value={{form.skin_flow_factor.value}} class="form-control"></td>
+                {% endif %}
+                <td><em>(Skin flow as percentage with respect to CO).</em></td>
+            </tr>
+            <tr>
+                <td>Skin Volume: </td>
+                {% if default %}
+                <td>{{form.skin_volume_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" id="sk_v_f" value={{form.skin_volume_fraction.value}} class="form-control"></td>
+                {% endif %}
+                <td><em>(Skin volume as percentage with respect to BW).</em></td>
+            </tr>
+            <tr>
+                <td>Blood in skin: </td>
+                {% if default %}
+                <td>{{form.blood_skin_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" id="sk_b_f" value={{form.blood_skin_fraction.value}} class="form-control"></td>
+                {% endif %}
+                <td><em>(Blood as percentage with respect to skin volume. The remaining of the volume is tissue).</em></td>
+            </tr>
+
+        </table>
+    </form>
+</div>

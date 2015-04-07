@@ -1,0 +1,34 @@
+<div id="dialog-spleen" class="organ-dialog" style="display: none;">
+    <form method="post" name="frm">
+
+        <table>
+            <tr><td>Spleen Flow:</td>
+                {% if default %}
+                <td>{{form.spleen_flow_factor.value}}</td>
+                {% else %}
+                <td><input type="text" value={{form.spleen_flow_factor.value}} id="sp_f_f" class="form-control"></td>
+                {% endif %}
+                <td><em>(Spleen flow as percentage with respect to CO).</em></td>
+            </tr>
+            <tr>
+                <td>Spleen Volume: </td>
+                {% if default %}
+                <td>{{form.spleen_volume_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" value={{form.spleen_volume_fraction.value}} id="sp_v_f" class="form-control"></td>
+                {% endif %}
+                <td><em>(Spleen volume as percentage with respect to BW).</em></td>
+            </tr>
+            <tr>
+                <td>Blood in spleen: </td>
+                {% if default %}
+                <td>{{form.blood_spleen_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" value={{form.blood_spleen_fraction.value}} id="sp_b_f" class="form-control"></td>
+                {% endif %}
+                <td><em>(Blood as percentage with respect to spleen volume. The remaining of the volume is tissue).</em></td>
+            </tr>
+
+        </table>
+    </form>
+</div>

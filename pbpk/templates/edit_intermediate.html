@@ -1,0 +1,68 @@
+{% extends "base.html"%}
+
+{% block content %}
+<form method="post"> {% csrf_token %}
+
+{% if form.errors %}
+    <p class="error">{{form.errors}}</p>
+{% endif %}
+
+	<div class="div-form-table" style=" width: 40%;"><b>Please select the model you want to edit:</b><br><br>
+	<table class="form-table">
+		<tr>
+
+			<td>
+				<b>Modelname:</b>
+				<!--<input type="text" id="modelname" name="modelname" value="{{modelname}}" class="form-control"/>-->
+                {{select_model}}
+			</td>
+            <td>
+				<b>Drugname:</b>
+				<!--<input type="text" id="modelname" name="modelname" value="{{modelname}}" class="form-control"/>-->
+                {{select_drug}}
+			</td>
+
+            <!--<td>
+                <input type="button" id="New_drug" value="New_drug">
+            </td>-->
+
+
+		</tr>
+	</table>
+    </div>
+    <br>
+	<div style="color : red">{{error}}</div><br>
+	<input type="submit" value="Edit this model" id="edit_model" class="btn btn-block btn-lg btn-primary" style="width: 10%; border: 2px solid #2f4154;width: 10%; display:none; ">
+
+	<!-- <div id="divCheckbox" style="visibility: hidden; display:inline;">Here are the results!</div>-->
+</form>
+
+<script>
+    function get_drug(){
+        $.ajax({
+            url: '/editIntermediate/',
+            type: 'POST',
+            data: {
+                'modelname': $('#id_modelname').val(),
+                'csrfmiddlewaretoken': '{{csrf_token}}'
+            },
+
+            success: function(drugs, textStatus, jqXHR) {
+                var e = $('#id_drugname');
+                e.empty();
+                for (var i=0; i<drugs.length; i++) {
+                    drug = drugs[i];
+                    e.append($('<option>', { value : drug[0] }).text(drug[1]));
+                }
+            }
+        });
+    }
+
+
+$('#id_modelname').one('change', function() {
+     //$('#edit_model').prop('disabled', false);
+     $('#edit_model').show();
+});
+
+</script>
+{% endblock %}

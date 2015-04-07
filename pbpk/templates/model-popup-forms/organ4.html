@@ -1,0 +1,23 @@
+<div id="dialog-organ4" class="organ-dialog" style="display: none;">
+    <form method="post" name="frm">
+        <hr>
+        <table>
+            <tr>
+                <td>Organ name: </td>
+                <td><input type="text" id="org4" class="form-control"></td>
+            </tr>
+            <tr><td>Flow Factor:</td>
+                <td><input type="text" value={{form.organ4_flow_factor.value}} id="org4_f_f" class="form-control"></td>
+                <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+            </tr>
+            <tr>
+                <td>Volume Fraction: </td>
+                <td><input type="text" value={{form.organ4_volume_fraction.value}} id="org4_v_f" class="form-control"></td>
+            </tr>
+            <tr>
+                <td>Blood fraction: </td>
+                <td><input type="text" value={{form.blood_organ4_fraction.value}} id="org4_b_f" class="form-control"></td>
+            </tr>
+        </table>
+    </form>
+</div>

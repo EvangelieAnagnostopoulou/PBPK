@@ -1,0 +1,34 @@
+<div id="dialog-kidney" class="organ-dialog" style="display: none;">
+    <form method="post" name="frm">
+
+        <table>
+            <tr><td>Kidney Flow:</td>
+                {% if default %}
+                <td>{{form.kidney_flow_factor.value}}</td>
+                {% else %}
+                <td><input type="text" value={{form.kidney_flow_factor.value}} id="kid_f_f" class="form-control"></td>
+                {% endif %}
+                <td><em>(Kidney flow as percentage with respect to CO).</em></td>
+            </tr>
+            <tr>
+                <td>Kidney Volume: </td>
+                {% if default %}
+                <td>{{form.kidney_volume_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" value={{form.kidney_volume_fraction.value}} id="kid_v_f" class="form-control"></td>
+                {% endif %}
+                <td><em>(Kidney volume as percentage with respect to BW).</em></td>
+            </tr>
+            <tr>
+                <td>Blood in kidney: </td>
+                {% if default %}
+                <td>{{form.blood_kidney_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" value={{form.blood_kidney_fraction.value}} id="kid_b_f" class="form-control"></td>
+                {% endif %}
+                <td><em>(Blood as percentage with respect to kidney volume. The remaining of the volume is tissue).</em></td>
+            </tr>
+
+        </table>
+    </form>
+</div>

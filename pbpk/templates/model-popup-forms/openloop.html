@@ -1,0 +1,220 @@
+<div id="dialog-open" class="div-form-table organ-dialog" style=" display:none; width: 40%;">
+    <h6>Please enter Total Time and Number of Intervals:</h6><br>
+	<form method="post">
+        <label>
+            Total Time(hr):<br>
+            <input type="text" id="Time"  class="form-control" />
+        </label>
+
+        <label>
+            Number of Intervals:<br>
+            <input type="text" id="N_int" class="form-control" />
+        </label>
+    </form>
+    <input type="button" name= "add" id="add" value="Submit" class="btn btn-block btn-lg btn-primary" style="width: 40%;" onclick="createTable() ">
+    <br>
+
+    <table id="dataTable" class="div-form-table" style=" display:none;">
+
+    </table>
+
+
+    <br>
+    <div id="buttons" style="display:none;">
+        <input type="checkbox" name="all" id= "all" >All fields get the value of the first.<br>
+        <input type="button" value="Add Row" id="addrow" class="btn btn-green btn-block btn-lg btn-primary" style="width: 40%;"  onclick="addRowOpen('dataTable')" />
+        <input type="button" value="Delete Row" id="delete" onclick="deleteLastRow('dataTable')" class="btn btn-red btn-block btn-lg btn-primary" style="width: 40%;"/>
+    </div>
+    <div style=" display:none;">
+    <label>
+         Method parameters:<br>
+         <input type="text" id="params-open"  class="form-control" />
+    </label>
+
+    </div>
+
+</div>
+
+
+<script>
+
+var first=0;
+//get the values from database
+function get(){
+
+var params_json2 = JSON.parse( $("#params-open").val() );
+
+for( var i=0; i<params_json2.total_N ;i++) {
+    if(params_json2.dose[i] != null){
+    $("#txtbox"+i).val(params_json2.dose[i])
+    }
+    if(params_json2.time[i] != null){
+    if(i == params_json2.total_N-1){
+          $('#txt'+i).val(params_json2.time[i]+'-'+params_json2.total_time)
+          }
+    else{
+          $('#txt'+i).val(params_json2.time[i]+'-'+params_json2.time[i+1])
+          }
+    }
+    }
+
+}
+function createTable() {
+    var a, b, tableElem, rowElem, colElem;
+     a = document.getElementById('N_int').value;
+     b = document.getElementById('Time').value;
+     D=(b/a);
+
+    if (a == "" || b =="") {
+        alert("Please enter some numeric value");
+    } else {
+
+        //Delete table of previous submit
+
+        try {
+            var table = document.getElementById('dataTable');
+            var rowCount = table.rows.length;
+
+            for(var i=0; i<rowCount; i++) {
+                var row = table.rows[i];
+                var chkbox = row.cells[0].childNodes[0];
+
+                table.deleteRow(i);
+                rowCount--;
+                i--;
+
+
+            }
+            }catch(e) {
+                alert(e);
+            }
+
+
+        $("#buttons").show();
+        $("#dataTable").show();
+
+        for( var i=0; i<a ;i++) {
+
+            var table = document.getElementById('dataTable');
+
+            //var rowCount = table.rows.length;
+            var row = table.insertRow(i);
+
+            D_arx=D*i;
+            D_tel=(D*i)+D;
+
+
+            D_arx=D_arx.toFixed(4);
+            D_tel=D_tel.toFixed(4);
+
+            //Round last time
+            if (i == a-1){
+                D_tel=Math.round(D_tel);
+            }
+            var cell2 = row.insertCell(0);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            element3.name = "txtbox[]";
+            element3.className = 'form-control';
+            //element3.className += ' form-open-time';
+            element3.id = "txt"+i;
+            //cell2.css({"weight","30%"});
+            element3.value= D_arx + '-' + D_tel;
+
+            //cell2.innerHTML = D_arx + '-' + D_tel;
+            cell2.appendChild(element3);
+
+            var cell3 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "text";
+            element2.id = "txtbox"+i;
+            element2.className = 'form-control';
+            //element2.className += ' dose-params';
+            element2.value= '2';
+            cell3.appendChild(element2);
+            var element_label = document.createElement("label");
+            element_label.innerHTML='μg/hr';
+            cell3.appendChild(element_label);
+            }
+            //load the parameters from database only the first time user press submit
+            if(first==0){
+            get()
+            first=1;
+            }
+
+    }
+    //gives to all txtboxes the value of the first one if checkbox is checked.
+    $(document).ready(function () {
+        var ckbox = $('#all');
+        ckbox.on('click',function () {
+                $('#txtbox0').keyup(function() {
+                    if (ckbox.is(':checked')==true) {
+                        for( var i=0; i<a ;i++) {
+                            $('#txtbox'+i).val($(this).val());
+                            }
+                            }
+                     });
+
+
+        });
+    });
+
+}
+
+function addRowOpen(tableID) {
+
+
+            var table = document.getElementById(tableID);
+
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+
+            var cell2 = row.insertCell(0);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            //element3.name = "txtbox[]";
+            element3.id = "txt"+rowCount;
+            element3.className = 'form-control';
+            cell2.appendChild(element3);
+            //cell2.innerHTML = rowCount + 1;
+
+            var cell3 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "text";
+            //element2.name = "txtbox[]";
+            element2.id = "txtbox"+rowCount;
+            element2.className = 'form-control';
+            element2.value= '2';
+            cell3.appendChild(element2);
+            var element_label = document.createElement("label");
+            element_label.innerHTML='μg/hr';
+            cell3.appendChild(element_label);
+
+
+        }
+
+        function deleteLastRow(tableID){
+            try{
+            var table = document.getElementById(tableID);
+            var rowCount = table.rows.length-1;
+
+            table.deleteRow(rowCount);
+            rowCount--;
+            }catch(e) {
+                alert(e);
+            }
+
+        }
+
+$('#addrow').click(function(){
+
+    document.getElementById('N_int').value++;
+});
+
+$('#delete').click(function(){
+
+    document.getElementById('N_int').value--;
+});
+
+
+</script>

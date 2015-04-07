@@ -1,0 +1,4171 @@
+{% extends "base.html" %}
+
+{% block header %}
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+
+
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script src="/static/js/highcharts.js"></script>
+<script src="/static/js/highchart-exporting.js"></script>
+
+
+{% endblock %}
+
+{% block content %}
+
+{% include "model-popup-forms/bladder.html" %}
+{% include "model-popup-forms/liver.html" %}
+{% include "model-popup-forms/residual.html" %}
+{% include "model-popup-forms/skin.html" %}
+{% include "model-popup-forms/kidney.html" %}
+{% include "model-popup-forms/blood.html" %}
+{% include "model-popup-forms/lung.html" %}
+{% include "model-popup-forms/organ1-create.html" %}
+{% include "model-popup-forms/organ2-create.html" %}
+{% include "model-popup-forms/organ3-create.html" %}
+{% include "model-popup-forms/organ4-create.html" %}
+{% include "model-popup-forms/organ5-create.html" %}
+{% include "model-popup-forms/organ1.html" %}
+{% include "model-popup-forms/organ2.html" %}
+{% include "model-popup-forms/organ3.html" %}
+{% include "model-popup-forms/organ4.html" %}
+{% include "model-popup-forms/organ5.html" %}
+{% include "model-popup-forms/confirm.html" %}
+{% include "model-popup-forms/openloop.html" %}
+{% include "model-popup-forms/setpoint.html" %}
+{% include "model-popup-forms/drug.html" %}
+{% include "model-popup-forms/heart.html" %}
+{% include "model-popup-forms/spleen.html" %}
+{% include "model-popup-forms/muscle.html" %}
+{% include "model-popup-forms/placental.html" %}
+
+<canvas id="canvas" width="640" height="840" style="display: none"></canvas>
+
+
+<form class="new-model-form" method="post" action="{% if edit %}/edit_model?modelid={{modelid}}&drugid={{drugid}} {% elif default%}/default {% else %}/NewModel{% endif %} " name="f1"> {% csrf_token %}
+
+<div id="model" class="div-form-table">
+    <table class="form-table">
+        <tr>
+            {% if default %}
+            <td><b>Model name:</b></td>
+            <td>{{form.modelname.value}}</td>
+            {% else %}
+             <td><b>Please enter a name for your model:</b></td>
+            <td>{{form.modelname}}</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td><b>Body Weight (BW):</b></td>
+            {% if default %}
+            <td>{{form.bw.value}}</td>
+            {% else %}
+            <td>{{form.bw}}</td>
+            {% endif %}
+            <td><em>(kg)</em></td>
+        </tr>
+        <tr>
+            <td><b>Hematocrit:</b></td>
+            {% if default %}
+            <td>{{form.h.value}}</td>
+            {% else %}
+            <td>{{form.h}}</td>
+            {% endif %}
+        </tr>
+         <tr>
+            <td><b>Cardiac output (CO):</b></td>
+             {% if default %}
+            <td>{{form.cardiac_output.value}}</td>
+            {% else %}
+            <td>{{form.cardiac_output}}</td>
+             {% endif %}
+            <td><em>(L/kg/hr)</em></td>
+        </tr>
+
+    </table>
+</div>
+
+{% if error or form.errors or dform.errors %}
+    <div class="error">
+        {% if form.errors %}
+        <p>{{form.errors}}</p>
+        {% endif %}
+        {% if dform.errors %}
+        <p>{{dform.errors}}</p>
+        {% endif %}
+        {{error}}
+    </div>
+{% endif %}
+
+<div id="constrains" class="div-form-table" style="display: none">
+    <table class="form-table">
+        <td>
+            <table>
+                <tr>
+                    <b>Contraints</b>
+                    <td>Liver: Maximum Concentration</td>
+                    <td>{{dform.max_liver}}</td>
+                    <td>{{dform.min_liver}}</td>
+                </tr>
+                <tr>
+                    <td>Kidney: Maximum Concentration</td>
+                    <td>{{dform.max_kidney}}</td>
+                    <td>{{dform.min_kidney}}</td>
+                </tr>
+                <tr>
+                    <td>Residual: Maximum Concentration</td>
+                    <td>{{dform.max_residual}}</td>
+                    <td>{{dform.min_residual}}</td>
+                </tr>
+                <tr>
+                    <td>Skin: Maximum Concentration</td>
+                    <td>{{dform.max_skin}}</td>
+                    <td>{{dform.min_skin}}</td>
+                </tr>
+                <tr>
+                    <td>Bladder: Maximum Concentration</td>
+                    <td>{{dform.max_bladder}}</td>
+                    <td>{{dform.min_bladder}}</td>
+                </tr>
+                <tr>
+                    <td>Lung: Maximum Concentration</td>
+                    <td>{{dform.max_lung}}</td>
+                    <td>{{dform.min_lung}}</td>
+                </tr>
+                <tr>
+                    <td>Maximum Influx Rate</td>
+                    <td>{{dform.max_influx}}</td>
+                </tr>
+                <tr>
+                    <td>Heart: Maximum Concentration</td>
+                    <td>{{dform.max_heart}}</td>
+                    <td>{{dform.min_heart}}</td>
+                </tr>
+                <tr>
+                    <td>Muscle: Maximum Concentration</td>
+                    <td>{{dform.max_muscle}}</td>
+                    <td>{{dform.min_muscle}}</td>
+                </tr>
+                <tr>
+                    <td>Spleen: Maximum Concentration</td>
+                    <td>{{dform.max_spleen}}</td>
+                    <td>{{dform.min_spleen}}</td>
+                </tr>
+                <tr>
+                    <td>Placental: Maximum Concentration</td>
+                    <td>{{dform.max_placental}}</td>
+                    <td>{{dform.min_placental}}</td>
+                </tr>
+            </table>
+        </td>
+
+    </table>
+</div>
+<div id="drugArea" style="display: none">
+    <table>
+        <tr>
+            <td>Drug name:</td>
+            <td>{{dform.drug_name}}</td>
+        </tr>
+        <tr>
+             <td>Drug_id:</td>
+            {% if send %}
+            <td><input value="{{drugid}}" id="dr-drug_id" name="dr-drug_id"></td>
+            {% else %}
+            <td><input value="{{drugid}}" id="drug_id" name="drug_id"></td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>Model_id:</td>
+            <td><input value="{{modelid}}" id="model_id" name="model_id"></td>
+        </tr>
+        <tr>
+            <td>Submit:</td>
+            <td><input value="{{submit}}" id="submit_id" name="submit_id"></td>
+        </tr>
+        <tr>
+            <td>Counter:</td>
+            <td><input value="{{counter}}" id="counter_id" name="counter_id"></td>
+        </tr>
+        </table>
+    </div>
+
+<input type="button" id="residual" value="Residual" class="organ enabled residual"/>
+
+<div id="residualArea" style="display: none">
+    <table>
+        <tr>
+            <td>Blood Residual fraction:</td>
+            <td>{{form.blood_rest_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P residual:</td>
+            <td>{{dform.p_rest}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi residual:</td>
+            <td>{{dform.pi_rest}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+</div>
+
+<input type="button" id="skin" name="skin" value="Skin" class="organ enabled skin"/>
+
+<div id="skinArea" style="display: none">
+    <table>
+        <tr>
+            <td>Skin Flow Factor:</td>
+            <td>{{form.skin_flow_factor}}</td>
+            <td><em>(Skin flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Skin Volume Fraction:</td>
+            <td>{{form.skin_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood skin fraction:</td>
+            <td>{{form.blood_skin_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P skin:</td>
+            <td>{{dform.p_skin}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi skin:</td>
+            <td>{{dform.pi_skin}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+</div>
+<input type="button" id="kidney" value="Kidney" class="organ enabled kidney"/>
+
+<div id="kidneyArea" style="display: none">
+    <table>
+        <tr>
+            <td>Kidney Flow Factor:</td>
+            <td>{{form.kidney_flow_factor}}</td>
+            <td><em>(Kidney flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Kidney Volume Fraction:</td>
+            <td>{{form.kidney_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood kidney fraction:</td>
+            <td>{{form.blood_kidney_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P kidney:</td>
+            <td>{{dform.p_kidney}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi kidney:</td>
+            <td>{{dform.pi_kidney}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>k_kidney:</td>
+            <td>{{dform.k_kidney}}</td>
+        </tr>
+    </table>
+</div>
+<input type="button" id="bladder" value="Bladder" class="organ enabled bladder"/>
+
+<div id="bladderArea" style="display: none">
+    <table>
+        <tr>
+            <td>Bladder Flow Factor:</td>
+            <td>{{form.bladder_flow_factor}}</td>
+            <td><em>(Bladder flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Bladder Volume Fraction:</td>
+            <td>{{form.bladder_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood bladder fraction:</td>
+            <td>{{form.blood_bladder_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P bladder:</td>
+            <td>{{dform.p_bladder}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi bladder:</td>
+            <td>{{dform.pi_bladder}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+</div>
+<input type="button" id="liver" value="Liver" class="organ enabled liver"/>
+
+<div id="liverArea" style="display: none">
+    <table>
+        <tr>
+            <td>Liver Flow Factor:</td>
+            <td>{{form.liver_flow_factor}}</td>
+            <td><em>(Liver flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Liver Volume Fraction:</td>
+            <td>{{form.liver_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood liver fraction:</td>
+            <td>{{form.blood_liver_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P liver:</td>
+            <td>{{dform.p_liver}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi liver:</td>
+            <td>{{dform.pi_liver}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+        <tr>
+            <b>Kinetic Constants</b>
+            <td>k_met:</td>
+            <td>{{dform.k_met}}</td>
+        </tr>
+        <tr>
+            <td>k_bile:</td>
+            <td>{{dform.k_bile}}</td>
+        </tr>
+    </table>
+</div>
+<input type="button" id="blood" value="Blood" class="organ enabled blood"/>
+
+<div id="bloodArea" style="display: none">
+    <table>
+        <tr>
+            <td>Blood Volume Fraction:</td>
+            <td>{{form.blood_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Pi Red Blood Cells:</td>
+            <td>{{dform.pi_rbc}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi plasma:</td>
+            <td>{{dform.pi_plasma}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+</div>
+<input type="button" id="lung" value="Lung" class="organ enabled lung"/>
+
+<div id="lungArea" style="display: none">
+    <table>
+        <tr>
+            <td>Lung Flow Factor:</td>
+            <td>{{form.lung_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Lung Volume Fraction:</td>
+            <td>{{form.lung_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood lung fraction:</td>
+            <td>{{form.blood_lung_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P lung:</td>
+            <td>{{dform.p_lung}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi lung:</td>
+            <td>{{dform.pi_lung}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+</div>
+<input type="button" id="Blood2" value="Blood" class="organ enabled blood2"><b></b>
+<input type="button" id="heart" value="Heart" class="organ enabled heart"><b></b>
+    <div id="heartArea" style="display: none">
+     <table>
+        <tr>
+            <td>Heart Flow Factor:</td>
+            <td>{{form.heart_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Heart Volume Fraction:</td>
+            <td>{{form.heart_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood heart fraction:</td>
+            <td>{{form.blood_heart_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P heart:</td>
+            <td>{{dform.p_heart}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi heart:</td>
+            <td>{{dform.pi_heart}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+        </div>
+<input type="button" id="muscle" value="Muscle" class="organ enabled muscle"><b></b>
+    <div id="muscleArea" style="display: none">
+     <table>
+        <tr>
+            <td>Muscle Flow Factor:</td>
+            <td>{{form.muscle_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Muscle Volume Fraction:</td>
+            <td>{{form.muscle_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood muscle fraction:</td>
+            <td>{{form.blood_muscle_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P muscle:</td>
+            <td>{{dform.p_muscle}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi muscle:</td>
+            <td>{{dform.pi_muscle}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+    </div>
+<input type="button" id="spleen" value="Spleen" class="organ enabled spleen"><b></b>
+    <div id="spleenArea" style="display: none">
+     <table>
+        <tr>
+            <td>Spleen Flow Factor:</td>
+            <td>{{form.spleen_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Spleen Volume Fraction:</td>
+            <td>{{form.spleen_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood spleen fraction:</td>
+            <td>{{form.blood_spleen_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P spleen:</td>
+            <td>{{dform.p_spleen}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi spleen:</td>
+            <td>{{dform.pi_spleen}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+    </div>
+<input type="button" id="placental" name="Placental" value="Placental-fetal unit" class="organ enabled placental"><b></b>
+    <div id="placentalArea" style="display: none">
+     <table>
+        <tr>
+            <td>PLacental Flow Factor:</td>
+            <td>{{form.placental_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>PLacental Volume Fraction:</td>
+            <td>{{form.placental_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood placental fraction:</td>
+            <td>{{form.blood_placental_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P placental:</td>
+            <td>{{dform.p_placental}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi placental:</td>
+            <td>{{dform.pi_placental}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+    </div>
+<input type="button" id="organ1" class="organ enabled" style="display: none"/>
+
+<div id="organ1Area" style="display: none">
+    <table>
+        <tr>
+            <td>Organ name:</td>
+            <td>{{form.organ1_name}}</td>
+            <td>Organ1params:</td>
+            <td>{{dform.organ1_params}}</td>
+        </tr>
+    </table>
+
+    <table id="organ1type">
+        <tr>
+            <td>Type of organ:</td>
+            <td><input type="radio" id="metabolising" class="metabolising" name="type"> Metabolizing</td>
+            <td><input type="radio" id="non-metabolising" class="non-metabolising" name="type">Non-metabolising</td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>Flow Factor:</td>
+            <td>{{form.organ1_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Volume Fraction:</td>
+            <td>{{form.organ1_volume_fraction}}</td>
+            <!--<td><input type="text" value={{0.0}} id="organ1_v_f"></td> -->
+        </tr>
+        <tr>
+            <td>Blood fraction:</td>
+            <td>{{form.blood_organ1_fraction}}</td>
+            <!--<td><input type="text" value={{0.0}} id="organ1_b_f"></td> -->
+        </tr>
+        <tr>
+            <td>P :</td>
+            <td>{{dform.p_organ1}}</td>
+            <!--<td><input type="text" value={{0.0}} id="p_organ1"></td> -->
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi :</td>
+            <td>{{dform.pi_organ1}}</td>
+            <!--<td><input type="text" value={{0.0}} id="pi_organ1"></td> -->
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+    <table id="meta-constains1" style="display: none">
+        <tr>
+            <td>Constains:</td>
+            <td><select id= "constains1" name="constains1">
+                <option value="Linear"></option>
+                <option value="Menten"></option>
+            </select></td>
+        </tr>
+
+    </table>
+</div>
+<input type="button" id="organ2" class="organ enabled" style="display: none"/>
+
+<div id="organ2Area" style="display: none">
+    <table>
+        <tr>
+            <td>Organ name:</td>
+            <td>{{form.organ2_name}}</td>
+        </tr>
+    </table>
+
+    <table id="organ2type">
+        <tr>
+            <td>Type of organ:</td>
+            <td><input type="radio" id="metabolising2" class="metabolising" name="type"> Metabolizing</td>
+            <td><input type="radio" id="non-metabolising2" class="non-metabolising" name="type">Non-metabolising</td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>Flow Factor:</td>
+            <td>{{form.organ2_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Volume Fraction:</td>
+            <td>{{form.organ2_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood fraction:</td>
+            <td>{{form.blood_organ2_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P :</td>
+            <td>{{dform.p_organ2}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi :</td>
+            <td>{{dform.pi_organ2}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+    <table id="meta-constains2" style="display: none">
+        <tr>
+            <td>Constains:</td>
+            <td><select name="constains2">
+                <option value="Linear"></option>
+                <option value="Menten"></option>
+            </select></td>
+        </tr>
+
+    </table>
+</div>
+<input type="button" id="organ3" class="organ enabled" style="display: none"/>
+
+<div id="organ3Area" style="display: none">
+    <table>
+        <tr>
+            <td>Organ name:</td>
+            <td>{{form.organ3_name}}</td>
+        </tr>
+    </table>
+
+    <table id="organ3type">
+        <tr>
+            <td>Type of organ:</td>
+            <td><input type="radio" id="metabolising3" class="metabolising" name="type"> Metabolizing</td>
+            <td><input type="radio" id="non-metabolising3" class="non-metabolising" name="type">Non-metabolising</td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>Flow Factor:</td>
+            <td>{{form.organ3_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Volume Fraction:</td>
+            <td>{{form.organ3_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood fraction:</td>
+            <td>{{form.blood_organ3_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P :</td>
+            <td>{{dform.p_organ3}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi :</td>
+            <td>{{dform.pi_organ3}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+    <table id="meta-constains3" style="display: none">
+        <tr>
+            <td>Constains:</td>
+            <td><select name="constains3">
+                <option value="Linear"></option>
+                <option value="Menten"></option>
+            </select></td>
+        </tr>
+
+    </table>
+</div>
+<input type="button" id="organ4" class="organ enabled" style="display: none"/>
+
+<div id="organ4Area" style="display: none">
+    <table>
+        <tr>
+            <td>Organ name:</td>
+            <td>{{form.organ4_name}}</td>
+        </tr>
+    </table>
+
+    <table id="organ4type">
+        <tr>
+            <td>Type of organ:</td>
+            <td><input type="radio" id="metabolising4" class="metabolising" name="type"> Metabolizing</td>
+            <td><input type="radio" id="non-metabolising4" class="non-metabolising" name="type">Non-metabolising</td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>Flow Factor:</td>
+            <td>{{form.organ4_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Volume Fraction:</td>
+            <td>{{form.organ4_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood fraction:</td>
+            <td>{{form.blood_organ4_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P :</td>
+            <td>{{dform.p_organ4}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi :</td>
+            <td>{{dform.pi_organ4}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+    <table id="meta-constains4" style="display: none">
+        <tr>
+            <td>Constains:</td>
+            <td><select name="constains4">
+                <option value="Linear"></option>
+                <option value="Menten"></option>
+            </select></td>
+        </tr>
+
+    </table>
+</div>
+<input type="button" id="organ5" class="organ enabled" style="display: none"/>
+
+<div id="organ5Area" style="display: none">
+    <table>
+        <tr>
+            <td>Organ name:</td>
+            <td>{{form.organ5_name}}</td>
+        </tr>
+    </table>
+
+    <table id="organ5type">
+        <tr>
+            <td>Type of organ:</td>
+            <td><input type="radio" id="metabolising5" class="metabolising" name="type"> Metabolizing</td>
+            <td><input type="radio" id="non-metabolising5" class="non-metabolising" name="type">Non-metabolising</td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>Flow Factor:</td>
+            <td>{{form.organ5_flow_factor}}</td>
+            <td><em>(Lung flow as percentage with respect to cardiac output).</em></td>
+        </tr>
+        <tr>
+            <td>Volume Fraction:</td>
+            <td>{{form.organ5_volume_fraction}}</td>
+        </tr>
+        <tr>
+            <td>Blood fraction:</td>
+            <td>{{form.blood_organ5_fraction}}</td>
+        </tr>
+        <tr>
+            <td>P :</td>
+            <td>{{dform.p_organ5}}</td>
+            <td><em>(Partition coefficient).</em></td>
+        </tr>
+        <tr>
+            <td>Pi :</td>
+            <td>{{dform.pi_organ5}}</td>
+            <td><em>(Permeability coefficient).</em></td>
+        </tr>
+    </table>
+    <table id="meta-constains5" style="display: none">
+        <tr>
+            <td>Constains:</td>
+            <td><select name="constains5">
+                <option value="Linear"></option>
+                <option value="Menten"></option>
+            </select></td>
+        </tr>
+
+    </table>
+</div>
+
+<br />
+<div style=" display:none;">
+    <label>
+         Method:<br>
+         {{form.method}}
+    </label>
+    <label>
+         Method parameters:<br>
+         {{form.method_params}}
+    </label>
+    <label>
+        Plot parameters:<br>
+        {{form.plot_params}}
+    </label>
+    <label>
+        Step parameters:<br>
+        {{form.step_params}}
+    </label>
+</div>
+
+{%if image%}
+    <div id="below">
+        <!-- DIV GIA RESULTS-->
+
+       <!-- <b>Expected Response of the System:</b><br>
+        <a class="example-image-link" href="data: test/png;base64,{{img}}" data-lightbox="image-1">
+            <img id="im" class="example-image" src="data: test/png;base64,{{img}}" style="width: 40rem">
+        </a>
+        <a ><img src="/static/img/print28.png" onclick="jQuery.print('#im')" style="width: 2rem; cursor: pointer;"/></a> -->
+        <!--<button class="print btn btn-block btn-lg btn-primary" onclick="jQuery.print('#im')" style="width: 50%"> Print Image </button>-->
+        <!--<a href="data: test/png;base64,{{img}}">Download image</a>-->
+    </div>
+{% endif %}
+
+<input type="submit" value="{%if edit%}Save changes{% else %}Create Model{% endif %}" id="Create_model" class="btn btn-block btn-lg btn-primary"
+       style="width: 8%; border: 2px solid #2f4154;" >
+{% if not default %}
+    <div id="div-placental"></div>
+    <input type="button" value="Add organs" id="Add_organs" name="Add_organs" onClick="addInput('div-placental');"
+           class="btn btn-block btn-lg btn-primary" style="width: 8%; border: 2px solid #2f4154;">
+    <input type="button" value="Remove" id="removeButton" class="btn btn-red btn-block btn-lg btn-primary"
+           style="width: 8%; border: 2px solid #2f4154; margin: 0px;">
+{% endif %}
+</form>
+
+<div id="loading" style="display: none"><!-- Place at bottom of page -->
+            <img id="loading-image" src="http://i.stack.imgur.com/FhHRx.gif" alt="Loading..." />
+        </div>
+<!--Script for loading -->
+<script>
+
+    $('#Create_model').bind('click', function(e)
+                    {
+                        $("#loading").show();
+                        $('.example-image').remove();
+                        $('.example-image-link').remove();
+                        $.ajax({
+                            {% if default %}
+                            url: /default/,
+                            {% elif edit %}
+                            url: /edit_model/,
+                            {% else %}
+                            url: /NewModel/,
+                            {% endif%}
+                            type: 'POST',
+                            data: 'json',
+                            cache: 'false',
+                            success: function(data, textStatus, jqXHR) {
+                                   //data=data.replace('data: test/png;base64', ' ')
+                                   $("#loading").hide();
+                             }
+                             });
+                    });
+
+
+
+</script>
+
+<script>
+// if user click the run buttom clicked "Create model" buttom
+    $( "#run" ).on( "click", function() {
+            $('#submit_id').val('Run');
+            $('input[type=submit]').click();
+			});
+
+</script>
+
+<script>
+    //add class to form elements
+    $(function() {
+        $(".new-model-form input").addClass("form-control");
+    });
+
+</script>
+
+<script>
+    $(function() {
+			dialogResidual = $( "#dialog-residual" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogResidual.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-blood_rest_fraction").val( $("#res_b_f").val() );
+
+						dialogResidual.dialog( "close" );
+						/*if(($("#id_mod-blood_rest_fraction").val() != "0.0" || $("#id_dr-p_rest").val() != "0.0" || $("#id_dr-pi_rest").val() != "0.0") && ($("#id_mod-blood_volume_fraction").val() != "0.0" || $("#id_dr-pi_rbc").val() != "0.0" || $("#id_dr-pi_plasma").val() != "0.0")) {
+    		                canvas.style.display="block";
+    		                organ_dart($( "#residual" ));
+    		            }*/
+					}
+			    {% endif %}
+				},
+
+			});
+
+			/*$( "#residual" ).on( "click", function() {
+				dialogResidual.dialog( "open" );
+			});*/
+		});
+
+		$(function() {
+			dialogSkin = $( "#dialog-skin" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogSkin.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-skin_flow_factor").val( $("#sk_f_f").val() );
+						$("#id_mod-skin_volume_fraction").val( $("#sk_v_f").val() );
+						$("#id_mod-blood_skin_fraction").val( $("#sk_b_f").val() );
+						dialogSkin.dialog( "close" );
+                        /*if(($("#id_mod-skin_flow_factor").val() != "0.0" || $("#id_mod-skin_volume_fraction").val() != "0.0" || $("#id_mod-blood_skin_fraction").val() != "0.0" || $("#id_dr-p_skin").val() != "0.0" || $("#id_dr-pi_skin").val() != "0.0") && ($("#id_mod-blood_volume_fraction").val() != "0.0" || $("#id_dr-pi_rbc").val() != "0.0" || $("#id_dr-pi_plasma").val() != "0.0") ){
+                            canvas.style.display="block";
+                            organ_dart($( "#skin" ));
+                        }*/
+					}
+				{% endif %}
+				},
+
+			});
+
+			/*$( "#skin" ).on( "click", function() {
+				dialogSkin.dialog( "open" );
+			});*/
+		});
+
+		$(function() {
+			dialogKidney = $( "#dialog-kidney" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogKidney.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-kidney_flow_factor").val( $("#kid_f_f").val() );
+						$("#id_mod-kidney_volume_fraction").val( $("#kid_v_f").val() );
+						$("#id_mod-blood_kidney_fraction").val( $("#kid_b_f").val() );
+						dialogKidney.dialog( "close" );
+                        /*if(($("#id_mod-kidney_flow_factor").val() != "0.0" || $("#id_mod-kidney_volume_fraction").val() != "0.0" || $("#id_mod-blood_kidney_fraction").val() != "0.0" || $("#id_dr-p_kidney").val() != "0.0" || $("#id_dr-pi_kidney").val() != "0.0") && ($("#id_mod-blood_volume_fraction").val() != "0.0" || $("#id_dr-pi_rbc").val() != "0.0" || $("#id_dr-pi_plasma").val() != "0.0")) {
+                            canvas.style.display="block";
+                            organ_dart($( "#kidney" ));
+                        }*/
+					}
+				{% endif %}
+				},
+
+			});
+
+			/*$( "#kidney" ).on( "click", function() {
+				dialogKidney.dialog( "open" );
+			});*/
+		});
+
+		$(function() {
+			dialogBladder = $( "#dialog-bladder" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogBladder.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-bladder_flow_factor").val( $("#bl_f_f").val() );
+						$("#id_mod-bladder_volume_fraction").val( $("#bl_v_f").val() );
+						$("#id_mod-blood_bladder_fraction").val( $("#bl_b_f").val() );
+
+						dialogBladder.dialog( "close" );
+						/*if(($("#id_mod-bladder_flow_factor").val() != "0.0" || $("#id_mod-bladder_volume_fraction").val() != "0.0" || $("#id_mod-blood_bladder_fraction").val() != "0.0" || $("#id_dr-p_bladder").val() != "0.0" || $("#id_dr-pi_bladder").val() != "0.0") && ($("#id_mod-blood_volume_fraction").val() != "0.0" || $("#id_dr-pi_rbc").val() != "0.0" || $("#id_dr-pi_plasma").val() != "0.0")) {
+                            canvas.style.display="block";
+                            organ_dart($( "#bladder" ));
+                        }*/
+					}
+				{% endif %}
+				},
+			});
+
+			/*$( "#bladder" ).on( "click", function() {
+				dialogBladder.dialog( "open" );
+			});*/
+		});
+
+
+		$(function() {
+			dialogLiver = $( "#dialog-liver" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogLiver.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-liver_flow_factor").val( $("#liv_f_f").val() );
+						$("#id_mod-liver_volume_fraction").val( $("#liv_v_f").val() );
+						$("#id_mod-blood_liver_fraction").val( $("#liv_b_f").val() );
+
+						dialogLiver.dialog( "close" );
+						/*if(($("#id_mod-liver_flow_factor").val() != "0.0" || $("#id_mod-liver_volume_fraction").val() != "0.0" || $("#id_mod-blood_liver_fraction").val() != "0.0" || $("#id_dr-p_liver").val() != "0.0" || $("#id_dr-pi_liver").val() != "0.0") && ($("#id_mod-blood_volume_fraction").val() != "0.0" || $("#id_dr-pi_rbc").val() != "0.0" || $("#id_dr-pi_plasma").val() != "0.0")) {
+                            canvas.style.display="block";
+                            liver();
+                        }*/
+					}
+				{% endif %}
+				},
+			});
+
+			/*$( "#liver" ).on( "click", function() {
+				dialogLiver.dialog( "open" );
+			});*/
+		});
+
+		$(function() {
+			dialogBlood = $( "#dialog-blood" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogBlood.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-blood_volume_fraction").val( $("#blo_v_f").val() );
+						dialogBlood.dialog( "close" );
+						/*if($("#id_mod-blood_volume_fraction").val() != "0.0" || $("#id_dr-pi_rbc").val() != "0.0" || $("#id_dr-pi_plasma").val() != "0.0") {
+                            canvas.style.display="block";
+                            if($("#id_mod-blood_rest_fraction").val() != "0.0" || $("#id_dr-p_rest").val() != "0.0" || $("#id_dr-pi_rest").val() != "0.0") {
+                                organ_dart($( "#residual" ));
+                            }
+                            if($("#id_mod-skin_flow_factor").val() != "0.0" || $("#id_mod-skin_volume_fraction").val() != "0.0" || $("#id_mod-blood_skin_fraction").val() != "0.0" || $("#id_dr-p_skin").val() != "0.0" || $("#id_dr-pi_skin").val() != "0.0") {
+                                organ_dart($( "#skin" ));;
+                            }
+                            if($("#id_mod-kidney_flow_factor").val() != "0.0" || $("#id_mod-kidney_volume_fraction").val() != "0.0" || $("#id_mod-blood_kidney_fraction").val() != "0.0" || $("#id_dr-p_kidney").val() != "0.0" || $("#id_dr-pi_kidney").val() != "0.0" || $("#id_dr-k_kidney").val() != "0.0") {
+                                organ_dart($( "#kidney" ));
+                            }
+                            if($("#id_mod-bladder_flow_factor").val() != "0.0" || $("#id_mod-bladder_volume_fraction").val() != "0.0" || $("#id_mod-blood_bladder_fraction").val() != "0.0" || $("#id_dr-p_bladder").val() != "0.0" || $("#id_dr-pi_bladder").val() != "0.0") {
+                                organ_dart($( "#bladder" ));
+                            }
+                            if($("#id_mod-liver_flow_factor").val() != "0.0" || $("#id_mod-liver_volume_fraction").val() != "0.0" || $("#id_mod-blood_liver_fraction").val() != "0.0" || $("#id_dr-p_liver").val() != "0.0" || $("#id_dr-pi_liver").val() != "0.0" || $("#id_dr-k_met").val() != "0.0" || $("#id_dr-k_bile").val() != "0.0") {
+                                liver();
+                            }
+                            if($("#id_mod-lung_flow_factor").val() != "0.0" || $("#id_mod-lung_volume_fraction").val() != "0.0" || $("#id_mod-blood_lung_fraction").val() != "0.0" || $("#id_dr-p_lung").val() != "0.0" || $("#id_dr-pi_lung").val() != "0.0") {
+                                lung();
+                            }
+                        }*/
+					}
+				{% endif %}
+				},
+			});
+
+			/*$( "#blood" ).on( "click", function() {
+				dialogBlood.dialog( "open" );
+			});
+			$( "#Blood2" ).on( "click", function() {
+				dialogBlood.dialog( "open" );
+			});*/
+		});
+
+		$(function() {
+			dialogLung = $( "#dialog-lung" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogLung.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-lung_flow_factor").val( $("#lg_f_f").val() );
+						$("#id_mod-lung_volume_fraction").val( $("#lg_v_f").val() );
+						$("#id_mod-blood_lung_fraction").val( $("#lg_b_f").val() );
+
+						dialogLung.dialog( "close" );
+						/*if(($("#id_mod-lung_flow_factor").val() != "0.0" || $("#id_mod-lung_volume_fraction").val() != "0.0" || $("#id_mod-blood_lung_fraction").val() != "0.0" || $("#id_dr-p_lung").val() != "0.0" || $("#id_dr-pi_lung").val() != "0.0") && ($("#id_mod-blood_volume_fraction").val() != "0.0" || $("#id_dr-pi_rbc").val() != "0.0" || $("#id_dr-pi_plasma").val() != "0.0")) {
+						    canvas.style.display="block";
+                            lung();
+                        }*/
+					}
+				{% endif %}
+				},
+			});
+
+			/*$( "#lung" ).on( "click", function() {
+				dialogLung.dialog( "open" );
+			}); */
+		});
+
+
+		$(function() {
+			dialogOrgan1 = $( "#dialog-organ1" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				"Save changes":
+					function() {
+					    $("#id_mod-organ1_name").val( $("#org1").val() );
+						$("#id_mod-organ1_flow_factor").val( $("#org1_f_f").val() );
+						$("#id_mod-organ1_volume_fraction").val( $("#org1_v_f").val() );
+						$("#id_mod-blood_organ1_fraction").val( $("#org1_b_f").val() );
+						$("#organ1").val( $("#id_mod-organ1_name").val() );
+						dialogOrgan1.dialog( "close" );
+
+					}
+				},
+			});
+		});
+
+		$(function() {
+			dialogOrgan2 = $( "#dialog-organ2" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				"Save changes":
+					function() {
+					    $("#id_mod-organ2_name").val( $("#org2").val() );
+						$("#id_mod-organ2_flow_factor").val( $("#org2_f_f").val() );
+						$("#id_mod-organ2_volume_fraction").val( $("#org2_v_f").val() );
+						$("#id_mod-blood_organ2_fraction").val( $("#org2_b_f").val() );
+						$("#organ2").val( $("#id_mod-organ2_name").val() );
+						dialogOrgan2.dialog( "close" );
+
+					}
+				},
+			});
+		});
+
+		$(function() {
+			dialogOrgan3 = $( "#dialog-organ3" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				"Save changes":
+					function() {
+                        $("#id_mod-organ3_name").val( $("#org3").val() );
+						$("#id_mod-organ3_flow_factor").val( $("#org1_f_f").val() );
+						$("#id_mod-organ3_volume_fraction").val( $("#org1_v_f").val() );
+						$("#id_mod-blood_organ3_fraction").val( $("#org1_b_f").val() );
+						$("#organ3").val( $("#id_mod-organ3_name").val() );
+						dialogOrgan3.dialog( "close" );
+
+					}
+				},
+			});
+		});
+
+		$(function() {
+			dialogOrgan4 = $( "#dialog-organ4" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				"Save changes":
+					function() {
+					    $("#id_mod-organ4_name").val( $("#org4").val() );
+						$("#id_mod-organ4_flow_factor").val( $("#org1_f_f").val() );
+						$("#id_mod-organ4_volume_fraction").val( $("#org1_v_f").val() );
+						$("#id_mod-blood_organ4_fraction").val( $("#org1_b_f").val() );
+						$("#organ4").val( $("#id_mod-organ4_name").val() );
+						dialogOrgan4.dialog( "close" );
+
+					}
+				},
+			});
+		});
+
+		$(function() {
+			dialogOrgan5 = $( "#dialog-organ5" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				"Save changes":
+					function() {
+					    $("#id_mod-organ5_name").val( $("#org5").val() );
+						$("#id_mod-organ5_flow_factor").val( $("#org1_f_f").val() );
+						$("#id_mod-organ5_volume_fraction").val( $("#org1_v_f").val() );
+						$("#id_mod-blood_organ5_fraction").val( $("#org1_b_f").val() );
+						$("#organ5").val( $("#id_mod-organ5_name").val() );
+						dialogOrgan5.dialog( "close" );
+
+					}
+				},
+			});
+		});
+	{% if not default %}
+
+	$(function() {
+			dialogHeart = $( "#dialog-heart" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogHeart.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-heart_flow_factor").val( $("#h_f_f").val() );
+						$("#id_mod-heart_volume_fraction").val( $("#h_v_f").val() );
+						$("#id_mod-blood_heart_fraction").val( $("#h_b_f").val() );
+						dialogHeart.dialog( "close" );
+					}
+				{% endif %}
+				},
+
+			});
+		});
+
+
+	$(function() {
+			dialogMuscle = $( "#dialog-muscle" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogMuscle.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-muscle_flow_factor").val( $("#m_f_f").val() );
+						$("#id_mod-muscle_volume_fraction").val( $("#m_v_f").val() );
+						$("#id_mod-blood_muscle_fraction").val( $("#m_b_f").val() );
+						dialogMuscle.dialog( "close" );
+					}
+				{% endif %}
+				},
+
+			});
+		});
+	$(function() {
+			dialogSpleen = $( "#dialog-spleen" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogSpleen.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-spleen_flow_factor").val( $("#sp_f_f").val() );
+						$("#id_mod-spleen_volume_fraction").val( $("#sp_v_f").val() );
+						$("#id_mod-blood_spleen_fraction").val( $("#sp_b_f").val() );
+						dialogSpleen.dialog( "close" );
+					}
+				{% endif %}
+				},
+
+			});
+		});
+		$(function() {
+			dialogPlacental = $( "#dialog-placental" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 608,
+				height: 320,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogPlacental.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+						$("#id_mod-placental_flow_factor").val( $("#pl_f_f").val() );
+						$("#id_mod-placental_volume_fraction").val( $("#pl_v_f").val() );
+						$("#id_mod-blood_placental_fraction").val( $("#pl_b_f").val() );
+						dialogPlacental.dialog( "close" );
+					}
+				{% endif %}
+				},
+
+			});
+		});
+	{% endif %}
+
+
+
+
+</script>
+
+
+<!-- Add and remove organs from the model -->
+
+<script>
+
+        // Residual
+        var checked_res=0;
+        $("#residual").click(function(e) {
+
+        if(checked_res==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    organ_dart($( "#residual" ));
+                }
+                dialogResidual.dialog( "open" );
+                checked_res=1;
+        }
+        else{
+
+                {% if default%}
+                dialogResidual.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or Delete Residual?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Residual",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('residual');
+                            //delete residual from model replacing its parameters with 0.0
+                            $('#id_mod-blood_rest_fraction').val("0.0");
+                            $('#id_dr-p_rest').val("0.0");
+                            $('#id_dr-pi_rest').val("0.0");
+                            checked_res=0;
+                            //callback(true);
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                //dialogSkin.dialog( "open" );
+                                checked_res=1;
+                                //callback(false);
+                        },
+                        "Edit": function () {
+                                $(this).dialog('close');
+                                dialogResidual.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+
+            }
+
+        });
+
+        // Skin
+		var checked_sk=0;
+		$('#skin').click(function(e) {
+
+        //if skin is not selected open pop up window and add darts.
+		    if(checked_sk==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    organ_dart($( "#skin" ));;
+                    }
+                dialogSkin.dialog( "open" );
+                checked_sk=1;
+            }
+            //if skin is selected if user want delete skin from the model delete it.
+            else{
+
+                {% if default%}
+                dialogSkin.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or Delete Skin?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Skin",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('skin');
+                            //delete skin from model replacing its parameters with 0.0
+                            $('#id_mod-skin_flow_factor').val("0.0");
+                            $('#id_mod-skin_volume_fraction').val("0.0");
+                            $('#id_mod-blood_skin_fraction').val("0.0");
+                            $('#id_dr-p_skin').val("0.0");
+                            $('#id_dr-pi_skin').val("0.0");
+                            checked_sk=0;
+                            //callback(true);
+                            },
+                            "Cancel": function () {
+                                $(this).dialog('close');
+                                //dialogSkin.dialog( "open" );
+                                checked_sk=1;
+                                //callback(false);
+                            },
+                            "Edit": function () {
+                                $(this).dialog('close');
+                                dialogSkin.dialog( "open" );
+                        }
+                    }
+
+                });
+                {% endif %}
+            }
+
+		});
+
+		//Kidney
+
+		var checked_k=0;
+		$('#kidney').click(function() {
+		    if(checked_k==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                canvas.style.display="block";
+                organ_dart($( "#kidney" ));
+                }
+                dialogKidney.dialog( "open" );
+                checked_k=1;
+            }
+             else{
+
+                {% if default%}
+                dialogKidney.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or Delete Kidney?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Kidney",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('kidney');
+                            $('#id_mod-kidney_flow_factor').val("0.0");
+                            $('#id_mod-kidney_volume_fraction').val("0.0");
+                            $('#id_mod-blood_kidney_fraction').val("0.0");
+                            $('#id_dr-p_kidney').val("0.0");
+                            $('#id_dr-pi_kidney').val("0.0");
+                            $('#id_dr-k_kidney').val("0.0");
+                            checked_k=0;
+                            //callback(true);
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                //dialogSkin.dialog( "open" );
+                                checked_k=1;
+                                //callback(false);
+                        },
+                        "Edit": function () {
+                                $(this).dialog('close');
+                                dialogKidney.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+             }
+        });
+
+        //Bladder
+
+        var checked_bla=0;
+		$('#bladder').click(function() {
+		    if(checked_bla==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                canvas.style.display="block";
+                //organ_dart($( "#bladder" ));
+                //var p3 = $( "#bladder" );
+                organ_dart($( "#bladder" ));
+                }
+                dialogBladder.dialog( "open" );
+                checked_bla=1;
+                }
+                else{
+                {% if default%}
+                dialogBladder.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or delete Bladder?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Bladder",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('bladder');
+                            $('#id_mod-bladder_flow_factor').val("0.0");
+                            $('#id_mod-bladder_volume_fraction').val("0.0");
+                            $('#id_mod-blood_bladder_fraction').val("0.0");
+                            $('#id_dr-p_bladder').val("0.0");
+                            $('#id_dr-pi_bladder').val("0.0");
+                            checked_bla=0;
+                            //callback(true);
+                        },
+                        "Cancel": function () {
+                            $(this).dialog('close');
+                            //dialogSkin.dialog( "open" );
+                            checked_bla=1;
+                            //callback(false);
+                        },
+                        "Edit": function () {
+                            $(this).dialog('close');
+                            dialogBladder.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+             }
+		});
+
+		//Liver
+
+		var checked_liv=0;
+		$('#liver').click(function() {
+		    if(checked_liv==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                canvas.style.display="block";
+                liver();
+                }
+                dialogLiver.dialog( "open" );
+                checked_liv=1;
+            }
+            else{
+                {% if default%}
+                dialogLiver.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or Delete Liver?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Liver",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('liver');
+                            $('#id_mod-liver_flow_factor').val("0.0");
+                            $('#id_mod-liver_volume_fraction').val("0.0");
+                            $('#id_mod-blood_liver_fraction').val("0.0");
+                            $('#id_dr-p_liver').val("0.0");
+                            $('#id_dr-pi_liver').val("0.0");
+                            $('#id_dr-k_met').val("0.0");
+                            $('#id_dr-k_bile').val("0.0");
+                            checked_liv=0;
+                            //callback(true);
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                //dialogSkin.dialog( "open" );
+                                checked_liv=1;
+                                //callback(false);
+                        },
+                        "Edit": function () {
+                                $(this).dialog('close');
+                                dialogLiver.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+
+            }
+
+		});
+
+		//Blood
+
+		var checked_bl=0;
+		$('#blood').click(function() {
+
+		    if(checked_bl==0){
+		        add_blood('blood');
+		        $("#Blood2").css('background-color','#16A085');
+                dialogBlood.dialog( "open" );
+		        checked_bl=1;
+		    }
+		    else{
+		        {% if default%}
+                dialogBlood.dialog( "open" );
+                {% else %}
+		        $("#dialog-confirm").html("Edit or Delete Blood?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Blood",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            $('#Blood2').css('background-color','#D2D7D3');
+                            delete_blood('blood');
+                            $('#id_mod-blood_volume_fraction').val("0.0");
+                            $('#id_dr-pi_rbc').val("0.0");
+                            $('#id_dr-pi_plasma').val("0.0");
+                            $('#Blood2').data('clicked', false);
+                            checked_bl=0;
+                            //callback(true);
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                //dialogSkin.dialog( "open" );
+                                checked_bl=1;
+                                //callback(false);
+                        },
+                        "Edit": function () {
+                            $(this).dialog('close');
+                            dialogBlood.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+
+		    }
+
+		});
+
+		//Blood 2
+
+		//var checked_bl2=0;
+		$('#Blood2').click(function() {
+
+		    if(checked_bl==0){
+		        add_blood('Blood2');
+		        $("#blood").css('background-color','#16A085');
+		        dialogBlood.dialog( "open" );
+		        checked_bl=1;
+		        }
+		    else{
+		    {% if default%}
+                dialogBlood.dialog( "open" );
+                {% else %}
+		        $("#dialog-confirm").html("Edit or Delete Blood?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Blood",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            $('#blood').css('background-color','#D2D7D3');
+                            delete_blood('Blood2');
+                            $('#id_mod-blood_volume_fraction').val("0.0");
+                            $('#id_dr-pi_rbc').val("0.0");
+                            $('#id_dr-pi_plasma').val("0.0");
+                            $('#blood').data('clicked', false);
+                            checked_bl=0;
+                            //callback(true);
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                //dialogSkin.dialog( "open" );
+                                checked_bl=1;
+                                //callback(false);
+                        },
+                        "Edit": function () {
+                            $(this).dialog('close');
+                            dialogBlood.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+
+		    }
+
+		});
+
+
+		//Lung
+
+		var checked_lg=0;
+		$('#lung').click(function() {
+		    if(checked_lg==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                canvas.style.display="block";
+                lung();
+                }
+                 dialogLung.dialog( "open" );
+                checked_lg=1;
+            }
+            else{
+            {% if default%}
+                dialogLung.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or Delete Lung?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Lung",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('lung');
+                            $('#id_mod-lung_flow_factor').val("0.0");
+                            $('#id_mod-lung_volume_fraction').val("0.0");
+                            $('#id_mod-blood_lung_fraction').val("0.0");
+                            $('#id_dr-p_lung').val("0.0");
+                            $('#id_dr-pi_lung').val("0.0");
+                            checked_lg=0;
+                            //callback(true);
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                //dialogSkin.dialog( "open" );
+                                checked_lg=1;
+                                //callback(false);
+                        },
+                        "Edit": function () {
+                            $(this).dialog('close');
+                            dialogLung.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+            }
+		});
+	{% if default%}
+        var checked_h=0;
+        var checked_g=0;
+        var checked_p=0;
+        var checked_m=0;
+        var checked_sp=0;
+	{%endif%}
+    {% if not default %}
+		// Heart
+        var checked_h=0;
+        $("#heart").click(function(e) {
+
+        if(checked_h==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    organ_dart($( "#heart" ));
+                }
+                dialogHeart.dialog( "open" );
+                checked_h=1;
+        }
+        else{
+
+                {% if default%}
+                dialogHeart.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or Delete Heart?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Heart",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('heart');
+                            //delete residual from model replacing its parameters with 0.0
+                            $('#id_mod-heart_flow_factor').val("0.0");
+                            $('#id_mod-heart_volume_fraction').val("0.0");
+                            $('#id_mod-blood_heart_fraction').val("0.0");
+                            $('#id_dr-p_heart').val("0.0");
+                            $('#id_dr-pi_heart').val("0.0");
+                            checked_h=0;
+                            //callback(true);
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                checked_h=1;
+                        },
+                        "Edit": function () {
+                                $(this).dialog('close');
+                                dialogHeart.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+
+            }
+
+        });
+
+        // Muscle
+        var checked_m=0;
+        $("#muscle").click(function(e) {
+
+        if(checked_m==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    organ_dart($( "#muscle" ));
+                }
+                dialogMuscle.dialog( "open" );
+                checked_m=1;
+        }
+        else{
+
+                {% if default%}
+                dialogMuscle.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or Delete Muscle?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Muscle",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('muscle');
+                            //delete residual from model replacing its parameters with 0.0
+                            $('#id_mod-muscle_flow_factor').val("0.0");
+                            $('#id_mod-muscle_volume_fraction').val("0.0");
+                            $('#id_mod-blood_muscle_fraction').val("0.0");
+                            $('#id_dr-p_muscle').val("0.0");
+                            $('#id_dr-pi_muscle').val("0.0");
+                            checked_m=0;
+
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                checked_m=1;
+                        },
+                        "Edit": function () {
+                                $(this).dialog('close');
+                                dialogMuscle.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+
+            }
+
+        });
+
+        // Spleen
+        var checked_sp=0;
+        $("#spleen").click(function(e) {
+
+        if(checked_sp==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    organ_dart($( "#spleen" ));
+                }
+                dialogSpleen.dialog( "open" );
+                checked_sp=1;
+        }
+        else{
+
+                {% if default%}
+                dialogSpleen.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or Delete Spleen?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Spleen",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('spleen');
+                            //delete residual from model replacing its parameters with 0.0
+                            $('#id_mod-spleen_flow_factor').val("0.0");
+                            $('#id_mod-spleen_volume_fraction').val("0.0");
+                            $('#id_mod-blood_spleen_fraction').val("0.0");
+                            $('#id_dr-p_spleen').val("0.0");
+                            $('#id_dr-pi_spleen').val("0.0");
+                            checked_sp=0;
+                            //callback(true);
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                checked_sp=1;
+                        },
+                        "Edit": function () {
+                                $(this).dialog('close');
+                                dialogSpleen.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+
+            }
+
+        });
+
+        // Placental
+        var checked_p=0;
+        $("#placental").click(function(e) {
+
+        if(checked_p==0){
+                //Now just reference this button and change CSS
+                $(this).css('background-color','#16A085');
+                $(this).data('clicked', true);
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    organ_dart($( "#placental" ));
+                }
+                dialogPlacental.dialog( "open" );
+                checked_p=1;
+        }
+        else{
+
+                {% if default%}
+                dialogPlacental.dialog( "open" );
+                {% else %}
+                $("#dialog-confirm").html("Edit or Delete Placental?");
+
+                // Define the Dialog and its properties.
+                $("#dialog-confirm").dialog({
+                    resizable: false,
+                    modal: true,
+                    title: "Placental",
+                    height: 250,
+                    width: 400,
+                    buttons: {
+                        "Delete": function () {
+                            $(this).dialog('close');
+                            delete_organ('placental');
+                            //delete residual from model replacing its parameters with 0.0
+                            $('#id_mod-placental_flow_factor').val("0.0");
+                            $('#id_mod-placental_volume_fraction').val("0.0");
+                            $('#id_mod-blood_placental_fraction').val("0.0");
+                            $('#id_dr-p_placental').val("0.0");
+                            $('#id_dr-pi_placental').val("0.0");
+                            checked_p=0;
+                        },
+                        "Cancel": function () {
+                                $(this).dialog('close');
+                                checked_p=1;
+                        },
+                        "Edit": function () {
+                                $(this).dialog('close');
+                                dialogPlacental.dialog( "open" );
+                        }
+                    }
+                });
+                {% endif %}
+
+            }
+
+        });
+    {% endif %}
+
+		function add_blood(organ){
+     	    $('#'+organ).css('background-color','#16A085');
+    		//$("#Blood2").css('background-color','#16A085');
+    		$('#'+organ).data('clicked', true);
+    		if($('#residual').data('clicked') ){
+    		    canvas.style.display="block";
+    		    organ_dart($( "#residual" ));
+    		}
+    		if($('#skin').data('clicked') ){
+    		    canvas.style.display="block";
+    		    organ_dart($( "#skin" ));;
+    		}
+    		if($('#kidney').data('clicked') ){
+    		    canvas.style.display="block";
+    		    organ_dart($( "#kidney" ));
+    		}
+    		if($('#bladder').data('clicked') ){
+    		    canvas.style.display="block";
+    		    organ_dart($( "#bladder" ));
+    		}
+    		if($('#liver').data('clicked') ){
+    		    canvas.style.display="block";
+    		    liver();
+    		}
+    		if($('#lung').data('clicked') ){
+    		    canvas.style.display="block";
+    		    lung();
+    		}
+    		if($('#organ1').data('clicked')  ){
+                 canvas.style.display="block";
+                 neworgan($("#div-placental").position().left,$("#div-placental").position().top);
+            }
+            if($('#organ2').data('clicked')  ){
+                 canvas.style.display="block";
+                 neworgan($("#div-placental").position().left,$("#div-placental").position().top+50);
+            }
+            if($('#organ3').data('clicked')  ){
+                 canvas.style.display="block";
+                 neworgan($("#div-placental").position().left,$("#div-placental").position().top+100);
+            }
+            if($('#organ4').data('clicked')  ){
+                 canvas.style.display="block";
+                 neworgan($("#div-placental").position().left,$("#div-placental").position().top+150);
+            }
+            if($('#organ5').data('clicked')  ){
+                 canvas.style.display="block";
+                 neworgan($("#div-placental").position().left,$("#div-placental").position().top+200);
+            }
+            if($('#heart').data('clicked') ){
+    		    canvas.style.display="block";
+                organ_dart($( "#heart" ));
+    		}
+    		if($('#muscle').data('clicked') ){
+    		    canvas.style.display="block";
+                organ_dart($( "#muscle" ));
+    		}
+    		if($('#spleen').data('clicked') ){
+    		    canvas.style.display="block";
+                organ_dart($( "#spleen" ));
+    		}
+    		if($('#placental').data('clicked') ){
+    		    canvas.style.display="block";
+                organ_dart($( "#placental" ));
+    		}
+
+     	}
+
+		function delete_organ(organ){
+
+		    //Now just reference this button and change CSS
+    		$('#'+organ).css('background-color','#D2D7D3');
+
+            // Store the current transformation matrix
+            ctx1.save();
+
+            // Use the identity matrix while clearing the canvas
+            ctx1.setTransform(1, 0, 0, 1, 0, 0);
+            ctx1.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx1.beginPath();
+
+            // Restore the transform
+            ctx1.restore();
+
+            $('#'+organ).data('clicked', false);
+
+            if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+
+                if($('#skin').data('clicked') ){
+                    //canvas.style.display="block";
+                    organ_dart($( "#skin" ));;
+                }
+                if($('#residual').data('clicked') ){
+                    //canvas.style.display="block";
+                    organ_dart($( "#residual" ));
+                }
+                if($('#bladder').data('clicked') ){
+                    //canvas.style.display="block";
+                    organ_dart($( "#bladder" ));
+                }
+                if($('#liver').data('clicked') ){
+                    //canvas.style.display="block";
+                    liver();
+                }
+                if($('#lung').data('clicked') ){
+                    //canvas.style.display="block";
+                    lung();
+                }
+                if($('#kidney').data('clicked') ){
+                    //canvas.style.display="block";
+                    organ_dart($( "#kidney" ));
+                }
+
+                if($('#organ1').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top);
+                    }
+
+                if($('#organ2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+50);
+                    }
+
+                if($('#organ3').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+100);
+                    }
+                if($('#organ4').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+150);
+                    }
+                if($('#organ5').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+200);
+                    }
+                if($('#heart').data('clicked') ){
+                    organ_dart($( "#heart" ));
+                }
+                if($('#muscle').data('clicked') ){
+                    organ_dart($( "#muscle" ));
+                }
+                if($('#spleen').data('clicked') ){
+                    organ_dart($( "#spleen" ));
+                }
+                if($('#placental').data('clicked') ){
+                    organ_dart($( "#placental" ));
+                }
+
+            }
+
+            if($('#skin').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    //canvas.style.display="block";
+                    organ_dart($( "#skin" ));
+                    }
+                }
+            if($('#residual').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    //canvas.style.display="block";
+                    organ_dart($( "#residual" ));
+                    }
+                }
+            if($('#bladder').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    //canvas.style.display="block";
+                    organ_dart($( "#bladder" ));
+                    }
+                }
+            if($('#liver').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    //canvas.style.display="block";
+                    liver();
+                    }
+                }
+            if($('#lung').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    //canvas.style.display="block";
+                    lung();
+                    }
+                }
+
+            if($('#kidney').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    //canvas.style.display="block";
+                    organ_dart($( "#kidney" ));
+                    }
+                }
+            if($('#organ1').data('clicked') ){
+
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top);
+                    }
+             }
+
+            if($('#organ2').data('clicked') ){
+
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+50);
+                    }
+             }
+
+            if($('#organ3').data('clicked') ){
+
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+100);
+                    }
+             }
+
+            if($('#organ4').data('clicked') ){
+
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+150);
+                    }
+             }
+
+            if($('#organ5').data('clicked') ){
+
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+200);
+                    }
+             }
+            if($('#heart').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    organ_dart($( "#heart" ));
+                    }
+                }
+            if($('#muscle').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    organ_dart($( "#muscle" ));
+                    }
+                }
+            if($('#spleen').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    organ_dart($( "#spleen" ));
+                    }
+                }
+            if($('#placental').data('clicked') ){
+                if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    organ_dart($( "#placental" ));
+                    }
+                }
+
+		}
+
+		function delete_blood(organ){
+
+		    //Now just reference this button and change CSS
+    		$('#'+organ).css('background-color','#D2D7D3');
+
+            // Store the current transformation matrix
+            ctx1.save();
+
+            // Use the identity matrix while clearing the canvas
+            ctx1.setTransform(1, 0, 0, 1, 0, 0);
+            ctx1.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx1.beginPath();
+
+            // Restore the transform
+            ctx1.restore();
+
+            $('#'+organ).data('clicked', false);
+
+
+		}
+
+
+</script>
+
+<script>
+            var p = $( "#Blood2" );
+            var BloodPos = p.position();
+            var p1 = $( "#skin" );
+            var SkinPos = p1.position();
+            var p2 = $( "#kidney" );
+            var KidPos = p2.position();
+            var p3 = $( "#bladder" );
+            var BlPos = p3.position();
+            var p4 = $( "#liver" );
+            var LivPos = p4.position();
+            var p5 = $( "#lung" );
+            var LungPos = p5.position();
+            var p6 = $( "#residual" );
+            var ResPos = p6.position();
+            var p7 = $( "#blood" );
+            var BloPos = p7.position();
+            var p8= $("#div-placental");
+            var Org1Pos= p8.position();
+            var p9 = $( "#heart" );
+            var HeartPos = p9.position();
+            var p10 = $( "#muscle" );
+            var MusclePos = p10.position();
+            var p11 = $( "#spleen" );
+            var SplPos = p11.position();
+            var p13 = $( "#placental" );
+            var PlPos = p13.position();
+
+
+</script>
+
+
+<!-- Canvas-Position of darts  -->
+
+<script>
+            //Add darts
+            //Lung
+			var c = document.getElementById("canvas");
+			var ctx1 = c.getContext("2d");
+
+            //Lung darts
+			function lung(){
+
+			    var c = document.getElementById("canvas");
+			    var ctx1 = c.getContext("2d");
+
+                ctx1.moveTo((p.width()/2)+BloodPos.left,LungPos.top+p2.height()-92);
+                ctx1.lineTo((p.width()/2)+BloodPos.left,BloodPos.top-92);
+                ctx1.stroke();
+
+                var ctx1 = c.getContext("2d");
+                ctx1.moveTo(LungPos.left,LungPos.top+p2.height()-92);
+                ctx1.lineTo((p.width()/2)+BloodPos.left,LungPos.top+p2.height()-92);
+                ctx1.stroke();
+
+                var ctx1 = c.getContext("2d");
+                ctx1.moveTo(LungPos.left-10,LungPos.top+p2.height()-92);
+                ctx1.lineTo(LungPos.left-20,LungPos.top+p2.height()-5-92);
+                ctx1.stroke();
+
+                var ctx1 = c.getContext("2d");
+                ctx1.moveTo(LungPos.left-10,LungPos.top+p2.height()-92);
+                ctx1.lineTo(LungPos.left-20,LungPos.top+p2.height()+5-92);
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left+12+(p7.width()/2),LungPos.top-92+p2.height());
+                ctx1.lineTo(LungPos.left+12+p2.width(),LungPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left+12+(p7.width()/2),BloodPos.top-92);
+                ctx1.lineTo(BloPos.left+12+(p7.width()/2),LungPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left+12+(p7.width()/2)-5,BloodPos.top-10-92);
+                ctx1.lineTo(BloPos.left+12+(p7.width()/2),BloodPos.top-92);
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left+12+(p7.width()/2)+5,BloodPos.top-10-92);
+                ctx1.lineTo(BloPos.left+12+(p7.width()/2),BloodPos.top-92);
+                ctx1.stroke();
+            }
+
+            //Darts for kidney, bladder, skin, residual
+            function organ_dart(organ){
+
+                ctx1.moveTo(organ.position().left,organ.position().top-92+organ.height());
+                ctx1.lineTo(BloodPos.left+p1.width(),organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left,organ.position().top-92+organ.height());
+                ctx1.lineTo(organ.position().left+14+p1.width(),organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                //belos
+
+                ctx1.moveTo(organ.position().left+24+p1.width(),organ.position().top-92+organ.height()+5);
+                ctx1.lineTo(organ.position().left+14+p1.width(),organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(organ.position().left+24+p1.width(),organ.position().top-92+organ.height()-5);
+                ctx1.lineTo(organ.position().left+14+p1.width(),organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloodPos.left+p1.width()+13,organ.position().top-92+organ.height()+5);
+                ctx1.lineTo(BloodPos.left+p1.width()+3,organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloodPos.left+p1.width()+13,organ.position().top-92+organ.height()-5);
+                ctx1.lineTo(BloodPos.left+p1.width()+3,organ.position().top-92+organ.height());
+                ctx1.stroke();
+                }
+
+
+
+            //Liver Darts
+            function liver(){
+                ctx1.moveTo(LivPos.left,LivPos.top-92+p3.height());
+                ctx1.lineTo(BloodPos.left+p1.width(),LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left,LivPos.top-92+p3.height());
+                ctx1.lineTo(LivPos.left+14+p4.width(),LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                //liver-belos
+
+                ctx1.moveTo(LivPos.left+24+p4.width(),LivPos.top-92+p2.height()+5);
+                ctx1.lineTo(LivPos.left+14+p4.width(),LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(LivPos.left+24+p4.width(),LivPos.top-92+p2.height()-5);
+                ctx1.lineTo(LivPos.left+14+p4.width(),LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloodPos.left+p1.width()+13,LivPos.top-92+p2.height()+5);
+                ctx1.lineTo(BloodPos.left+p1.width()+3,LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloodPos.left+p1.width()+13,LivPos.top-92+p2.height()-5);
+                ctx1.lineTo(BloodPos.left+p1.width()+3,LivPos.top-92+p2.height());
+                ctx1.stroke();
+                }
+
+
+            // Added organs darts
+
+            function neworgan(left,top){
+
+            ctx1.moveTo(left,top-92+p3.height());
+			ctx1.lineTo(BloodPos.left+p1.width(),top-92+p2.height());
+			ctx1.stroke();
+
+			ctx1.moveTo(BloPos.left,top-92+p3.height());
+			ctx1.lineTo(BlPos.left+19+p1.width(),top-92+p2.height());
+			ctx1.stroke();
+
+			//residual-belos
+
+			ctx1.moveTo(BlPos.left+29+p1.width(),top-92+p2.height()-5);
+			ctx1.lineTo(BlPos.left+19+p1.width(),top-92+p2.height());
+			ctx1.stroke();
+
+			ctx1.moveTo(BlPos.left+29+p1.width(),top-92+p2.height()+5);
+			ctx1.lineTo(BlPos.left+19+p1.width(),top-92+p2.height());
+			ctx1.stroke();
+
+			ctx1.moveTo(BloodPos.left+p1.width()+13, top-92+p2.height()+5);
+			ctx1.lineTo(BloodPos.left+p1.width()+3, top-92+p2.height());
+			ctx1.stroke();
+
+			ctx1.moveTo(BloodPos.left+p1.width()+13, top-92+p2.height()-5);
+			ctx1.lineTo(BloodPos.left+p1.width()+3, top-92+p2.height());
+			ctx1.stroke();
+
+            }
+
+
+
+
+
+</script>
+
+{% if default or edit or save %}
+
+        <script>
+
+        if($("#id_mod-blood_rest_fraction").val() != "0.0" || $("#id_dr-p_rest").val() != "0.0" || $("#id_dr-pi_rest").val() != "0.0") {
+            $("#residual").css('background-color','#16A085');
+            organ_dart($( "#residual" ));
+            $('#residual').data('clicked','true');
+            checked_res=1;
+
+        }
+        if($("#id_mod-skin_flow_factor").val() != "0.0" || $("#id_mod-skin_volume_fraction").val() != "0.0" || $("#id_mod-blood_skin_fraction").val() != "0.0" || $("#id_dr-p_skin").val() != "0.0" || $("#id_dr-pi_skin").val() != "0.0") {
+            $("#skin").css('background-color','#16A085');
+            organ_dart($( "#skin" ));
+            $('#skin').data('clicked','true');
+            checked_sk=1;
+        }
+        if($("#id_mod-kidney_flow_factor").val() != "0.0" || $("#id_mod-kidney_volume_fraction").val() != "0.0" || $("#id_mod-blood_kidney_fraction").val() != "0.0" || $("#id_dr-p_kidney").val() != "0.0" || $("#id_dr-pi_kidney").val() != "0.0" || $("#id_dr-k_kidney").val() != "0.0") {
+            $("#kidney").css('background-color','#16A085');
+            organ_dart($( "#kidney" ));
+            $('#kidney').data('clicked','true');
+            checked_k=1;
+        }
+        if($("#id_mod-bladder_flow_factor").val() != "0.0" || $("#id_mod-bladder_volume_fraction").val() != "0.0" || $("#id_mod-blood_bladder_fraction").val() != "0.0" || $("#id_dr-p_bladder").val() != "0.0" || $("#id_dr-pi_bladder").val() != "0.0") {
+            $("#bladder").css('background-color','#16A085');
+            organ_dart($( "#bladder" ));
+            $('#bladder').data('clicked','true');
+            checked_bla=1;
+        }
+        if($("#id_mod-liver_flow_factor").val() != "0.0" || $("#id_mod-liver_volume_fraction").val() != "0.0" || $("#id_mod-blood_liver_fraction").val() != "0.0" || $("#id_dr-p_liver").val() != "0.0" || $("#id_dr-pi_liver").val() != "0.0" || $("#id_dr-k_met").val() != "0.0" || $("#id_dr-k_bile").val() != "0.0") {
+            $("#liver").css('background-color','#16A085');
+            liver();
+            $('#liver').data('clicked','true');
+            checked_liv=1;
+        }
+        if($("#id_mod-blood_volume_fraction").val() != "0.0" || $("#id_dr-pi_rbc").val() != "0.0" || $("#id_dr-pi_plasma").val() != "0.0") {
+            $("#blood").css('background-color','#16A085');
+            $("#Blood2").css('background-color','#16A085');
+            canvas.style.display="block";
+            $('#blood').data('clicked','true');
+            $('#Blood2').data('clicked','true');
+            checked_bl=1;
+            checked_bl2=1;
+        }
+        if($("#id_mod-lung_flow_factor").val() != "0.0" || $("#id_mod-lung_volume_fraction").val() != "0.0" || $("#id_mod-blood_lung_fraction").val() != "0.0" || $("#id_dr-p_lung").val() != "0.0" || $("#id_dr-pi_lung").val() != "0.0") {
+            $("#lung").css('background-color','#16A085');
+            lung();
+            $('#lung').data('clicked','true');
+            checked_lg=1;
+        }
+         if($("#id_mod-heart_flow_factor").val() != "0.0" || $("#id_mod-heart_volume_fraction").val() != "0.0" || $("#id_mod-blood_heart_fraction").val() != "0.0" || $("#id_dr-p_heart").val() != "0.0" || $("#id_dr-pi_heart").val() != "0.0") {
+            $("#heart").css('background-color','#16A085');
+            organ_dart($( "#heart" ));
+            $('#heart').data('clicked','true');
+            checked_h=1;
+        }
+         if($("#id_mod-muscle_flow_factor").val() != "0.0" || $("#id_mod-muscle_volume_fraction").val() != "0.0" || $("#id_mod-blood_muscle_fraction").val() != "0.0" || $("#id_dr-p_muscle").val() != "0.0" || $("#id_dr-pi_muscle").val() != "0.0") {
+            $("#muscle").css('background-color','#16A085');
+            organ_dart($( "#muscle" ));
+            $('#muscle').data('clicked','true');
+            checked_m=1;
+        }
+         if($("#id_mod-spleen_flow_factor").val() != "0.0" || $("#id_mod-spleen_volume_fraction").val() != "0.0" || $("#id_mod-blood_spleen_fraction").val() != "0.0" || $("#id_dr-p_spleen").val() != "0.0" || $("#id_dr-pi_spleen").val() != "0.0") {
+            $("#spleen").css('background-color','#16A085');
+            organ_dart($( "#spleen" ));
+            $('#spleen').data('clicked','true');
+            checked_sp=1;
+        }
+         if($("#id_mod-placental_flow_factor").val() != "0.0" || $("#id_mod-placental_volume_fraction").val() != "0.0" || $("#id_mod-blood_placental_fraction").val() != "0.0" || $("#id_dr-p_placental").val() != "0.0" || $("#id_dr-pi_placental").val() != "0.0") {
+            $("#placental").css('background-color','#16A085');
+            organ_dart($( "#placental" ));
+            $('#placental').data('clicked','true');
+            checked_p=1;
+        }
+         /* if($("#id_mod-organ1_flow_factor").val() != "0.0" || $("#id_mod-organ1_volume_fraction").val() != "0.0" || $("#id_mod-blood_organ1_fraction").val() != "0.0" || $("#id_dr-p_organ1").val() != "0.0" || $("#id_dr-pi_organ1").val() != "0.0") {
+            $("#organ1").css('background-color','#16A085');
+             document.getElementById('organ1').style.display = 'block';
+             $('#blood').animate({height: '+=50'}, 500);
+             $('#Blood2').animate({height: '+=50'}, 500);
+             $('#Create_model').animate({top: '+=50'}, 500);
+             $('#Add_organs').animate({top: '+=50'}, 500);
+             $('#removeButton').animate({top: '+=50'}, 500);
+            canvas.style.display="block";
+            neworgan($("#div-placental").position().left,$("#div-placental").position().top);
+            $('#organ1').data('clicked','true');
+            checked_org1=1;
+        }*/
+
+    </script>
+{% endif %}
+
+<script>
+    //This function is called if user click an organ. If this organ is included to the model, displays a pop up window which ask user if he want edit or delete the clicked organ.
+//Else user insert the organ parameters and the organ added to the model.
+
+            function organ_click(){
+
+                //organ1 click
+
+                $('#organ1').click(function() {
+
+                    if(!$('#organ1').data('clicked')){
+                        //Now just reference this button and change CSS
+                        $("#organ1").css('background-color','#16A085');
+                        $("#organ1").data('clicked', true);
+                        if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                        canvas.style.display="block";
+                        neworgan($("#div-placental").position().left,$("#div-placental").position().top);
+                        }
+                        //dialogLiver.dialog( "open" );
+                        dialogOrgan1.dialog( "open" );
+
+
+                    }
+                    else{
+                        $("#dialog-confirm").html("Edit or Delete?");
+
+                        // Define the Dialog and its properties.
+                        $("#dialog-confirm").dialog({
+                            resizable: false,
+                            modal: true,
+                            title: "Delete ",
+                            height: 250,
+                            width: 400,
+                            buttons: {
+                                "Delete": function () {
+                                    $("#dialog-confirm").dialog('close');
+                                    delete_organ('organ1');
+                                    $('#id_mod-organ1_flow_factor').val("0.0");
+                                    $('#id_mod-organ1_volume_fraction').val("0.0");
+                                    $('#id_mod-blood_organ1_fraction').val("0.0");
+                                    $('#id_dr-p_organ1').val("0.0");
+                                    $('#id_dr-pi_organ1').val("0.0");
+                                    $("#org1_f_f").val("0.0");
+                                    $("#org1_v_f").val("0.0");
+                                    $("#org1_b_f").val("0.0");
+                                    var org = JSON.parse( $("#id_dr-organ1_params").val() );
+                                    org[0]= {type: NULL}
+                                    $("#id_dr-organ1_params").val( JSON.stringify(org) );
+                                    $("#non-metabolise1").attr("checked", false);
+                                    $("#metabolise1").attr("checked", false);
+                                    $("#meta-const1").hide()
+
+                                    //callback(true);
+                                },
+                                "Cancel": function () {
+                                        $("#dialog-confirm").dialog('close');
+                                        //dialogSkin.dialog( "open" );
+                                        //callback(false);
+
+                                },
+                                "Edit": function () {
+                                $(this).dialog('close');
+                                dialogOrgan1.dialog( "open" );
+                                }
+                            }
+                        });
+
+                    }
+
+
+                                  /*  //Now just reference this button and change CSS
+                                    $(this).css('background-color','#16A085');
+                                    //Open pop up window
+                                    dialogOrgan1.dialog( "open" );
+                                    canvas.style.display="block";
+                                    neworgan($("#div-placental").position().left,$("#div-placental").position().top);
+                                    //neworgan($("#div-placental").position().left,$("#div-placental").position().top+50);
+                                    //or1($("#div-placental").position());*/
+                });
+
+                //organ2 click
+
+                $('#organ2').click(function() {
+
+                    if(!$('#organ2').data('clicked')){
+                    //Now just reference this button and change CSS
+                    $(this).css('background-color','#16A085');
+                    $(this).data('clicked', true);
+                    if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+50);
+                    }
+                    //dialogLiver.dialog( "open" );
+                    dialogOrgan2.dialog( "open" );
+
+                    }
+                    else{
+                        $("#dialog-confirm").html("Edit or Delete?");
+
+                        // Define the Dialog and its properties.
+                        $("#dialog-confirm").dialog({
+                            resizable: false,
+                            modal: true,
+                            title: "Delete",
+                            height: 250,
+                            width: 400,
+                            buttons: {
+                                "Delete": function () {
+                                    $(this).dialog('close');
+                                    delete_organ('organ2');
+                                    $('#id_mod-organ2_flow_factor').val("0.0");
+                                    $('#id_mod-organ2_volume_fraction').val("0.0");
+                                    $('#id_mod-blood_organ2_fraction').val("0.0");
+                                    $('#id_dr-p_organ2').val("0.0");
+                                    $('#id_dr-pi_organ2').val("0.0");
+                                    $("#org2_f_f").val("0.0");
+                                    $("#org2_v_f").val("0.0");
+                                    $("#org2_b_f").val("0.0");
+                                    var org = JSON.parse( $("#id_dr-organ2_params").val() );
+                                    org[1]= {type: NULL};
+                                    $("#id_dr-organ1_params").val( JSON.stringify(org) );
+                                    $("#non-metabolise2").attr("checked", false);
+                                    $("#metabolise2").attr("checked", false);
+                                    $("#meta-const2").hide()
+
+                                    //callback(true);
+                                },
+                                "Cancel": function () {
+                                        $(this).dialog('close');
+                                        //dialogSkin.dialog( "open" );
+                                        //callback(false);
+
+                                },
+                                 "Edit": function () {
+                                        $(this).dialog('close');
+                                        dialogOrgan2.dialog( "open" );
+                                }
+                            }
+                        });
+
+                    }
+
+                });
+
+                //organ3 click
+
+                $('#organ3').click(function() {
+
+                    if(!$('#organ3').data('clicked')){
+                    //Now just reference this button and change CSS
+                    $(this).css('background-color','#16A085');
+                    $(this).data('clicked', true);
+                    if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+100);
+                    }
+                    //dialogLiver.dialog( "open" );
+                    dialogOrgan3.dialog( "open" );
+
+                    }
+                    else{
+                        $("#dialog-confirm").html("Edit or Delete?");
+
+                        // Define the Dialog and its properties.
+                        $("#dialog-confirm").dialog({
+                            resizable: false,
+                            modal: true,
+                            title: "Delete",
+                            height: 250,
+                            width: 400,
+                            buttons: {
+                                "Delete": function () {
+                                    $(this).dialog('close');
+                                    delete_organ('organ3');
+                                    $('#id_mod-organ3_flow_factor').val("0.0");
+                                    $('#id_mod-organ3_volume_fraction').val("0.0");
+                                    $('#id_mod-blood_organ3_fraction').val("0.0");
+                                    $('#id_dr-p_organ3').val("0.0");
+                                    $('#id_dr-pi_organ3').val("0.0");
+                                    $("#org3_f_f").val("0.0");
+                                    $("#org3_v_f").val("0.0");
+                                    $("#org3_b_f").val("0.0");
+                                    var org = JSON.parse( $("#id_dr-organ1_params").val() );
+                                    org[2]= {type: NULL};
+                                    $("#id_dr-organ1_params").val( JSON.stringify(org) );
+                                    $("#non-metabolise3").attr("checked", false);
+                                    $("#metabolise3").attr("checked", false);
+                                    $("#meta-const3").hide()
+
+                                    //callback(true);
+                                },
+                                "Cancel": function () {
+                                        $(this).dialog('close');
+                                        //dialogSkin.dialog( "open" );
+                                        //callback(false);
+
+                                },
+                                "Edit": function () {
+                                        $(this).dialog('close');
+                                        dialogOrgan3.dialog( "open" );
+                                }
+                            }
+                        });
+
+                    }
+
+                });
+
+
+                //organ4 click
+
+                $('#organ4').click(function() {
+
+                    if(!$('#organ4').data('clicked')){
+                    //Now just reference this button and change CSS
+                    $(this).css('background-color','#16A085');
+                    $(this).data('clicked', true);
+                    if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+150);
+                    }
+                    //dialogLiver.dialog( "open" );
+                    dialogOrgan4.dialog( "open" );
+
+                    }
+                    else{
+                        $("#dialog-confirm").html("Edit or Delete?");
+
+                        // Define the Dialog and its properties.
+                        $("#dialog-confirm").dialog({
+                            resizable: false,
+                            modal: true,
+                            title: "Delete",
+                            height: 250,
+                            width: 400,
+                            buttons: {
+                                "Delete": function () {
+                                    $(this).dialog('close');
+                                    delete_organ('organ4');
+                                    $('#id_mod-organ4_flow_factor').val("0.0");
+                                    $('#id_mod-organ4_volume_fraction').val("0.0");
+                                    $('#id_mod-blood_organ4_fraction').val("0.0");
+                                    $('#id_dr-p_organ4').val("0.0");
+                                    $('#id_dr-pi_organ4').val("0.0");
+                                    $("#org4_f_f").val("0.0");
+                                    $("#org4_v_f").val("0.0");
+                                    $("#org4_b_f").val("0.0");
+                                    var org = JSON.parse( $("#id_dr-organ1_params").val() );
+                                    org[3]= {type: NULL};
+                                    $("#id_dr-organ1_params").val( JSON.stringify(org) );
+                                    $("#non-metabolise4").attr("checked", false);
+                                    $("#metabolise4").attr("checked", false);
+                                    $("#meta-const4").hide()
+
+                                    //callback(true);
+                                },
+                                "Cancel": function () {
+                                        $(this).dialog('close');
+                                        //dialogSkin.dialog( "open" );
+                                        //callback(false);
+
+                                },
+                                "Edit": function () {
+                                        $(this).dialog('close');
+                                        dialogOrgan4.dialog( "open" );
+                                }
+                            }
+                        });
+
+                    }
+
+                });
+
+
+                //organ5 click
+
+                $('#organ5').click(function() {
+
+                    if(!$('#organ5').data('clicked')){
+                    //Now just reference this button and change CSS
+                    $(this).css('background-color','#16A085');
+                    $(this).data('clicked', true);
+                    if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
+                    canvas.style.display="block";
+                    neworgan($("#div-placental").position().left,$("#div-placental").position().top+200);
+                    }
+                    //dialogLiver.dialog( "open" );
+                    dialogOrgan5.dialog( "open" );
+
+                    }
+                    else{
+                        $("#dialog-confirm").html("Edit or Delete?");
+
+                        // Define the Dialog and its properties.
+                        $("#dialog-confirm").dialog({
+                            resizable: false,
+                            modal: true,
+                            title: "Delete",
+                            height: 250,
+                            width: 400,
+                            buttons: {
+                                "Delete": function () {
+                                    $(this).dialog('close');
+                                    delete_organ('organ5');
+                                    $('#id_mod-organ5_flow_factor').val("0.0");
+                                    $('#id_mod-organ5_volume_fraction').val("0.0");
+                                    $('#id_mod-blood_organ2_fraction').val("0.0");
+                                    $('#id_dr-p_organ5').val("0.0");
+                                    $('#id_dr-pi_organ5').val("0.0");
+                                    $("#org5_f_f").val("0.0");
+                                    $("#org5_v_f").val("0.0");
+                                    $("#org5_b_f").val("0.0");
+                                    var org = JSON.parse( $("#id_dr-organ1_params").val() );
+                                    org[4]= {type: NULL};
+                                    $("#id_dr-organ1_params").val( JSON.stringify(org) );
+                                    $("#non-metabolise5").attr("checked", false);
+                                    $("#metabolise5").attr("checked", false);
+                                    $("#meta-const5").hide()
+
+                                    //callback(true);
+                                },
+                                "Cancel": function () {
+                                        $(this).dialog('close');
+                                        //dialogSkin.dialog( "open" );
+                                        //callback(false);
+
+                                },
+                                "Edit": function () {
+                                        $(this).dialog('close');
+                                        dialogOrgan5.dialog( "open" );
+                                }
+                            }
+                        });
+
+                    }
+
+                });
+
+            }
+             organ_click();
+
+
+        //Display additional organs
+        //counter is the number of added organs that included in the model.
+        if ($('#counter_id').val() > 1){
+	    for (i = 2; i <= $('#counter_id').val(); i++) {
+            //$('input[name= "Add_organs"]').click();
+            if(i==2){
+            $("#id_mod-organ1_flow_factor").val( $("#org1_f_fc").val() );
+            $("#id_mod-organ1_volume_fraction").val( $("#org1_v_fc").val() );
+            $("#id_mod-blood_organ1_fraction").val( $("#org1_b_fc").val() );
+
+            $("#organ1").val($("#id_mod-organ1_name").val() );
+            document.getElementById('organ1').style.display = 'block';
+             if($("#id_mod-organ1_flow_factor").val() != "0.0" || $("#id_mod-organ1_volume_fraction").val() != "0.0" || $("#id_mod-blood_organ1_fraction").val() != "0.0" || $("#id_dr-p_organ1").val() != "0.0" || $("#id_dr-pi_organ1").val() != "0.0"){
+                $('#organ1').css('background-color','#16A085');
+                $('#organ1').data('clicked', true);
+
+                }
+                counter++;
+
+
+            $('#blood').animate({height: '+=80'}, 500);
+            $('#Blood2').animate({height: '+=80'}, 500);
+            $('#Create_model').animate({top: '+=50'}, 500);
+            $('#Add_organs').animate({top: '+=50'}, 500);
+            $('#removeButton').animate({top: '+=50'}, 500);
+
+
+            if(($('#blood').data('clicked') || $('#Blood2').data('clicked')) && ($('#organ1').data('clicked')) ){
+                canvas.style.display="block";
+                neworgan($("#div-placental").position().left,$("#div-placental").position().top);
+            }
+
+            $("#org1").val($("#id_mod-organ1_name").val() );
+            $("#org1_f_f").val( $("#id_mod-organ1_flow_factor").val() );
+            $("#org1_v_f").val( $("#id_mod-organ1_volume_fraction").val() );
+            $("#org1_b_f").val( $("#id_mod-blood_organ1_fraction").val() );
+
+
+            }
+            if(i==3){
+            $("#id_mod-organ2_flow_factor").val( $("#org2_f_fc").val() );
+            $("#id_mod-organ2_volume_fraction").val( $("#org2_v_fc").val() );
+            $("#id_mod-blood_organ2_fraction").val( $("#org2_b_fc").val() );
+
+            $("#organ2").val($("#id_mod-organ2_name").val() );
+            document.getElementById('organ2').style.display = 'block';
+            if($("#id_mod-organ2_flow_factor").val() != "0.0" || $("#id_mod-organ2_volume_fraction").val() != "0.0" || $("#id_mod-blood_organ2_fraction").val() != "0.0" || $("#id_dr-p_organ2").val() != "0.0" || $("#id_dr-pi_organ2").val() != "0.0"){
+                $('#organ2').css('background-color','#16A085');
+                $('#organ2').data('clicked', true);
+            }
+            counter++;
+
+            $('#blood').animate({height: '+=50'}, 500);
+            $('#Blood2').animate({height: '+=50'}, 500);
+            $('#Create_model').animate({top: '+=50'}, 500);
+            $('#Add_organs').animate({top: '+=50'}, 500);
+            $('#removeButton').animate({top: '+=50'}, 500);
+
+
+            if(($('#blood').data('clicked') || $('#Blood2').data('clicked')) && ($('#organ2').data('clicked')) ){
+                canvas.style.display="block";
+                neworgan($("#div-placental").position().left,$("#div-placental").position().top + 50);
+            }
+
+            $("#org2").val($("#id_mod-organ2_name").val() );
+            $("#org2_f_f").val( $("#id_mod-organ2_flow_factor").val() );
+            $("#org2_v_f").val( $("#id_mod-organ2_volume_fraction").val() );
+            $("#org2_b_f").val( $("#id_mod-blood_organ2_fraction").val() );
+            }
+            if(i==4){
+            $("#id_mod-organ3_flow_factor").val( $("#org3_f_fc").val() );
+            $("#id_mod-organ3_volume_fraction").val( $("#org3_v_fc").val() );
+            $("#id_mod-blood_organ3_fraction").val( $("#org3_b_fc").val() );
+
+            $("#organ3").val($("#id_mod-organ3_name").val() );
+            document.getElementById('organ3').style.display = 'block';
+            if($("#id_mod-organ3_flow_factor").val() != "0.0" || $("#id_mod-organ3_volume_fraction").val() != "0.0" || $("#id_mod-blood_organ3_fraction").val() != "0.0" || $("#id_dr-p_organ3").val() != "0.0" || $("#id_dr-pi_organ3").val() != "0.0"){
+                $('#organ3').css('background-color','#16A085');
+                $('#organ3').data('clicked', true);
+            }
+            counter++;
+
+            $('#blood').animate({height: '+=50'}, 500);
+            $('#Blood2').animate({height: '+=50'}, 500);
+            $('#Create_model').animate({top: '+=50'}, 500);
+            $('#Add_organs').animate({top: '+=50'}, 500);
+            $('#removeButton').animate({top: '+=50'}, 500);
+
+
+            if(($('#blood').data('clicked') || $('#Blood2').data('clicked')) && ($('#organ3').data('clicked')) ){
+                canvas.style.display="block";
+                neworgan($("#div-placental").position().left,$("#div-placental").position().top + 100);
+            }
+
+            $("#org3").val($("#id_mod-organ3_name").val() );
+            $("#org3_f_f").val( $("#id_mod-organ3_flow_factor").val() );
+            $("#org3_v_f").val( $("#id_mod-organ3_volume_fraction").val() );
+            $("#org3_b_f").val( $("#id_mod-blood_organ3_fraction").val() );
+            }
+            if(i==5){
+            $("#id_mod-organ4_flow_factor").val( $("#org4_f_fc").val() );
+            $("#id_mod-organ4_volume_fraction").val( $("#org4_v_fc").val() );
+            $("#id_mod-blood_organ4_fraction").val( $("#org4_b_fc").val() );
+
+            $("#orga4").val($("#id_mod-organ4_name").val() );
+            document.getElementById('organ4').style.display = 'block';
+            if($("#id_mod-organ4_flow_factor").val() != "0.0" || $("#id_mod-organ4_volume_fraction").val() != "0.0" || $("#id_mod-blood_organ4_fraction").val() != "0.0" || $("#id_dr-p_organ4").val() != "0.0" || $("#id_dr-pi_organ4").val() != "0.0"){
+                $('#organ4').css('background-color','#16A085');
+                $('#organ4').data('clicked', true);
+                }
+            counter++;
+
+            $('#blood').animate({height: '+=50'}, 500);
+            $('#Blood2').animate({height: '+=50'}, 500);
+            $('#Create_model').animate({top: '+=50'}, 500);
+            $('#Add_organs').animate({top: '+=50'}, 500);
+            $('#removeButton').animate({top: '+=50'}, 500);
+
+
+            if(($('#blood').data('clicked') || $('#Blood2').data('clicked')) && ($('#organ4').data('clicked')) ){
+                canvas.style.display="block";
+                neworgan($("#div-placental").position().left,$("#div-placental").position().top + 150);
+            }
+
+            $("#org4").val($("#id_mod-organ4_name").val() );
+            $("#org4_f_f").val( $("#id_mod-organ4_flow_factor").val() );
+            $("#org4_v_f").val( $("#id_mod-organ4_volume_fraction").val() );
+            $("#org4_b_f").val( $("#id_mod-blood_organ4_fraction").val() );
+            }
+            if(i==6){
+            $("#id_mod-organ5_flow_factor").val( $("#org5_f_fc").val() );
+            $("#id_mod-organ5_volume_fraction").val( $("#org5_v_fc").val() );
+            $("#id_mod-blood_organ5_fraction").val( $("#org5_b_fc").val() );
+
+            $("#organ5").val($("#id_mod-organ5_name").val() );
+            document.getElementById('organ5').style.display = 'block';
+            if($("#id_mod-organ5_flow_factor").val() != "0.0" || $("#id_mod-organ5_volume_fraction").val() != "0.0" || $("#id_mod-blood_organ5_fraction").val() != "0.0" || $("#id_dr-p_organ5").val() != "0.0" || $("#id_dr-pi_organ5").val() != "0.0"){
+                $('#organ5').css('background-color','#16A085');
+                $('#organ5').data('clicked', true);
+            }
+            counter++;
+
+            $('#blood').animate({height: '+=50'}, 500);
+            $('#Blood2').animate({height: '+=50'}, 500);
+            $('#Create_model').animate({top: '+=50'}, 500);
+            $('#Add_organs').animate({top: '+=50'}, 500);
+            $('#removeButton').animate({top: '+=50'}, 500);
+
+
+            if(($('#blood').data('clicked') || $('#Blood2').data('clicked')) && ($('#organ5').data('clicked')) ){
+                canvas.style.display="block";
+                neworgan($("#div-placental").position().left,$("#div-placental").position().top + 200);
+            }
+
+            $("#org5").val($("#id_mod-organ5_name").val() );
+            $("#org5_f_f").val( $("#id_mod-organ5_flow_factor").val() );
+            $("#org5_v_f").val( $("#id_mod-organ5_volume_fraction").val() );
+            $("#org5_b_f").val( $("#id_mod-blood_organ5_fraction").val() );
+            }
+        }
+	}
+
+//Remove the last organ which has been inserted
+             $("#removeButton").click(function () {
+                if(counter ==1){
+                      alert("No more textbox to remove");
+                      return false;
+                   }
+
+                counter--;
+                $('#counter_id').val(+counter);
+                document.getElementById('organ' + counter).style.display = 'none';
+                $('#organ'+counter).data('clicked', false);
+
+                $('#blood').animate({height: '-=50'}, 500);
+                $('#Blood2').animate({height: '-=50'}, 500);
+                $('#Create_model').animate({top: '-=50'}, 500);
+                $('#Add_organs').animate({top: '-=50'}, 500);
+                $('#removeButton').animate({top: '-=50'}, 500);
+
+                // $("#organ" + counter).remove();
+                delete_organ('organ'+ counter);
+                $('#id_mod-organ' + counter + '_flow_factor').val("0.0");
+                $('#id_mod-organ' + counter + '_volume_fraction').val("0.0");
+                $('#id_mod-blood_organ' + counter + '_fraction').val("0.0");
+                $('#id_dr-p_organ' + counter).val("0.0");
+                $('#id_dr-pi_organ' + counter).val("0.0");
+                $('#org' + counter + '_f_fc').val("0.0");
+                $('#org' + counter + '_v_fc').val("0.0");
+                $('#org' + counter + '_b_fc').val("0.0");
+                $('#p_org' + counter).val("0.0");
+                $('#pi_org' + counter).val("0.0");
+                $('#org' + counter + 'c').val("");
+                $('#organ' + counter + 'name').val("");
+                $('#organ' + counter + 'nam').val("");
+                $('#organ' + counter).val("");
+                $('#k_met' + counter).val("0.0");
+                $('#k_bile' + counter).val("0.0");
+                var org = JSON.parse( $("#id_dr-organ1_params").val() );
+                org[counter-1]= null;
+                $("#id_dr-organ1_params").val( JSON.stringify(org) );
+                $("#non-metabolise" + counter).attr("checked", false);
+                $("#metabolise" + counter).attr("checked", false);
+                $("#meta-const" + counter).hide();
+
+            });
+</script>
+
+<!-- MPC -->
+<script>
+
+    $('#close-loop').removeClass('disabled');
+    $('#open').removeClass('disabled');
+    $('#mpc').removeClass('disabled');
+    $('#pid').removeClass('disabled');
+    $('#close-loop').addClass('enabled');
+    $('#open').addClass('enabled');
+    $('#mpc').addClass('enabled');
+    $('#pid').addClass('enabled');
+
+    $('a#mpc').click(function(){
+		    //get the json object from the method_params field
+		    var params_json = JSON.parse( $("#id_mod-method_params").val() );
+            $("#Np").val(params_json.N);
+            $("#target_p").val(params_json.target);
+            $("#step_p").val(params_json.step);
+            $("#end_p").val(params_json.end);
+            dialogSet.dialog( "open" );
+        });
+
+    $('a#open').click(function(){
+
+            var params_json = JSON.parse( $("#id_mod-method_params").val() );
+            $("#Time").val(params_json.total_time);
+            $("#N_int").val(params_json.total_N);
+            $("#params-open").val(JSON.stringify(params_json));
+            //if Time and N_int field have values click submit
+            if ($("#Time").val() != "" &&  $("#N_int").val() != ""){
+                $("#add").click();
+            }
+            dialogOpen.dialog( "open" );
+
+
+        })
+
+
+</script>
+
+<!-- Define drug properties pop up -->
+<script>
+
+         $(function() {
+			dialogDrug = $( "#dialog-drug" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 808,
+				height: 520,
+				left: 300,
+				top: 200,
+				buttons: {
+				{% if default%}
+				"OK":
+				    function() {
+						dialogDrug.dialog( "close" );
+					}
+				{% else %}
+				"Save changes":
+					function() {
+					    $("#id_dr-drug_name").val( $("#drugname").val() );
+					    $("#id_dr-max_influx").val( $("#max_influx").val() );
+					    $("#id_dr-p_rest").val( $("#p_rest").val() );
+						$("#id_dr-pi_rest").val( $("#pi_rest").val() );
+						$("#id_dr-max_residual").val( $("#max_rest").val() );
+						$("#id_dr-min_residual").val( $("#min_rest").val() );
+						$("#id_dr-p_skin").val( $("#p_sk").val() );
+						$("#id_dr-pi_skin").val( $("#pi_sk").val() );
+						$("#id_dr-max_skin").val( $("#max_sk").val() );
+						$("#id_dr-min_skin").val( $("#min_sk").val() );
+						$("#id_dr-p_kidney").val( $("#p_kid").val() );
+						$("#id_dr-pi_kidney").val( $("#pi_kid").val() );
+						$("#id_dr-k_kidney").val( $("#kin_kidney").val() );
+						$("#id_dr-max_kidney").val( $("#max_kidney").val() );
+						$("#id_dr-min_kidney").val( $("#min_kidney").val() );
+						$("#id_dr-p_bladder").val( $("#p_bl").val() );
+						$("#id_dr-pi_bladder").val( $("#pi_bl").val() );
+						$("#id_dr-max_bladder").val( $("#max_bl").val() );
+						$("#id_dr-min_bladder").val( $("#min_bl").val() );
+						$("#id_dr-p_liver").val( $("#p_liv").val() );
+						$("#id_dr-pi_liver").val( $("#pi_liv").val() );
+						$("#id_dr-max_liver").val( $("#max_liv").val() );
+						$("#id_dr-min_liver").val( $("#min_liv").val() );
+						$("#id_dr-k_met").val( $("#kin_met").val() );
+						$("#id_dr-k_bile").val( $("#kin_bile").val() );
+						$("#id_dr-pi_rbc").val( $("#pi_rb").val() );
+						$("#id_dr-pi_plasma").val( $("#pi_pl").val() );
+						$("#id_dr-p_lung").val( $("#p_lg").val() );
+						$("#id_dr-pi_lung").val( $("#pi_lg").val() );
+						$("#id_dr-max_lung").val( $("#max_lg").val() );
+						$("#id_dr-min_lung").val( $("#min_lg").val() );
+						//organ1
+						$("#id_dr-p_organ1").val( $("#p_org1").val() );
+                        $("#id_dr-pi_organ1").val( $("#pi_org1").val() );
+                        //Get the type of the organ
+                        /*$("#organ1type").val( $('#dialog-drug').find('input:checked').val() );
+                        //If type of organ is metabolising
+                        if( $("#organ1type").val() == "met"){
+                        //Get the selected option(constains) from pop up window
+                            $('select[name="constains1" ]').val($('select[name="const"]').val() );
+
+                            }*/
+                        if( $('#t1').find('input:checked').val() == "met"){
+                            var organ1_params_json= [{
+                                type: $('#t1').find('input:checked').val(),
+                                const: $('select[name="const"]').val(),
+                                k_met: $("#k_met1").val(),
+                                k_bile: $("#k_bile1").val()
+                            }]
+                        }
+                        else if( $('#t1').find('input:checked').val() == "non-met"){
+                            var organ1_params_json= [{
+                                type: $('#t1').find('input:checked').val()
+                            }]
+                        }
+                        else {
+                            var organ1_params_json= [{
+                                type: "NULL"
+                            }]
+                        }
+                         //pass json to field to be read by the view
+                        //$("#id_dr-organ1_params").val( JSON.stringify(organ1_params_json) );
+                        //organ2
+                         $("#id_dr-p_organ2").val( $("#p_org2").val() );
+                         $("#id_dr-pi_organ2").val( $("#pi_org2").val() );
+                         //Get the type of the organ
+                         if( $('#t2').find('input:checked').val() == "met"){
+                            var organ2_params_json= {
+                                type: $('#t2').find('input:checked').val(),
+                                const: $('select[name="const2"]').val(),
+                                k_met: $("#k_met2").val(),
+                                k_bile: $("#k_bile2").val()
+                            }
+                         }
+                         else if( $('#t2').find('input:checked').val() == "non-met"){
+                            var organ2_params_json= {
+                                type: $('#t2').find('input:checked').val()
+                            }
+                         }
+                         else {
+                            var organ2_params_json= {
+                                type: "NULL"
+                            }
+                        }
+                         //pass json to field to be read by the view
+                         if(organ1_params_json != null){
+                         organ1_params_json.push(organ2_params_json);
+                         }
+                        $("#id_dr-organ1_params").val( JSON.stringify(organ1_params_json) );
+                         //organ3
+                         $("#id_dr-p_organ3").val( $("#p_org3").val() );
+                         $("#id_dr-pi_organ3").val( $("#pi_org3").val() );
+
+                         //Get the type of the organ
+                         if( $('#t3').find('input:checked').val() == "met"){
+                            var organ3_params_json= {
+                                type: $('#t3').find('input:checked').val(),
+                                const: $('select[name="const3"]').val(),
+                                k_met: $("#k_met3").val(),
+                                k_bile: $("#k_bile3").val()
+                            }
+                         }
+                         else if( $('#t3').find('input:checked').val() == "non-met"){
+                            var organ3_params_json= {
+                                type: $('#t3').find('input:checked').val()
+                            }
+                         }
+                         else {
+                            var organ3_params_json= {
+                                type: "NULL"
+                            }
+                         }
+                         //pass json to field to be read by the view
+                         if(organ1_params_json != null){
+                            organ1_params_json.push(organ3_params_json);
+                         }
+                        $("#id_dr-organ1_params").val( JSON.stringify(organ1_params_json) );
+                         //organ4
+                         $("#id_dr-p_organ4").val( $("#p_org4").val() );
+                         $("#id_dr-pi_organ4").val( $("#pi_org4").val() );
+                         //Get the type of the organ
+                         if( $('#t4').find('input:checked').val() == "met"){
+                            var organ4_params_json= {
+                                type: $('#t4').find('input:checked').val(),
+                                const: $('select[name="const4"]').val(),
+                                k_met: $("#k_met4").val(),
+                                k_bile: $("#k_bile4").val()
+                            }
+                         }
+                         else if( $('#t4').find('input:checked').val() == "non-met"){
+                            var organ4_params_json= {
+                                type: $('#t4').find('input:checked').val()
+                            }
+                         }
+                         else {
+                            var organ4_params_json= {
+                                type: "NULL"
+                            }
+                         }
+                         //pass json to field to be read by the view
+                         if(organ1_params_json != null){
+                             organ1_params_json.push(organ4_params_json);
+                             }
+                         $("#id_dr-organ1_params").val( JSON.stringify(organ1_params_json) );
+                         //organ5
+                         $("#id_dr-p_organ5").val( $("#p_org5").val() );
+                         $("#id_dr-pi_organ5").val( $("#pi_org5").val() );
+                         //Get the type of the organ
+                         if( $('#t5').find('input:checked').val() == "met"){
+                            var organ5_params_json= {
+                                type: $('#t5').find('input:checked').val(),
+                                const: $('select[name="const5"]').val(),
+                                k_met: $("#k_met5").val(),
+                                k_bile: $("#k_bile5").val()
+                            }
+                         }
+                         else if( $('#t5').find('input:checked').val() == "non-met"){
+                            var organ5_params_json= {
+                                type: $('#t5').find('input:checked').val()
+                            }
+                         }
+                         else {
+                            var organ5_params_json= {
+                                type: "NULL"
+                            }
+                         }
+                         //pass json to field to be read by the view
+                        if(organ1_params_json != null){
+                            organ1_params_json.push(organ5_params_json);
+                        }
+                        $("#id_dr-organ1_params").val( JSON.stringify(organ1_params_json) );
+
+                        $("#id_dr-p_heart").val( $("#p_h").val() );
+						$("#id_dr-pi_heart").val( $("#pi_h").val() );
+						$("#id_dr-max_heart").val( $("#max_h").val() );
+						$("#id_dr-min_heart").val( $("#min_h").val() );
+						$("#id_dr-p_muscle").val( $("#p_m").val() );
+						$("#id_dr-pi_muscle").val( $("#pi_m").val() );
+						$("#id_dr-max_muscle").val( $("#max_m").val() );
+						$("#id_dr-min_muscle").val( $("#min_m").val() );
+						$("#id_dr-p_spleen").val( $("#p_sp").val() );
+						$("#id_dr-pi_spleen").val( $("#pi_sp").val() );
+						$("#id_dr-max_spleen").val( $("#max_sp").val() );
+						$("#id_dr-min_spleen").val( $("#min_sp").val() );
+						$("#id_dr-p_placental").val( $("#p_p").val() );
+						$("#id_dr-pi_placental").val( $("#pi_p").val() );
+						$("#id_dr-max_placental").val( $("#max_p").val() );
+						$("#id_dr-min_placental").val( $("#min_p").val() );
+
+						/*$("#").val( $("#N_int").val() );*/
+						dialogDrug.dialog( "close" );
+					}
+				{%endif%}
+				},
+			});
+
+		});
+
+
+        $('a#drug').click(function(){
+
+        $("#organ1name").val(  $("#organ1").val() );
+        $("#organ2name").val(  $("#organ2").val() );
+        $("#organ3name").val(  $("#organ3").val() );
+        $("#organ4name").val(  $("#organ4").val() );
+        $("#organ5name").val(  $("#organ5").val() );
+        $("#organ1nam").val(  $("#organ1").val() );
+        $("#organ2nam").val(  $("#organ2").val() );
+        $("#organ3nam").val(  $("#organ3").val() );
+        $("#organ4nam").val(  $("#organ4").val() );
+        $("#organ5nam").val(  $("#organ5").val() );
+
+        //get the json object from the method_params field
+        if($("#id_dr-organ1_params").val() != []){
+            var organ1_params_json = JSON.parse( $("#id_dr-organ1_params").val() );
+                if(organ1_params_json[0] != null){
+                    if (organ1_params_json[0].type == "met"){
+                        $('input:radio[name=type1][value="met"]').click();
+                        if (organ1_params_json[0].const == "Linear"){
+                            $("#const").val("Linear");
+                            }
+                        if (organ1_params_json[0].const == "Menten"){
+                            $("#const").val("Menten");
+                            }
+                        $("#k_met1").val(organ1_params_json[0].k_met);
+                        $("#k_bile1").val(organ1_params_json[0].k_bile);
+
+                    }
+                    if (organ1_params_json[0].type == "non-met"){
+                        $('input:radio[name=type1][value="non-met"]').click();
+
+                    }
+                }
+                if(organ1_params_json[1] != null){
+                    if (organ1_params_json[1].type == "met"){
+                        $('input:radio[name=type2][value="met"]').click();
+                        if (organ1_params_json[1].const == "Linear"){
+                            $("#const2").val("Linear");
+                            }
+                        if (organ1_params_json[1].const == "Menten"){
+                            $("#const2").val("Menten");
+                            }
+                        $("#k_met2").val(organ1_params_json[1].k_met);
+                        $("#k_bile2").val(organ1_params_json[1].k_bile);
+                    }
+                    if (organ1_params_json[1].type == "non-met"){
+                        $('input:radio[name=type2][value="non-met"]').click();
+
+                    }
+                }
+                if(organ1_params_json[2] != null){
+                    if (organ1_params_json[2].type == "met"){
+                        $('input:radio[name=type3][value="met"]').click();
+                        if (organ1_params_json[2].const == "Linear"){
+                            $("#const3").val("Linear");
+                            }
+                        if (organ1_params_json[2].const == "Menten"){
+                            $("#const3").val("Menten");
+                            }
+                        $("#k_met3").val(organ1_params_json[2].k_met);
+                        $("#k_bile3").val(organ1_params_json[2].k_bile);
+                    }
+                    if (organ1_params_json[2].type == "non-met"){
+                        $('input:radio[name=type3][value="non-met"]').click();
+
+                    }
+                }
+                if(organ1_params_json[3] != null){
+                    if (organ1_params_json[3].type == "met"){
+                        $('input:radio[name=type4][value="met"]').click();
+                        if (organ1_params_json[3].const == "Linear"){
+                            $("#const4").val("Linear");
+                            }
+                        if (organ1_params_json[3].const == "Menten"){
+                            $("#const4").val("Menten");
+                            }
+                        $("#k_met4").val(organ1_params_json[3].k_met);
+                        $("#k_bile4").val(organ1_params_json[3].k_bile);
+                    }
+                    if (organ1_params_json[3].type == "non-met"){
+                        $('input:radio[name=type4][value="non-met"]').click();
+
+                    }
+
+                }
+                if(organ1_params_json[4] != null){
+                    if (organ1_params_json[4].type == "met"){
+                        $('input:radio[name=type5][value="met"]').click();
+                        if (organ1_params_json[4].const == "Linear"){
+                            $("#const5").val("Linear");
+                            }
+                        if (organ1_params_json[4].const == "Menten"){
+                            $("#const5").val("Menten");
+                            }
+                        $("#k_met5").val(organ1_params_json[4].k_met);
+                        $("#k_bile5").val(organ1_params_json[4].k_bile);
+                    }
+                    if (organ1_params_json[4].type == "non-met"){
+                        $('input:radio[name=type5][value="non-met"]').click();
+
+                    }
+                }
+
+
+            }
+
+
+        if(checked_res==1){
+            $("#residual_selected").val('0');
+            }
+        else{
+            $("#residual_selected").val('2');
+            }
+
+        if(checked_sk==1){
+            $("#skin_selected").val('0');
+            }
+        else{
+            $("#skin_selected").val('2');
+            }
+        if(checked_bla==1){
+            $("#bladder_selected").val('0');
+            }
+        else{
+            $("#bladder_selected").val('2');
+            }
+        if(checked_liv==1){
+            $("#liver_selected").val('0');
+            }
+        else{
+            $("#liver_selected").val('2');
+            }
+        if(checked_bl==1){
+            $("#blood_selected").val('0');
+            }
+        else{
+            $("#blood_selected").val('2');
+            }
+        if(checked_k==1){
+            $("#kidney_selected").val('0');
+            }
+        else{
+            $("#kidney_selected").val('2');
+            }
+        if(checked_lg==1){
+            $("#lung_selected").val('0');
+            }
+        else{
+            $("#lung_selected").val('2');
+            }
+
+        if(!$('#organ1').data('clicked')){
+           $("#organ1_selected").val('2');
+           }
+        else{
+            $("#organ1_selected").val('0');
+        }
+        if(!$('#organ2').data('clicked')){
+           $("#organ2_selected").val('2');
+           }
+        else{
+            $("#organ2_selected").val('0');
+        }
+
+        if(!$('#organ3').data('clicked')){
+           $("#organ3_selected").val('2');
+           }
+        else{
+            $("#organ3_selected").val('0');
+        }
+        if(!$('#organ4').data('clicked')){
+           $("#organ4_selected").val('2');
+           }
+        else{
+            $("#organ4_selected").val('0');
+        }
+        if(!$('#organ5').data('clicked')){
+           $("#organ5_selected").val('2');
+           }
+        else{
+            $("#organ5_selected").val('0');
+        }
+        if(checked_h==1){
+            $("#heart_selected").val('0');
+            }
+        else{
+            $("#heart_selected").val('2');
+            }
+        if(checked_m==1){
+            $("#muscle_selected").val('0');
+            }
+        else{
+            $("#muscle_selected").val('2');
+            }
+        if(checked_sp==1){
+            $("#spleen_selected").val('0');
+            }
+        else{
+            $("#spleen_selected").val('2');
+            }
+        if(checked_p==1){
+            $("#placental_selected").val('0');
+            }
+        else{
+            $("#placental_selected").val('2');
+            }
+
+        $(document).ready(function() {
+            toggleFields(); //call this first so we start out with the correct visibility depending on the selected form values
+           //this will call our toggleFields function every time the selection value of our field changes
+            $("#resid").change(function() { toggleFields(); });
+
+        });
+        //this toggles the visibility of organ parameters.
+        function toggleFields()
+        {
+
+            if ($("#skin_selected").val() < 1){
+                $("#skinArea1").show();
+                $('#s').parent().show();
+                $( "#s" ).prop( "checked", true );
+                }
+            else{
+                $("#skinArea1").hide();
+                $('#s').parent().hide();
+                }
+            if ($("#residual_selected").val() < 1){
+                $("#residualArea1").show();
+                $('#r').parent().show();
+                $( "#r" ).prop( "checked", true );
+                }
+            else{
+                $("#residualArea1").hide();
+                $('#r').parent().hide();
+                }
+            if ($("#bladder_selected").val() < 1){
+                $("#bladderArea1").show();
+                $('#bl').parent().show();
+                $( "#bl" ).prop( "checked", true );
+
+                }
+            else{
+                $("#bladderArea1").hide();
+                $('#bl').parent().hide();
+                }
+            if ($("#liver_selected").val() < 1){
+                $("#liverArea1").show();
+                $('#li').parent().show();
+                $( "#li" ).prop( "checked", true );
+                }
+            else{
+                $("#liverArea1").hide();
+                $('#li').parent().hide();
+                }
+            if ($("#blood_selected").val() < 1){
+                $("#bloodArea1").show();
+                $('#b').parent().show();
+                $( "#b" ).prop( "checked", true );
+                }
+            else{
+                $("#bloodArea1").hide();
+                $('#b').parent().hide();
+                }
+            if ($("#lung_selected").val() < 1){
+                $("#lungArea1").show();
+                $('#l').parent().show();
+                $( "#l" ).prop( "checked", true );
+                }
+            else{
+                $("#lungArea1").hide();
+                $('#l').parent().hide();
+                }
+
+            if ($("#kidney_selected").val() < 1){
+                $("#kidneyArea1").show();
+                $('#k').parent().show();
+                $( "#k" ).prop( "checked", true );
+                }
+            else{
+                $("#kidneyArea1").hide();
+                $('#k').parent().hide();
+                }
+             if ($("#organ1_selected").val() < 1){
+                $("#organ1Area1").show();
+                $('#o1').parent().show();
+                $('#organ1nam').show();
+                $( "#o1" ).prop( "checked", true );
+                }
+            else{
+                $("#organ1Area1").hide();
+                $('#o1').parent().hide();
+                $('#organ1nam').hide();
+
+                }
+             if ($("#organ2_selected").val() < 1){
+                $("#organ2Area1").show();
+                $('#o2').parent().show();
+                $('#organ2nam').show();
+                $( "#o2" ).prop( "checked", true );
+                }
+            else{
+                $("#organ2Area1").hide();
+                $('#o2').parent().hide();
+                $('#organ2nam').hide();
+                }
+             if ($("#organ3_selected").val() < 1){
+                $("#organ3Area1").show();
+                $('#o3').parent().show();
+                $('#organ3nam').show();
+                $( "#o3" ).prop( "checked", true );
+                }
+            else{
+                $("#organ3Area1").hide();
+                $('#o3').parent().hide();
+                $('#organ3nam').hide();
+                }
+             if ($("#organ4_selected").val() < 1){
+                $("#organ4Area1").show();
+                $('#o4').parent().show();
+                $('#organ4nam').show();
+                $( "#o4" ).prop( "checked", true );
+                }
+            else{
+                $("#organ4Area1").hide();
+                $('#o4').parent().hide();
+                $('#organ4nam').hide();
+                }
+             if ($("#organ5_selected").val() < 1){
+                $("#organ5Area1").show();
+                $('#o5').parent().show();
+                $('#organ5nam').show();
+                $( "#o5" ).prop( "checked", true );
+                }
+            else{
+                $("#organ5Area1").hide();
+                $('#o5').parent().hide();
+                $('#organ5nam').hide();
+                }
+            if ($("#heart_selected").val() < 1){
+                $("#heartArea1").show();
+                $('#h').parent().show();
+                $( "#h" ).prop( "checked", true );
+                }
+            else{
+                $("#heartArea1").hide();
+                $('#h').parent().hide();
+                }
+            if ($("#muscle_selected").val() < 1){
+                $("#muscleArea1").show();
+                $('#m').parent().show();
+                $( "#m" ).prop( "checked", true );
+                }
+            else{
+                $("#muscleArea1").hide();
+                $('#m').parent().hide();
+                }
+            if ($("#spleen_selected").val() < 1){
+                $("#spleenArea1").show();
+                $('#sp').parent().show();
+                $( "#sp" ).prop( "checked", true );
+                }
+            else{
+                $("#spleenArea1").hide();
+                $('#sp').parent().hide();
+                }
+            if ($("#placental_selected").val() < 1){
+                $("#placentalArea1").show();
+                $('#pl').parent().show();
+                $( "#pl" ).prop( "checked", true );
+                }
+            else{
+                $("#placentalArea1").hide();
+                $('#pl').parent().hide();
+                }
+        }
+
+
+        dialogDrug.dialog( "open" );
+
+
+        })
+
+
+</script>
+
+<script>
+{% if edit or image %}
+//if form has changed get the new values for plotting
+{% if change %}
+$("#id_mod-step_params").val("{{adm}}");
+$("#id_mod-plot_params").val("{{json}}");
+{% endif %}
+
+var admin_rate = JSON.parse($("#id_mod-step_params").val() );
+//admin_rate = JSON.parse("{{ adm }}");
+
+    organs_active = [{
+                    name: 'Administration rate',
+                    data: admin_rate,
+                    step: true
+                }];
+
+    var c = JSON.parse($("#id_mod-plot_params").val());
+    //c = JSON.parse("{{ json }}");
+
+    var c_len= c.length;
+    if($("#id_mod-method").val()  == "OpenLoop")
+        bl = c[1];
+    else
+        bl = c[0];
+    lu = c[3];
+    var num=5;
+
+    organs_active.push({
+                name: 'Blood',
+                data: bl,
+                yAxis: 1,
+            }, {
+                name: 'Lung',
+                data: lu,
+                yAxis: 1,
+            });
+
+    if(checked_sk==1){
+        sk = c[num]
+        num=num+2;
+        organs_active.push({
+                name: 'Skin',
+                data:  sk,
+                yAxis: 1,
+            });
+    }
+    else{
+        sk=[]
+    }
+    if(checked_bla==1){
+        bla = c[num];
+        num=num+2;
+        organs_active.push({
+                name: 'Bladder',
+                data: bla,
+                yAxis: 1,
+            });
+    }
+    else{
+        bla=[]
+    }
+    if(checked_liv==1){
+        liv = c[num];
+        num=num+2;
+        organs_active.push({
+                name: 'Liver',
+                data:  liv,
+                yAxis: 1,
+            });
+    }
+    else{
+        liv=[]
+    }
+    if(checked_res==1){
+        res = c[num];
+        num=num+2;
+        organs_active.push({
+                name: 'Residual',
+                data:  res,
+                yAxis: 1,
+            });
+    }
+    else{
+        res=[]
+    }
+    if(checked_k==1){
+        ki = c[num];
+        num=num+2;
+        organs_active.push({
+                name: 'Kidney',
+                color: '#F1A9A0',
+                data:  ki,
+                yAxis: 1,
+            });
+    }
+    else{
+        ki=[]
+    }
+    if($('#organ1').data('clicked')){
+        organ1= c[num];
+        num=num+2;
+        organs_active.push({
+                name: $("#organ1").val() ,
+                color: '#00FFFF',
+                data:  organ1,
+                yAxis: 1,
+            });
+    }
+    else{
+        organ1=[]
+    }
+    if($('#organ2').data('clicked')){
+        organ2= c[num];
+        num=num+2;
+        organs_active.push({
+                name: $("#organ2").val(),
+                color: '#6666FF',
+                data:  organ2,
+                yAxis: 1,
+            });
+    }
+    else{
+        organ2=[]
+    }
+    if($('#organ3').data('clicked')){
+        organ3= c[num];
+        num=num+2;
+        organs_active.push({
+                name: $("#organ3").val(),
+                color: '#FFCC33',
+                data:  organ3,
+                yAxis: 1,
+            });
+    }
+    else{
+        organ3=[]
+    }
+    if($('#organ4').data('clicked')){
+        organ4= c[num];
+        num=num+2;
+        organs_active.push({
+                name: $("#organ4").val(),
+                color: '#00CC66',
+                data:  organ4,
+                yAxis: 1,
+            });
+    }
+    else{
+        organ4=[]
+    }
+    if($('#organ5').data('clicked')){
+        organ5= c[num];
+        num=num+2;
+        organs_active.push({
+                name: $("#organ5").val(),
+                color: '#3399FF',
+                data:  organ5,
+                yAxis: 1,
+            });
+    }
+    else{
+        organ5=[]
+    }
+    if(checked_h==1){
+        hear = c[num];
+        num=num+2;
+        organs_active.push({
+                name: 'Heart',
+                data:  hear,
+                yAxis: 1,
+            });
+    }
+    else{
+        hear=[]
+    }
+    if(checked_m==1){
+        mu = c[num]
+        num=num+2
+        organs_active.push({
+                name: 'Muscle',
+                data:  mu,
+                yAxis: 1,
+            });
+    }
+    else{
+        mu=[]
+    }
+    if(checked_sp==1){
+        sp = c[num]
+        num=num+2
+        organs_active.push({
+                name: 'Spleen',
+                color: '#1BBC9B',
+                data:  sp,
+                yAxis: 1,
+            });
+    }
+    else{
+        sp=[]
+    }
+    if(checked_p==1){
+        place = c[num];
+        num=num+2;
+        organs_active.push({
+                name: 'Placental',
+                color: '#CC00CC',
+                data:  place,
+                yAxis: 1,
+
+            });
+    }
+    else{
+        place=[]
+    }
+
+$(function () {
+    $('#below').highcharts({
+        title: {
+            text: 'Expected response of the system',
+            x: -20 //center
+        },
+
+        xAxis: {
+           title: {
+                text: 'Time (hr)'
+            },
+        },
+
+        yAxis: [{
+                height: 150,
+                min: 0,
+                title: {
+                    text: 'Administration Rate (μg/hr)'
+                },
+                labels: {
+                    format: '{value:.2f}',
+                    formatter: function() {
+                     return parseFloat((this.value));
+                    }
+                },
+
+                plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }],
+
+            }, {
+                title: {
+                    text: 'State variables (μg/L)'
+                },
+                labels: {
+
+                    formatter: function() {
+                     return parseFloat((this.value));
+                    }
+                },
+                plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }],
+                //tickInterval: 0.0000001,
+                min: 0,
+                top: 220,
+                height: 100,
+                offset: 0,
+                lineWidth: 2
+            }],
+
+        tooltip: {
+            formatter: function() {
+                return '<b>'+  parseFloat((this.y)) +'</b><br/>'+
+                    'Time: '+ Highcharts.numberFormat(this.x, 2);
+            }
+
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: organs_active
+    });
+});
+
+{% endif %}
+</script>
+
+<script>
+//if default don't change color on hover
+    {% if default %}
+        $('#heart').removeClass( "enabled" )
+        $('#muscle').removeClass( "enabled" )
+        $('#spleen').removeClass( "enabled" )
+        $('#placental').removeClass( "enabled" )
+    {% endif %}
+
+</script>
+
+<!--Tutorial -->
+<script>
+    {% if tutorial %}
+    var trip1 = new Trip([
+      { sel : $(".form-table"), content : "<h>Welcome to pbpk!</h><br>At the end of this tutorial you can run the default model.<br>Above you can see modelname, BW, hematocrit, CO.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
+      { sel : $(".lung"), content : "Above you can see the organs included to default model.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
+      { sel : $(".blood"), content : "Click on blood to see blood parameters.", position : "n" },
+      { sel : $(".lung"), content : "Click on lung to see lung parameters.", position : "n" },
+      { sel : $(".kidney"), content : "Click on kidney to see kidney parameters.", position : "n" },
+      { sel : $(".bladder"), content : "Click on bladder to see bladder parameters.", position : "n" },
+      { sel : $(".skin"), content : "Click on skin to see skin parameters.", position : "n" },
+      { sel : $(".residual"), content : "Click on residual to see residual parameters.", position : "n" },
+      { sel : $(".liver"), content : "Click on liver to see liver parameters.", position : "n" },
+      { sel : $(".drug-properties"), content : "Click on Define Drug Properties.", position : "e", onTripStart: function(tripIndex) {console.log('onTripStart : ', tripIndex); },
+       },
+      { sel : $(".simulation-parameters"), content : "Click on Simulation Parameters and select Closed Loop-->MPC.", position : "e", delay: 1000},
+      //{ sel : $(".ui-button-text"), content : "Click on Save.", position : "e" },
+      { sel : $(".btn"), content : "Click on Save.", position : "e" },
+
+    ],{
+      delay: 1000,
+      onTripChange : function(i, tripData) {
+         if ( i === 10 ) {
+            alert("onTripChange, go check your console !");
+            console.log("You can put your own function or data in tripData, then access it onTripChange !");
+            console.log("current tripIndex : " + i);
+            console.log("current tripData : ", tripData);
+
+             if ($("#dialog-setpoint").dialog( "isOpen" )===true) {
+            //true
+            alert("fgh");
+
+            } else {
+                //false
+
+            }
+          }
+        }
+    });
+
+$(document).ready(function()
+ {
+  trip1.start();
+});
+    {% endif %}
+</script>
+{% endblock %}

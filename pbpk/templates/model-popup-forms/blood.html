@@ -1,0 +1,16 @@
+<div id="dialog-blood" class="organ-dialog" style="display: none;">
+    <form method="post" name="frm">
+        <table>
+            <tr>
+                <td>Blood Volume: </td>
+                {% if default %}
+                <td>{{form.blood_volume_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" id="blo_v_f" value={{form.blood_volume_fraction.value}} class="form-control"></td>
+                {% endif %}
+                <td><em>(Blood volume as percentage with respect to BW).</em></td>
+            </tr>
+
+        </table>
+    </form>
+</div>

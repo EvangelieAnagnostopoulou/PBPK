@@ -1,0 +1,33 @@
+<div id="dialog-bladder" class="organ-dialog" style="display: none;">
+    <form method="post" name="frm">
+
+        <table>
+            <tr><td>Bladder Flow:</td>
+                {% if default %}
+                <td>{{form.bladder_flow_factor.value}}</td>
+                {% else %}
+                <td><input type="text" id="bl_f_f" value={{form.bladder_flow_factor.value}} class="form-control"></td>
+                {% endif %}
+                <td><em>(Bladder flow as percentage with respect to CO).</em></td>
+            </tr>
+            <tr>
+                <td>Bladder Volume: </td>
+                {% if default %}
+                <td>{{form.bladder_volume_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" value={{form.bladder_volume_fraction.value}} id="bl_v_f" class="form-control"></td>
+                {% endif %}
+                <td><em>(Bladder volume as percentage with respect to BW).</em></td>
+            </tr>
+            <tr>
+                <td>Blood in bladder: </td>
+                {% if default %}
+                <td>{{form.blood_bladder_fraction.value}}</td>
+                {% else %}
+                <td><input type="text"  value={{form.blood_bladder_fraction.value}} id="bl_b_f" class="form-control"></td>
+                {% endif %}
+                <td><em>(Blood as percentage with respect to bladder volume. The remaining of the volume is tissue).</em></td>
+            </tr>
+        </table>
+    </form>
+</div>

@@ -1,0 +1,39 @@
+{% extends "base.html"%}
+
+{% block content %}
+<div>
+    <img src="/static/img/profle.png" alt="Welcome to Mail App" style="float:left;">
+    <h1 style="padding-left : 30px;float:left;">{{user.username}}</h1>
+
+</div>
+<div style="margin-top: 10%; ">
+<div class="panel panel-default" style="float:left; width: 20%; ">
+    <div class="panel-heading" style="background-color: #1ABC9C;">
+        <h3 class="panel-title">{{user.username}}'s models</h3>
+    </div>
+    <div class="panel-body">
+        <ul>
+        {% for model in models %}
+            <li>{{model.modelname}}</li>
+        {% empty %}
+            <p> You have not created any model yet!</p>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+<div class="panel panel-default" style="float:left; width: 20%; margin-left:5px; ">
+    <div class="panel-heading" style="background-color: #1ABC9C;">
+        <h3 class="panel-title">{{user.username}}'s drugs</h3>
+    </div>
+    <div class="panel-body">
+        <ul>
+        {% for drug in drugs %}
+            <li>{{drug.drug_name}}</li>
+        {% empty %}
+            <h6>You have not created any drug yet!</h6>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+</div>
+{% endblock %}

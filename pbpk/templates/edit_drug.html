@@ -1,0 +1,48 @@
+{% extends "base.html"%}
+{% block content %}
+<form method="post"> {% csrf_token %}
+
+{% if form.errors %}
+    <p class="error">{{form.errors}}</p>
+{% endif %}
+
+	<div class="div-form-table" style=" width: 40%;"><b>Please select the model you want to edit:</b><br><br>
+	<table class="form-table">
+		<tr>
+            <td>
+				<b>Modelname:</b>
+				<!--<input type="text" id="modelname" name="modelname" value="{{modelname}}" class="form-control"/>-->
+                {{select_model}}
+			</td>
+			<td>
+				<b>Drugname:</b>
+				<!--<input type="text" id="modelname" name="modelname" value="{{modelname}}" class="form-control"/>-->
+                {{select_drug}}
+			</td>
+
+		</tr>
+	</table>
+    </div>
+
+	<div style="color : red">{{error}}</div><br>
+	<input type="submit" value="Edit this model" class="btn btn-block btn-lg btn-primary" style="width: 10%; border: 2px solid #2f4154;">
+
+	<!-- <div id="divCheckbox" style="visibility: hidden; display:inline;">Here are the results!</div>-->
+</form>
+{% endblock %}
+
+
+<script>
+function get_drug(){
+    new Ajax.Request('/auto/ajax_purpose_staff/', {
+    method: 'post',
+    parameters: $H({'type':$('id_type').getValue()}),
+    onSuccess: function(transport) {
+        var e = $('id_color')
+        if(transport.responseText)
+            e.update(transport.responseText)
+    }
+    }); // end new Ajax.Request
+}
+
+</script>

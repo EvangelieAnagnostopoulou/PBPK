@@ -1,0 +1,30 @@
+<div id="dialog-bladder" style="display: none;">
+    <form method="post" name="frm">
+
+        <table>
+            <tr><td>Bladder Flow Factor:</td>
+                <td><input type="text" id="bl_f_f" value={{0.0}} ></td>
+                <td><em>(Bladder flow as percentage with respect to cardiac output).</em></td>
+            </tr>
+            <tr>
+                <td>Bladder Volume Fraction: </td>
+                <td><input type="text" value={{0.0}} id="bl_v_f"></td>
+            </tr>
+            <tr>
+                <td>Blood bladder fraction: </td>
+                <td><input type="text"  value={{0.0}} id="bl_b_f"></td>
+            </tr>
+            <tr>
+                <td>P bladder:</td>
+                <td><input type="text" value={{0.0}} id="p_bl"></td>
+                <td><em>(Partition coefficient).</em></td>
+            </tr>
+            <tr>
+                <td>Pi bladder:</td>
+                <td><input type="text" value={{0.0}} id="pi_bl"></td>
+                <td><em>(Permeability coefficient).</em></td>
+            </tr>
+        </table>
+        <input type="button" value="Submit" onclick=" return SendData();" />
+    </form>
+</div>

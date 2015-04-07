@@ -1,0 +1,834 @@
+
+<div id="dialog-drug" class="div-form-table" style=" width: 40%;"><b>Please define drug properties:</b><br><br>
+	<form method="post"> {% csrf_token %}
+        <table>
+            <tr>
+                <td>Drug name:</td>
+                <td><input type="text" id="drugname" value="{{dform.drug_name.value}}" class="form-control"></td>
+            </tr>
+            <tr>
+                    <td>Constraints</td>
+            </tr>
+            <tr>
+                    <td>Maximum Influx Rate</td>
+                    {% if default %}
+                    <td>{{dform.max_influx.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_influx" value="{{dform.max_influx.value}}" class="form-control"></td>
+                    {% endif %}
+                <td><em>(μg/hr)</em></td>
+            </tr>
+            <tr>
+                <td><input type="text" id="residual_selected" style="display:none"></td>
+            </tr>
+            <tr>
+                <td><input type="text" id="skin_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="kidney_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="bladder_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="liver_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="blood_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="lung_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="organ1_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="organ2_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="organ3_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="organ4_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="organ5_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="heart_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="muscle_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="placental_selected" style="display:none"></td>
+             </tr>
+            <tr>
+                <td><input type="text" id="spleen_selected" style="display:none"></td>
+             </tr>
+        </table>
+        <hr>
+
+
+        <div id="residualArea1" >
+            <table>
+                <tr>
+                    <td>Residual Compartment</td>
+                </tr>
+
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_rest.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="p_rest" value={{dform.p_rest.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_rest.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="pi_rest" value={{dform.pi_rest.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.min_residual.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_rest" placeholder="0.0" value={{dform.min_residual.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_residual.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_rest" placeholder="inf" value={{dform.max_residual.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+            <hr>
+        </div>
+
+         <div id="skinArea1" >
+            <table>
+                <tr>
+                    <td>Skin Compartment</td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_skin.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="p_sk" value={{dform.p_skin.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_skin.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="pi_sk" value={{dform.pi_skin.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.min_skin.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_sk" placeholder="0.0" value={{dform.min_skin.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_skin.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_sk" placeholder="inf" value={{dform.max_skin.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+             <hr>
+         </div>
+        <div id="kidneyArea1" >
+            <table>
+                <tr>
+                    <td>kidney Compartment</td>
+                </tr>
+
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_kidney.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.p_kidney.value}} id="p_kid" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_kidney.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.pi_kidney.value}} id="pi_kid" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>k_kidney:</td>
+                    {% if default %}
+                    <td>{{dform.k_kidney.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="kin_kidney" value={{dform.k_kidney.value}} class="form-control"></td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{0.0}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_kidney" placeholder="0.0" value={{0.0}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_kidney.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_kidney" placeholder="inf" value={{dform.max_kidney.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+            <hr>
+        </div>
+
+
+         <div id="bladderArea1" >
+            <table>
+                <tr>
+                    <td>Bladder Compartment</td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_bladder.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.p_bladder.value}} id="p_bl" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_bladder.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.pi_bladder.value}} id="pi_bl" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.min_bladder.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_bl" placeholder="0.0" value={{dform.min_bladder.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_bladder.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_bl" placeholder="inf" value={{dform.max_bladder.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+            <hr>
+         </div>
+
+         <div id="liverArea1" >
+            <table>
+                <tr>
+                    <td>Liver Compartment</td>
+                </tr>
+
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_liver.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="p_liv" value={{dform.p_liver.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_liver.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="pi_liv" value={{dform.pi_liver.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>Metabolic clearance:</td>
+                    {% if default %}
+                    <td>{{dform.k_met.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="kin_met" value={{dform.k_met.value}} class="form-control"></td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Excretory clearance:</td>
+                    {% if default %}
+                    <td>{{dform.k_bile.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="kin_bile" value={{dform.k_bile.value}} class="form-control"></td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{0.0}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_liv" placeholder="0.0" value={{0.0}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_liver.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_liv" placeholder="inf" value={{dform.max_liver.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+             <hr>
+
+         </div>
+
+         <div id="bloodArea1" >
+            <table>
+                <tr>
+                    <td>Blood Compartment</td>
+                </tr>
+                <tr>
+                    <td>Pi Red Blood Cells:</td>
+                    {% if default %}
+                    <td>{{dform.pi_rbc.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="pi_rb" value={{dform.pi_rbc.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(Permeability coefficient).</em></td>
+                </tr>
+                <tr>
+                    <td>Pi plasma:</td>
+                    {% if default %}
+                    <td>{{dform.pi_plasma.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="pi_pl" value={{dform.pi_plasma.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(Permeability coefficient).</em></td>
+                </tr>
+            </table>
+              <hr>
+         </div>
+
+        <div id="lungArea1" >
+
+            <table>
+                <tr>
+                    <td>Lung Compartment</td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_lung.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.p_lung.value}} id="p_lg" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_lung.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.pi_lung.value}} id="pi_lg" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.min_lung.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_lg" placeholder="0.0" value={{dform.min_lung.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_lung.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_lg" placeholder="inf" value={{dform.max_lung.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+             <hr>
+        </div>
+
+        <div id="organ1Area1">
+
+             <table id="t1">
+                <tr>
+                    <td><input type="text" id="organ1name" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    <td><input type="text" value={{dform.p_organ1.value}} id="p_org1" class="form-control"></td>
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    <td><input type="text" value={{dform.pi_organ1.value}} id="pi_org1" class="form-control"></td>
+                    <td><em>(L/hr)</em></td>
+                </tr>
+
+                <tr>
+                    <td>Type of organ: </td>
+                    <td><input type="radio" id="metabolise1" class="metabolising" value="met" name="type1"> Metabolizing</td>
+                    <td><input type="radio" id="non-metabolise1" class="non-metabolising" value="non-met" name="type1">Non-metabolising</td>
+                </tr>
+            </table>
+            <table id="meta-const1" style="display: none">
+                <tr><td>Constains:</td>
+                <td><select id= "const" name="const">
+                <option value="Linear">Linear</option>
+                <option value="Menten">Menten</option>
+                </select></td>
+                </tr>
+                <tr>
+                    <td>Metabolic clearance:</td>
+                    <td><input type="text" value="0.0" id="k_met1" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>Excretory clearance:</td>
+                    <td><input type="text" value="0.0" id="k_bile1" class="form-control"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="organ2Area1">
+
+             <table id="t2">
+                <tr>
+                    <td><input type="text" id="organ2name" class="form-control"></td>
+                </tr>
+
+
+            <tr>
+                <td>P (Partition coefficient) :</td>
+                <td><input type="text" value={{dform.p_organ2.value}} id="p_org2" class="form-control"></td>
+                <td><em>(dimensionless)</em></td>
+            </tr>
+            <tr>
+                <td>π (Permeability coefficient):</td>
+                <td><input type="text" value={{dform.pi_organ2.value}} id="pi_org2" class="form-control"></td>
+                <td><em>(L/hr)</em></td>
+            </tr>
+            <tr>
+                    <td>Type of organ: </td>
+                    <td><input type="radio" id="metabolise2" class="metabolising" value="met" name="type2"> Metabolizing</td>
+                    <td><input type="radio" id="non-metabolise2" class="non-metabolising" value="non-met" name="type2">Non-metabolising</td>
+                </tr>
+            </table>
+            <table id="meta-const2" style="display: none">
+                <tr><td>Constains:</td>
+                <td><select name="const2">
+                <option value="Linear">Linear</option>
+                <option value="Menten">Menten</option>
+                </select></td>
+                </tr>
+                <tr>
+                    <td>Metabolic clearance:</td>
+                    <td><input type="text" value="0.0" id="k_met2" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>Excretory clearance:</td>
+                    <td><input type="text" value="0.0" id="k_bile2" class="form-control"></td>
+                </tr>
+
+            </table>
+            <hr>
+        </div>
+
+        <div id="organ3Area1">
+
+             <table id="t3">
+                <tr>
+                    <td><input type="text" id="organ3name" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    <td><input type="text" value={{dform.p_organ3.value}} id="p_org3" class="form-control"></td>
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    <td><input type="text" value={{dform.pi_organ3.value}} id="pi_org3" class="form-control"></td>
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                 <tr>
+                    <td>Type of organ: </td>
+                    <td><input type="radio" id="metabolise3" class="metabolising" value="met" name="type3"> Metabolizing</td>
+                    <td><input type="radio" id="non-metabolise3" class="non-metabolising" value="non-met" name="type3">Non-metabolising</td>
+                </tr>
+            </table>
+            <table id="meta-const3" style="display: none">
+                <tr><td>Constains:</td>
+                <td><select name="const3">
+                <option value="Linear">Linear</option>
+                <option value="Menten">Menten</option>
+                </select></td>
+                </tr>
+                <tr>
+                    <td>Metabolic clearance:</td>
+                    <td><input type="text" value="0.0" id="k_met3" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>Excretory clearance:</td>
+                    <td><input type="text" value="0.0" id="k_bile3" class="form-control"></td>
+                </tr>
+            </table>
+             <hr>
+        </div>
+        <div id="organ4Area1">
+
+             <table id="t4">
+                <tr>
+                    <td><input type="text" id="organ4name" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    <td><input type="text" value={{dform.p_organ4.value}} id="p_org4" class="form-control"></td>
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    <td><input type="text" value={{dform.pi_organ4.value}} id="pi_org4" class="form-control"></td>
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                 <tr>
+                    <td>Type of organ: </td>
+                    <td><input type="radio" id="metabolise4" class="metabolising" value="met" name="type4"> Metabolizing</td>
+                    <td><input type="radio" id="non-metabolise4" class="non-metabolising" value="non-met" name="type4">Non-metabolising</td>
+                </tr>
+            </table>
+            <table id="meta-const4" style="display: none">
+                <tr><td>Constains:</td>
+                <td><select name="const4">
+                <option value="Linear">Linear</option>
+                <option value="Menten">Menten</option>
+                </select></td>
+                </tr>
+                <tr>
+                    <td>Metabolic clearance:</td>
+                    <td><input type="text" value="0.0" id="k_met4" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>Excretory clearance:</td>
+                    <td><input type="text" value="0.0" id="k_bile4" class="form-control"></td>
+                </tr>
+            </table>
+             <hr>
+        </div>
+        <div id="organ5Area1">
+
+             <table id="t5">
+                <tr>
+                    <td><input type="text" id="organ5name" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    <td><input type="text" value={{dform.p_organ5.value}} id="p_org5" class="form-control"></td>
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    <td><input type="text" value={{dform.pi_organ5.value}} id="pi_org5" class="form-control"></td>
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                 <tr>
+                    <td>Type of organ: </td>
+                    <td><input type="radio" id="metabolise5" class="metabolising" value="met" name="type5"> Metabolizing</td>
+                    <td><input type="radio" id="non-metabolise5" class="non-metabolising" value="non-met" name="type5">Non-metabolising</td>
+                </tr>
+                <hr>
+            </table>
+            <table id="meta-const5" style="display: none">
+                <tr><td>Constains:</td>
+                <td><select name="const5">
+                <option value="Linear">Linear</option>
+                <option value="Menten">Menten</option>
+                </select></td>
+                <tr>
+                    <td>Metabolic clearance:</td>
+                    <td><input type="text" value="0.0" id="k_met5" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>Excretory clearance:</td>
+                    <td><input type="text" value="0.0" id="k_bile5" class="form-control"></td>
+                </tr>
+                </tr>
+            </table>
+        </div>
+        <div id="heartArea1" >
+            <table>
+                <tr>
+                    <td>Heart Compartment</td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_heart.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.p_heart.value}} id="p_h" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_heart.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.pi_heart.value}} id="pi_h" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.min_heart.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_h" placeholder="0.0" value={{dform.min_heart.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_heart.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_h" placeholder="inf" value={{dform.max_heart.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+            <hr>
+         </div>
+        <div id="muscleArea1" >
+            <table>
+                <tr>
+                    <td>Muscle Compartment</td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_muscle.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.p_muscle.value}} id="p_m" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_muscle.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.pi_muscle.value}} id="pi_m" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.min_muscle.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_m" placeholder="0.0" value={{dform.min_muscle.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_muscle.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_m" placeholder="inf" value={{dform.max_muscle.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+            <hr>
+         </div>
+        <div id="spleenArea1" >
+            <table>
+                <tr>
+                    <td>Spleen Compartment</td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_spleen.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.p_spleen.value}} id="p_sp" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_spleen.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.pi_spleen.value}} id="pi_sp" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.min_spleen.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_sp" placeholder="0.0" value={{dform.min_spleen.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_spleen.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_sp" placeholder="inf" value={{dform.max_spleen.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+            <hr>
+         </div>
+        <div id="placentalArea1" >
+            <table>
+                <tr>
+                    <td>Placental Compartment</td>
+                </tr>
+                <tr>
+                    <td>P (Partition coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.p_placental.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.p_placental.value}} id="p_p" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(dimensionless)</em></td>
+                </tr>
+                <tr>
+                    <td>π (Permeability coefficient):</td>
+                    {% if default %}
+                    <td>{{dform.pi_placental.value}}</td>
+                    {% else %}
+                    <td><input type="text" value={{dform.pi_placental.value}} id="pi_p" class="form-control"></td>
+                    {% endif %}
+                    <td><em>(L/hr)</em></td>
+                </tr>
+                <tr>
+                    <td>Minimum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.min_placental.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="min_p" placeholder="0.0" value={{dform.min_placental.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+                <tr>
+                    <td>Maximum Concentration</td>
+                    {% if default %}
+                    <td>{{dform.max_placental.value}}</td>
+                    {% else %}
+                    <td><input type="text" id="max_p" placeholder="inf" value={{dform.max_placental.value}} class="form-control"></td>
+                    {% endif %}
+                    <td><em>(μg/L)</em></td>
+                </tr>
+            </table>
+            <hr>
+         </div>
+
+
+        </form>
+
+    </div>
+
+
+<script>
+     $('#metabolise1').click(function() {
+            $("#meta-const1").show();
+     });
+     $('#non-metabolise1').click(function() {
+            $("#meta-const1").hide();
+     });
+
+      $('#metabolise2').click(function() {
+            $("#meta-const2").show();
+     });
+     $('#non-metabolise2').click(function() {
+            $("#meta-const2").hide();
+     });
+      $('#metabolise3').click(function() {
+            $("#meta-const3").show();
+     });
+     $('#non-metabolise3').click(function() {
+            $("#meta-const3").hide();
+     });
+      $('#metabolise4').click(function() {
+            $("#meta-const4").show();
+     });
+     $('#non-metabolise4').click(function() {
+            $("#meta-const4").hide();
+     });
+      $('#metabolise5').click(function() {
+            $("#meta-const5").show();
+     });
+     $('#non-metabolise5').click(function() {
+            $("#meta-const5").hide();
+     });
+
+     /*
+     $('#metabolise1').click(function() {
+            $("#meta-const1").show();
+            if($('#const').find(":selected").text() == "Linear"){
+                $("#kin1").show();
+            }
+            if($('#const').find(":selected").text() == "Menten"){
+                $("#kin1").show();
+            }
+
+     });
+     $('#non-metabolise1').click(function() {
+            $("#meta-const1").hide();
+            $("#kin1").hide();
+     });*/
+</script>

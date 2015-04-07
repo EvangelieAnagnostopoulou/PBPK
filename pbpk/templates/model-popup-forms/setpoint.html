@@ -1,0 +1,178 @@
+<div id="dialog-setpoint" class="div-form-table organ-dialog" style=" display:none; width: 40%;"><b>Please enter Total Time and Number of Intervals:</b><br><br>
+	<form method="post">
+        <label>
+            Control Horizon (Future time steps):<br>
+            <input type="number" id="Np"  class="form-control" value="{{form.N.value}}"/>
+        </label>
+        <br>
+        <label>
+            Concentration setpoint in Blood (μg/L):<br>
+            <input type="text" id="target_p" class="form-control" value="{{form.target.value}}"/>
+        </label>
+
+        <hr>
+        <label>
+            Simulation Step (hr):<br>
+            <input type="text" id="step_p" class="form-control" value="{{form.step.value}}"/>
+        </label>
+        <br>
+        <label>
+            End Time (hr):<br>
+            <input type="text" id="end_p"  class="form-control" value="{{form.end.value}}"/>
+        </label>
+        <hr>
+        <label>
+            Total Time(hr):<br>
+            <input type="text" id="total_t" value={{0}} class="form-control" />
+        </label>
+
+        <label>
+            Number of Intervals:<br>
+            <input type="text" id="inter" value={{0}} class="form-control" />
+        </label>
+    </form>
+    <input type="button" id="add1" value="Submit" class="btn btn-block btn-lg btn-primary" style="width: 40%;" onclick="createTable1()">
+    <br>
+
+    <table id="tables" class="div-form-table" style=" display:none;">
+
+    </table>
+    <br>
+    <input type="button" value="Add Row" id="addr" class="btn btn-block btn-lg btn-primary" style=" display:none; width: 40%;"  onclick="addRow('tables')" />
+    <input type="button" value="Delete Row" id="del" onclick="deleteRow('tables')" class="btn btn-block btn-lg btn-primary" style=" display:none; width: 40%;"/>
+
+</div>
+
+
+
+
+
+<script>
+
+function createTable1() {
+    var a, b, tableElem, rowElem, colElem;
+     a = document.getElementById('inter').value;
+     b = document.getElementById('total_t').value;
+     D=b/a;
+
+    if (a == "0" || b =="0") {
+        alert("Please enter some numeric value");
+    } else {
+
+        //Delete table of previous submit
+
+        try {
+            var table = document.getElementById('tables');
+            var rowCount = table.rows.length;
+
+            for(var i=0; i<rowCount; i++) {
+                var row = table.rows[i];
+                var chkbox = row.cells[0].childNodes[0];
+
+                table.deleteRow(i);
+                rowCount--;
+                i--;
+
+
+            }
+            }catch(e) {
+                alert(e);
+            }
+
+
+        $("#tables").show();
+        $("#addr").show();
+         $("#del").show();
+        for( var i=0; i<a;i++) {
+
+            var table = document.getElementById('tables');
+
+            //var rowCount = table.rows.length;
+            var row = table.insertRow(i);
+
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "checkbox";
+            element1.name="chkbox[]";
+            cell1.appendChild(element1);
+
+            D_arx=D*i;
+            D_tel=(D*i)+D;
+            var cell2 = row.insertCell(1);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            element3.name = "txtbox[]";
+            element3.className = 'form-control';
+            //cell2.css({"weight","30%"});
+            element3.value= D_arx + '-' + D_tel;
+            //cell2.innerHTML = D_arx + '-' + D_tel;
+            cell2.appendChild(element3);
+
+
+            var cell3 = row.insertCell(2);
+            var element2 = document.createElement("input");
+            element2.type = "text";
+            element2.name = "txtbox[]";
+            element2.className = 'form-control';
+            element2.value= '2ms/lt';
+            cell3.appendChild(element2);
+
+
+        }
+    }
+
+}
+function addRow(tableID) {
+
+            var table = document.getElementById(tableID);
+
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "checkbox";
+            element1.name="chkbox[]";
+            cell1.appendChild(element1);
+
+            var cell2 = row.insertCell(1);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            element3.name = "txtbox[]";
+            element3.className = 'form-control';
+            cell2.appendChild(element3);
+            //cell2.innerHTML = rowCount + 1;
+
+            var cell3 = row.insertCell(2);
+            var element2 = document.createElement("input");
+            element2.type = "text";
+            element2.name = "txtbox[]";
+            element2.className = 'form-control';
+            element2.value= '2ms/lt';
+            cell3.appendChild(element2);
+
+
+        }
+
+        function deleteRow(tableID) {
+            try {
+            var table = document.getElementById(tableID);
+            var rowCount = table.rows.length;
+
+            for(var i=0; i<rowCount; i++) {
+                var row = table.rows[i];
+                var chkbox = row.cells[0].childNodes[0];
+                if(null != chkbox && true == chkbox.checked) {
+                    table.deleteRow(i);
+                    rowCount--;
+                    i--;
+                }
+
+
+            }
+            }catch(e) {
+                alert(e);
+            }
+        }
+
+</script>

@@ -1,0 +1,59 @@
+{% extends "base.html"%}
+
+{% block content %}
+<form method="post"> {% csrf_token %}
+
+{% if form.errors %}
+    <p class="error">{{form.errors}}</p>
+{% endif %}
+
+	<div class="div-form-table" style=" width: 40%;"><b>Please select the model you want to delete:</b><br><br>
+	<table class="form-table">
+		<tr>
+
+			<td>
+				<b>Modelname:</b>
+                {{select_model}}
+			</td>
+            <td>
+				<b>Drugname:</b>
+                {{select_drug}}
+			</td>
+
+            <!--<td>
+                <input type="button" id="New_drug" value="New_drug">
+            </td>-->
+
+
+		</tr>
+	</table>
+    </div>
+    <br>
+	<div style="color : red">{{error}}</div><br>
+	<input type="submit" value="Delete this model" class="btn btn-red btn-block btn-lg btn-primary" style="width: 10%; border: 2px solid #2f4154;">
+
+	<!-- <div id="divCheckbox" style="visibility: hidden; display:inline;">Here are the results!</div>-->
+</form>
+
+<script>
+    function get_drug(){
+        $.ajax({
+            url: '/DeleteModel/',
+            type: 'POST',
+            data: {
+                'modelname': $('#id_modelname').val(),
+                'csrfmiddlewaretoken': '{{csrf_token}}'
+            },
+
+            success: function(drugs, textStatus, jqXHR) {
+                var e = $('#id_drugname');
+                e.empty();
+                for (var i=0; i<drugs.length; i++) {
+                    drug = drugs[i];
+                    e.append($('<option>', { value : drug[0] }).text(drug[1]));
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

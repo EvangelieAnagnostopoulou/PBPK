@@ -1,0 +1,17 @@
+<div id="dialog-residual" class="organ-dialog" style="display: none;">
+    <form method="post" name="frm">
+
+        <table>
+            <tr>
+                <td>Blood in residual: </td>
+                {% if default %}
+                <td>{{form.blood_rest_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" id="res_b_f" value={{form.blood_rest_fraction.value}} class="form-control"></td>
+                {% endif %}
+                <td><em>(Blood as percentage with respect to volume of rest of the body. The remaining of the volume is tissue).</em></td>
+            </tr>
+
+        </table>
+    </form>
+</div>

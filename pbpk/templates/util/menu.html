@@ -1,0 +1,78 @@
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+
+
+
+<nav class="navbar navbar-inverse navbar-embossed" role="navigation">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-01">
+                <span class="sr-only">Toggle navigation</span>
+              </button>
+              <a class="navbar-brand" href="/">PBPK Modelling  </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-collapse-01">
+              <ul class="nav navbar-nav navbar-left">
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Actions <b class="caret"></b></a>
+                  <span class="dropdown-arrow"></span>
+                  <ul class="dropdown-menu">
+                    <li><a href="/NewModel">Create new Model</a></li>
+                    <!--<li><a href="/oldModels">Use a pre-extisted Model</a></li>-->
+                    <li><a href="/DeleteModel">Delete a Drug or a Model</a></li>
+                    <li><a href="/editIntermediate">Edit and use a existing Model</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/default">Use the Default Model</a></li>
+                  </ul>
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle simulation-parameters" data-toggle="dropdown">Simulation Parameters <b class="caret"></b></a>
+                  <span class="dropdown-arrow"></span>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" id="open">Open Loop</a></li>
+                    <li class="dropdown"><a href="#" id="close-loop" class="dropdown-toggle" data-toggle="dropdown">Closed Loop</a>
+                        <span class="dropdown-arrow"></span>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown"><a href="#" id="mpc" class="dropdown-toggle" data-toggle="dropdown">MPC</a></li>
+                            <li><a href="#" id="pid">PID</a></li>
+                        </ul>
+
+                    </li>
+                  </ul>
+                </li>
+                 <li><a href="#" id="drug" class="drug-properties" >Define Drug Properties</a> </li>
+                <span class="user-info">
+			       <a href="#" id="run"><img src="/static/img/play.png" class="admin-icon"/></a>
+                    </span>
+               </ul>
+
+                {% if user.is_authenticated %}
+                    <span class="user-info">
+			        Welcome back, <a href="/userprofile">{{user.username}}</a>
+			        <a href="/accounts/logout"><img src="/static/img/logout.png" class="admin-icon"/></a>
+                    </span>
+		        {% endif %}
+
+              <!-- <form class="navbar-form navbar-right" action="#" role="search">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input class="form-control" id="navbarInput-01" type="search" placeholder="Search">
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn"><span class="fui-search"></span></button>
+                    </span>
+                  </div>
+                </div>
+              </form> -->
+            </div><!-- /.navbar-collapse -->
+          </nav>
+
+<script>
+
+        $('#close-loop').addClass('disabled');
+        $('#open').addClass('disabled');
+        $('#mpc').addClass('disabled');
+        $('#pid').addClass('disabled');
+        $('#mpc').unbind("hover");
+
+
+</script>

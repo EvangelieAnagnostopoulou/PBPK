@@ -1,0 +1,35 @@
+<div id="dialog-liver" class="organ-dialog" style="display: none;">
+    <form method="post" name="frm">
+
+        <table>
+            <tr><td>Liver Flow:</td>
+                {% if default %}
+                <td>{{form.liver_flow_factor.value}}</td>
+                {% else %}
+                <td><input type="text" id="liv_f_f" value={{form.liver_flow_factor.value}} class="form-control"></td>
+                {% endif %}
+                <td><em>(Liver flow as percentage with respect to CO).</em></td>
+            </tr>
+            <tr>
+                <td>Liver Volume: </td>
+                {% if default %}
+                <td>{{form.liver_volume_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" id="liv_v_f" value={{form.liver_volume_fraction.value}} class="form-control"></td>
+                {% endif %}
+                <td><em>(Liver volume as percentage with respect to BW).</em></td>
+            </tr>
+            <tr>
+                <td>Blood in liver: </td>
+                {% if default %}
+                <td>{{form.blood_liver_fraction.value}}</td>
+                {% else %}
+                <td><input type="text" id="liv_b_f" value={{form.blood_liver_fraction.value}} class="form-control"></td>
+                {% endif %}
+                <td><em>(Blood as percentage with respect to liver volume. The remaining of the volume is tissue).</em></td>
+            </tr>
+
+        </table>
+    </form>
+
+ </div>

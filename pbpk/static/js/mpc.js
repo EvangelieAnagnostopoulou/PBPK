@@ -1,36 +1,3 @@
-//MPC
-        $(function() {
-			dialogSet = $( "#dialog-setpoint" ).dialog({
-				autoOpen: false,
-				modal: true,
-				width: 808,
-				height: 520,
-				left: 300,
-				top: 200,
-				buttons: {
-				"Save changes":
-					function() {
-                        //create json from values
-                        var params_json = {
-                            N: $("#Np").val(),
-                            target: $("#target_p").val(),
-                            step: $("#step_p").val(),
-                            end: $("#end_p").val()
-                        };
-
-                        //pass json to field to be read by the view
-                        $("#id_mod-method_params").val( JSON.stringify(params_json) );
-                        $("#id_mod-method").val('CloseLoop-MPC');
-
-						dialogSet.dialog( "close" );
-					}
-				},
-			});
-
-		});
-
-
-
         function openloop_send_vals(){
             //create the lists
             a = $('#N_int').val();

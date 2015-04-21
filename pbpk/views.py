@@ -1596,7 +1596,7 @@ def tutorial(request):
             json_object_plot = json.dumps(plot_j)
 
             params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True, 'change': True,
-                      'json': json_object_plot, 'adm': adm_j, 'tutorial': True}
+                      'json': json_object_plot, 'adm': adm_j, 'tutorial': True, 'tutorial_result': True}
             if request.is_ajax():
                 return HttpResponse(json_object_plot, 'application/json')
 
@@ -1604,7 +1604,6 @@ def tutorial(request):
         elif method == "CloseLoop-PID":
             return Http404  # todo implement CloseLoop-PID defaults
         elif method == "OpenLoop":  # OpenLoop
-
             params_json = json.loads(meth_par)
             total_time = params_json['total_time']
             total_N = params_json['total_N']
@@ -1701,7 +1700,7 @@ def tutorial(request):
                 json_object_plot = json.dumps(plot_j)
 
                 params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True,
-                          'change': True, 'json': json_object_plot, 'adm': adm_j, 'tutorial': True}
+                          'change': True, 'json': json_object_plot, 'adm': adm_j, 'tutorial': True, 'tutorial_result': True}
                 if request.is_ajax():
                     return HttpResponse(json_object_plot, 'application/json')
                 return render(request, "model_form.html", params)

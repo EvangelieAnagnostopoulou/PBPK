@@ -42,7 +42,7 @@
 <canvas id="canvas" width="640" height="840" style="display: none"></canvas>
 
 
-<form class="new-model-form" method="post" action="{% if edit %}/edit_model?modelid={{modelid}}&drugid={{drugid}} {% elif default%}/default {% else %}/NewModel{% endif %} " name="f1"> {% csrf_token %}
+<form class="new-model-form" method="post" action="{% if edit %}/edit_model?modelid={{modelid}}&drugid={{drugid}} {% elif default%}{%if tutorial %}/tutorial {% else%} /default {% endif %} {% else %}/NewModel{% endif %} " name="f1"> {% csrf_token %}
 
 <div id="model" class="div-form-table">
     <table class="form-table">
@@ -795,7 +795,7 @@
 </div>
 
 {%if image%}
-    <div id="below">
+    <div id="below" class="below">
         <!-- DIV GIA RESULTS-->
 
        <!-- <b>Expected Response of the System:</b><br>
@@ -808,7 +808,7 @@
     </div>
 {% endif %}
 
-<input type="submit" value="{%if edit%}Save changes{% else %}Create Model{% endif %}" id="Create_model" class="btn btn-block btn-lg btn-primary"
+<input type="submit" value="{%if edit%}Save changes{% else %}Create Model{% endif %}" id="Create_model" class="btn btn-block btn-lg btn-primary create"
        style="width: 8%; border: 2px solid #2f4154;" >
 {% if not default %}
     <div id="div-placental"></div>
@@ -832,7 +832,11 @@
                         $('.example-image-link').remove();
                         $.ajax({
                             {% if default %}
-                            url: /default/,
+                                {% if tutorial%}
+                                 url: /tutorial/,
+                                {% else %}
+                                url: /default/,
+                                {% endif %}
                             {% elif edit %}
                             url: /edit_model/,
                             {% else %}
@@ -880,13 +884,18 @@
 				top: 200,
 				buttons: {
 				{% if default%}
-				"OK":
-				    function() {
+				"OK":{
+                    "class": 'btn-ok-residual',
+				    text: "OK",
+				    id: "residual-ok",
+				    click: function() {
 						dialogResidual.dialog( "close" );
 					}
+					}
 				{% else %}
-				"Save changes":
-					function() {
+				"Save changes":{
+				    text: "Save changes",
+					click: function() {
 						$("#id_mod-blood_rest_fraction").val( $("#res_b_f").val() );
 
 						dialogResidual.dialog( "close" );
@@ -894,6 +903,7 @@
     		                canvas.style.display="block";
     		                organ_dart($( "#residual" ));
     		            }*/
+					}
 					}
 			    {% endif %}
 				},
@@ -915,13 +925,18 @@
 				top: 200,
 				buttons: {
 				{% if default%}
-				"OK":
-				    function() {
+				"OK":{
+				    "class": 'btn-ok-skin',
+				    text: "OK",
+				    id: "skin-ok",
+				    click: function() {
 						dialogSkin.dialog( "close" );
 					}
+					}
 				{% else %}
-				"Save changes":
-					function() {
+				"Save changes":{
+				    text: "Save changes",
+					click: function() {
 						$("#id_mod-skin_flow_factor").val( $("#sk_f_f").val() );
 						$("#id_mod-skin_volume_fraction").val( $("#sk_v_f").val() );
 						$("#id_mod-blood_skin_fraction").val( $("#sk_b_f").val() );
@@ -930,6 +945,7 @@
                             canvas.style.display="block";
                             organ_dart($( "#skin" ));
                         }*/
+					}
 					}
 				{% endif %}
 				},
@@ -951,13 +967,18 @@
 				top: 200,
 				buttons: {
 				{% if default%}
-				"OK":
-				    function() {
+				"OK":{
+				    "class": 'btn-ok-kidney',
+				    text: "OK",
+				    id: "kidney-ok",
+				    click: function() {
 						dialogKidney.dialog( "close" );
 					}
+					}
 				{% else %}
-				"Save changes":
-					function() {
+				"Save changes":{
+				    text: "Save changes",
+					click: function() {
 						$("#id_mod-kidney_flow_factor").val( $("#kid_f_f").val() );
 						$("#id_mod-kidney_volume_fraction").val( $("#kid_v_f").val() );
 						$("#id_mod-blood_kidney_fraction").val( $("#kid_b_f").val() );
@@ -966,6 +987,7 @@
                             canvas.style.display="block";
                             organ_dart($( "#kidney" ));
                         }*/
+					}
 					}
 				{% endif %}
 				},
@@ -987,13 +1009,18 @@
 				top: 200,
 				buttons: {
 				{% if default%}
-				"OK":
-				    function() {
+				"OK":{
+				    "class": 'btn-ok-bladder',
+				    text: "OK",
+				    id: "bladder-ok",
+				    click: function() {
 						dialogBladder.dialog( "close" );
 					}
+					}
 				{% else %}
-				"Save changes":
-					function() {
+				"Save changes":{
+				    text: "Save changes",
+					click: function() {
 						$("#id_mod-bladder_flow_factor").val( $("#bl_f_f").val() );
 						$("#id_mod-bladder_volume_fraction").val( $("#bl_v_f").val() );
 						$("#id_mod-blood_bladder_fraction").val( $("#bl_b_f").val() );
@@ -1003,6 +1030,7 @@
                             canvas.style.display="block";
                             organ_dart($( "#bladder" ));
                         }*/
+					}
 					}
 				{% endif %}
 				},
@@ -1024,13 +1052,18 @@
 				top: 200,
 				buttons: {
 				{% if default%}
-				"OK":
-				    function() {
+				"OK":{
+				    "class": 'btn-ok-liver',
+				    text: "OK",
+				    id: "liver-ok",
+				    click: function() {
 						dialogLiver.dialog( "close" );
 					}
+					}
 				{% else %}
-				"Save changes":
-					function() {
+				"Save changes": {
+				    text: "Save changes",
+					click : function() {
 						$("#id_mod-liver_flow_factor").val( $("#liv_f_f").val() );
 						$("#id_mod-liver_volume_fraction").val( $("#liv_v_f").val() );
 						$("#id_mod-blood_liver_fraction").val( $("#liv_b_f").val() );
@@ -1040,6 +1073,7 @@
                             canvas.style.display="block";
                             liver();
                         }*/
+					}
 					}
 				{% endif %}
 				},
@@ -1060,13 +1094,18 @@
 				top: 200,
 				buttons: {
 				{% if default%}
-				"OK":
-				    function() {
+				"blood-btn": {
+				    "class": 'btn-ok-blood',
+				    text: "OK",
+				    id: "blood-ok",
+				    click: function() {
 						dialogBlood.dialog( "close" );
 					}
+					}
 				{% else %}
-				"Save changes":
-					function() {
+				"Save changes": {
+                    text: "Save changes",
+                    click : function() {
 						$("#id_mod-blood_volume_fraction").val( $("#blo_v_f").val() );
 						dialogBlood.dialog( "close" );
 						/*if($("#id_mod-blood_volume_fraction").val() != "0.0" || $("#id_dr-pi_rbc").val() != "0.0" || $("#id_dr-pi_plasma").val() != "0.0") {
@@ -1091,6 +1130,7 @@
                             }
                         }*/
 					}
+					}
 				{% endif %}
 				},
 			});
@@ -1113,13 +1153,19 @@
 				top: 200,
 				buttons: {
 				{% if default%}
-				"OK":
-				    function() {
+				"OK":{
+				    "class": 'btn-ok-lung',
+				    text: "OK",
+				    id: "lung-ok",
+				    click: function() {
 						dialogLung.dialog( "close" );
+					},
 					}
+
 				{% else %}
-				"Save changes":
-					function() {
+				"Save changes":{
+				    text: "Save changes",
+					click: function() {
 						$("#id_mod-lung_flow_factor").val( $("#lg_f_f").val() );
 						$("#id_mod-lung_volume_fraction").val( $("#lg_v_f").val() );
 						$("#id_mod-blood_lung_fraction").val( $("#lg_b_f").val() );
@@ -1129,6 +1175,7 @@
 						    canvas.style.display="block";
                             lung();
                         }*/
+					}
 					}
 				{% endif %}
 				},
@@ -3228,13 +3275,17 @@
 				top: 200,
 				buttons: {
 				{% if default%}
-				"OK":
-				    function() {
+				"OK":{
+				    text: "OK",
+				    id: "drug-ok",
+				    click: function() {
 						dialogDrug.dialog( "close" );
 					}
+					}
 				{% else %}
-				"Save changes":
-					function() {
+				"Save changes":{
+                    text: "Save changes",
+					click: function() {
 					    $("#id_dr-drug_name").val( $("#drugname").val() );
 					    $("#id_dr-max_influx").val( $("#max_influx").val() );
 					    $("#id_dr-p_rest").val( $("#p_rest").val() );
@@ -3426,6 +3477,7 @@
 
 						/*$("#").val( $("#N_int").val() );*/
 						dialogDrug.dialog( "close" );
+					}
 					}
 				{%endif%}
 				},
@@ -4119,31 +4171,155 @@ $(function () {
         $('#spleen').removeClass( "enabled" )
         $('#placental').removeClass( "enabled" )
     {% endif %}
+</script>
 
+<script>
+
+//MPC dialog
+
+     $(function() {
+			dialogSet = $( "#dialog-setpoint" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 808,
+				height: 520,
+				left: 300,
+				top: 200,
+				buttons: {
+				"Save changes":{
+				    text: "Save changes",
+			        id: "closeloop-save",
+					click: function() {
+                        //create json from values
+                        var params_json = {
+                            N: $("#Np").val(),
+                            target: $("#target_p").val(),
+                            step: $("#step_p").val(),
+                            end: $("#end_p").val()
+                        };
+
+                        //pass json to field to be read by the view
+                        $("#id_mod-method_params").val( JSON.stringify(params_json) );
+                        $("#id_mod-method").val('CloseLoop-MPC');
+
+						dialogSet.dialog( "close" );
+					}
+				},
+				}
+			});
+
+		});
 </script>
 
 <!--Tutorial -->
 <script>
     {% if tutorial %}
+
+    {% if tutorial_result%}
+      var trip11 = new Trip([
+      {sel : $(".below"), content : "You can print and download the produced graph.", position : "n", delay:5000 , },
+      {sel : $(".below"), content : "You can add and remove organs from graph by clicking on label.", position : "e", delay:5000 , },
+      {sel : $(".below"), content : "Congratulations!You have learned how simulate default model.", delay:5000 , },
+      ],{
+
+      });
+
+      $(document).ready(function()
+         {
+          trip11.start();
+        });
+    {% else %}
     var trip1 = new Trip([
       { sel : $(".form-table"), content : "<h>Welcome to pbpk!</h><br>At the end of this tutorial you can run the default model.<br>Above you can see modelname, BW, hematocrit, CO.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
       { sel : $(".lung"), content : "Above you can see the organs included to default model.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
-      { sel : $(".blood"), content : "Click on blood to see blood parameters.", position : "n" },
-      { sel : $(".lung"), content : "Click on lung to see lung parameters.", position : "n" },
-      { sel : $(".kidney"), content : "Click on kidney to see kidney parameters.", position : "n" },
-      { sel : $(".bladder"), content : "Click on bladder to see bladder parameters.", position : "n" },
-      { sel : $(".skin"), content : "Click on skin to see skin parameters.", position : "n" },
-      { sel : $(".residual"), content : "Click on residual to see residual parameters.", position : "n" },
-      { sel : $(".liver"), content : "Click on liver to see liver parameters.", position : "n" },
-      { sel : $(".drug-properties"), content : "Click on Define Drug Properties.", position : "e", onTripStart: function(tripIndex) {console.log('onTripStart : ', tripIndex); },
-       },
-      { sel : $(".simulation-parameters"), content : "Click on Simulation Parameters and select Closed Loop-->MPC.", position : "e", delay: 1000},
-      //{ sel : $(".ui-button-text"), content : "Click on Save.", position : "e" },
-      { sel : $(".btn"), content : "Click on Save.", position : "e" },
+      { sel : $(".blood"), content : "Click on blood to see blood parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#blood').on('click', function() {if ( tripIndex === 2 ) {trip1.next();} } )},},
+      { position: 'screen-center',content : "You can see blood volume. Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#blood-ok').on('click', function() {if ( tripIndex === 3 ) { trip2.start();}})   }, },
 
     ],{
       delay: 1000,
-      onTripChange : function(i, tripData) {
+      onTripPause : function (tripIndex, tripObject){
+        setInterval(tripObject,3000);
+        console.log('pause : ', tripIndex);
+
+      },
+
+      onTripChange : function (i, tripData) {
+      console.log("current tripIndex1 : " + i);
+         /*$('#blood').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+                })
+        $('#lung').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+        })
+         $('#kidney').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+        })
+         $('#bladder').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+        })
+         $('#skin').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+        })
+         $('#residual').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+        })
+         $('#liver').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+        })
+         $('#blood-ok').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+                })
+         $('#lung-ok').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+                })
+         $('#kidney-ok').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+                })
+         $('#bladder-ok').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+                })
+         $('#skin-ok').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+                })
+         $('#residual-ok').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+                })
+         $('#liver-ok').on('click', function() {
+            if ( i === 1 ) {
+                trip1.next();
+                }
+                })  */
+         if ( i === 4 ) {
+            //trip1.pause();
+            //$('#lung').click();
+            dialogLung.dialog( "close" );
+         }
          if ( i === 10 ) {
             alert("onTripChange, go check your console !");
             console.log("You can put your own function or data in tripData, then access it onTripChange !");
@@ -4161,11 +4337,94 @@ $(function () {
           }
         }
     });
+    var trip2 = new Trip([
+      { sel : $(".lung"),content : "Click on lung to see lung parameters.",  position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); if ( tripIndex === 0 ) { $('#lung').on('click', function() {if ($("#dialog-lung").dialog( "isOpen" )){trip2.next();} } ) } }, },
+      {sel : $(".lung-dialog"), position: "n", content : "<h>You can see lung flow, lung volume and blood in lung.</h><br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#lung-ok').on('click', function() {if ( tripIndex === 1 ) {trip3.start();}}) }, },
+      ],{
+        onTripChange : function (i, tripData) {
+        }
+        });
+    var trip3 = new Trip([
+      { sel : $(".kidney"), content : "Click on kidney to see kidney parameters.", position : "n" , delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#kidney').on('click', function() {if ( tripIndex === 0 ) { if ($("#dialog-kidney").dialog( "isOpen" )){trip3.next();}} } ) },},
+      {sel : $(".kidney-dialog"), position: "n", content : "You can see kidney flow, kidney volume and blood in kidney.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#kidney-ok').on('click', function() {if ( tripIndex === 1 ) {trip4.start();}}) }, },
+
+      ],{
+        onTripChange : function (i, tripData) {
+        }
+
+      });
+    var trip4 = new Trip([
+      { sel : $(".bladder"), content : "Click on bladder to see bladder parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#bladder').on('click', function() {if ( tripIndex === 0 ) {if ($("#dialog-bladder").dialog( "isOpen" )){trip4.next();}} } ) }, },
+       {sel : $(".bladder-dialog"), position: "n", content : "You can see bladder flow, bladder volume and blood in bladder.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#bladder-ok').on('click', function() {if ( tripIndex === 1 ) {trip5.start();}}) }, },
+
+      ],{
+      onTripChange : function (i, tripData) {
+
+      }
+
+      });
+    var trip5 = new Trip([
+      { sel : $(".skin"), content : "Click on skin to see skin parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#skin').on('click', function() {if ( tripIndex === 0 ) {trip5.next();} } ) }, },
+       {sel : $(".skin-dialog"), position: "n",content : "You can see skin flow, skin volume and blood in skin.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#skin-ok').on('click', function() {if ( tripIndex === 1 ) {trip6.start();}}) }, },
+
+      ],{
+      onTripChange : function (i, tripData) {
+      }
+
+      });
+    var trip6 = new Trip([
+      { sel : $(".residual"), content : "Click on residual to see residual parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#residual').on('click', function() {if ( tripIndex === 0 ) {trip6.next();} } ) }, },
+       {sel : $(".residual-dialog"), position: "n", content : "You can see residual flow, residual volume and blood in residual.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#residual-ok').on('click', function() {if ( tripIndex === 1 ) {trip7.start();}}) }, },
+      ],{
+      onTripChange : function (i, tripData) {
+      }
+
+      });
+    var trip7 = new Trip([
+      { sel : $(".liver"), content : "Click on liver to see liver parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#liver').on('click', function() {if ( tripIndex === 0 ) {trip7.next();} } ) }, },
+       {sel : $(".liver-dialog"), position: "n",content : "You can see liver flow, liver volume and blood in liver.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#liver-ok').on('click', function() {if ( tripIndex === 1 ) {trip8.start();}}) }, },
+
+      ],{
+      onTripChange : function (i, tripData) {
+      }
+
+      });
+    var trip8 = new Trip([
+      { sel : $(".drug-properties"), content : "Click on Define Drug Properties.", position : "e", delay:-1 ,onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#drug').on('click', function() {if ( tripIndex === 0 ) {trip8.next();} } ) },
+       },
+      {sel : $(".drug-dialog"),position: "n", content : "You can see drug properties.", delay:2000 ,  },
+      {sel : $(".drug-dialog"),position: "e", content : "Scroll down to see drug properties for all included organs.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#drug-ok').on('click', function() {if ( tripIndex === 2 ) {trip9.start();}}) }, },
+
+      ],{
+      onTripChange : function (i, tripData) {
+      }
+
+      });
+    var trip9 = new Trip([
+
+      { sel : $(".simulation-parameters"), content : "Click on Simulation Parameters and select Closed Loop-->MPC.", position : "e", delay: -1, onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#mpc').on('click', function() {if ( tripIndex === 0 ) {trip10.start();}}) },},
+
+      ],{
+      onTripChange : function (i, tripData) {
+      }
+
+      });
+       var trip10 = new Trip([
+      {sel : $(".closeloop-dialog"), position: "e",content : "Click Save changes.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#closeloop-save').on('click', function() {if ( tripIndex === 0 ) {trip10.next();}}) }, },
+      //{ sel : $(".ui-button-text"), content : "Click on Save.", position : "e" },
+      { sel : $(".create"), content : "Click Save to run the default model.", position : "e", delay:5000 },
+      ],{
+      onTripChange : function (i, tripData) {
+      }
+
+      });
+
 
 $(document).ready(function()
  {
   trip1.start();
 });
+{% endif %}
     {% endif %}
 </script>
 {% endblock %}

@@ -132,11 +132,11 @@ class Models(models.Model):
     organ5_flow_factor = models.FloatField(blank=True, null=True, default=0.0)
     organ5_volume_fraction = models.FloatField(blank=True, null=True, default=0.0)
     blood_organ5_fraction = models.FloatField(blank=True, null=True, default=0.0)
-    organ1_name= models.TextField(db_column='organ1Name', blank=True, default="organ name")  # Field name made lowercase
-    organ2_name= models.TextField(db_column='organ2Name', blank=True, default="organ name")  # Field name made lowercase
-    organ3_name= models.TextField(db_column='organ3Name', blank=True, default="organ name")  # Field name made lowercase
-    organ4_name= models.TextField(db_column='organ4Name', blank=True, default="organ name")  # Field name made lowercase
-    organ5_name= models.TextField(db_column='organ5Name', blank=True, default="organ name")  # Field name made lowercase
+    organ1_name= models.TextField(db_column='organ1Name', blank=True,)  # Field name made lowercase
+    organ2_name= models.TextField(db_column='organ2Name', blank=True,)  # Field name made lowercase
+    organ3_name= models.TextField(db_column='organ3Name', blank=True,)  # Field name made lowercase
+    organ4_name= models.TextField(db_column='organ4Name', blank=True,)  # Field name made lowercase
+    organ5_name= models.TextField(db_column='organ5Name', blank=True,)  # Field name made lowercase
     heart_flow_factor = models.FloatField(blank=True, null=True, default=0.0)
     heart_volume_fraction = models.FloatField(blank=True, null=True, default=0.0)
     blood_heart_fraction = models.FloatField(blank=True, null=True, default=0.0)

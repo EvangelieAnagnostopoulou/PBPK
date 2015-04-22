@@ -106,7 +106,6 @@ def InitPage(request):
                     new_model.username = request.user.username
                     # new_model.drugs.clear()
                     #convert method_params to json and read values
-
                     if new_drug.organ1_params:
                         org1_params_json = json.loads(new_drug.organ1_params)
                         if org1_params_json[0]:
@@ -952,14 +951,13 @@ def Edit(request):
                             const1 = org1_params_json[0]['const']
                             k_met1 = org1_params_json[0]['k_met']
                             k_bile1 = org1_params_json[0]['k_bile']
-                            print (const1)
-                        print(type1)
                     if org1_params_json[1]:
                         type2 = org1_params_json[1]['type']
                         if type2 == "met":
                             const2 = org1_params_json[1]['const']
                             k_met2 = org1_params_json[1]['k_met']
                             k_bile2 = org1_params_json[1]['k_bile']
+
                     if org1_params_json[2]:
                         type3 = org1_params_json[2]['type']
                         if type3 == "met":
@@ -1092,16 +1090,16 @@ def Edit(request):
                     placental = Placental(model)
                     try:
                         mysystem = System(model, skin, kidney, bladder, residual, liver, blood, lung, organ1, organ2,
-                                          organ3, organ4, organ5, heart, muscle, spleen, placental)
+                                              organ3, organ4, organ5, heart, muscle, spleen, placental)
                         sys = mysystem.DiscreteSystem()
                         d_hat = 1.7408e-14 * np.ones((1, 1))
                         x_hat = np.zeros((sys.A.shape[0], 1))
                         sim = Simulator(mysystem, N, x_hat, d_hat, drug.max_liver, drug.max_kidney, drug.max_influx,
-                                        drug.min_residual, drug.max_residual, drug.min_skin, drug.max_skin,
-                                        drug.min_bladder, drug.max_bladder, drug.min_lung, drug.max_lung,
-                                        drug.min_liver, drug.min_kidney,
-                                        drug.min_heart, drug.max_heart, drug.min_muscle, drug.max_muscle,
-                                        drug.min_spleen, drug.max_spleen, drug.min_placental, drug.max_placental)
+                                            drug.min_residual, drug.max_residual, drug.min_skin, drug.max_skin,
+                                            drug.min_bladder, drug.max_bladder, drug.min_lung, drug.max_lung,
+                                            drug.min_liver, drug.min_kidney,
+                                            drug.min_heart, drug.max_heart, drug.min_muscle, drug.max_muscle,
+                                            drug.min_spleen, drug.max_spleen, drug.min_placental, drug.max_placental)
                         Tsim, cont, ulist = sim.Simulate(target, step, end)
                         plot_j = []
 
@@ -1539,68 +1537,81 @@ def tutorial(request):
                 target = float(target)
                 step = float(step)
                 end = float(end)
+            read_models = Models.objects.filter(modelname='default', pk=117)
+            if read_models and read_models[0].plot_params and N == int(35) and target == float(4e-7) and step == float(0.0833) and end == float(4):
+                model_item = read_models[0]
+                print model_item.method_params
+                print model_item.plot_params
+                json_object_plot = json.loads(model_item.plot_params)
+                adm_j = json.loads(model_item.step_params)
+                params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True, 'change': True,
+                          'json': json_object_plot, 'adm': adm_j, 'tutorial': True, 'tutorial_result': True}
+                if request.is_ajax():
+                    return HttpResponse(json_object_plot, 'application/json')
+                return render(request, "model_form.html", params)
+            else:
 
-            model = PBPK_Model(0.03, 0.45, 16.5, 0.07, 0.0, 0.0164, 1.4e-6, 5.0e-6, 0.04e-6,
-                               0.058, 0.165, 0.03, 1.6, 0.0095, 0.091, 0.017, 0.24, 0.14, 0.12,
-                               0.0033, 0.0009, 0.03, 1.6, 0.0095, 0.04, 1.6, 0.0095, 0.162, 0.055, 0.31, 1.6, 0.0095,
-                               0.5, 1.3, 0.81, 1.0, 0.007, 0.5, 0.44, 0.94, 0.0, 1, 0.0, 1, 0.0, 1, 0.0, 1, 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0)
-            skin = Skin(model)
-            kidney = Kidney(model)
-            bladder = Bladder(model)
-            residual = Residual(model)
-            liver = Liver(model)
-            blood = Blood(model)
-            lung = Lung(model)
-            organ1 = Organ1(model)
-            organ2 = Organ2(model)
-            organ3 = Organ3(model)
-            organ4 = Organ4(model)
-            organ5 = Organ5(model)
-            heart = Heart(model)
-            muscle = Muscle(model)
-            spleen = Spleen(model)
-            placental = Placental(model)
+                model = PBPK_Model(0.03, 0.45, 16.5, 0.07, 0.0, 0.0164, 1.4e-6, 5.0e-6, 0.04e-6,
+                                   0.058, 0.165, 0.03, 1.6, 0.0095, 0.091, 0.017, 0.24, 0.14, 0.12,
+                                   0.0033, 0.0009, 0.03, 1.6, 0.0095, 0.04, 1.6, 0.0095, 0.162, 0.055, 0.31, 1.6, 0.0095,
+                                   0.5, 1.3, 0.81, 1.0, 0.007, 0.5, 0.44, 0.94, 0.0, 1, 0.0, 1, 0.0, 1, 0.0, 1, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, "", "", 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0)
+                skin = Skin(model)
+                kidney = Kidney(model)
+                bladder = Bladder(model)
+                residual = Residual(model)
+                liver = Liver(model)
+                blood = Blood(model)
+                lung = Lung(model)
+                organ1 = Organ1(model)
+                organ2 = Organ2(model)
+                organ3 = Organ3(model)
+                organ4 = Organ4(model)
+                organ5 = Organ5(model)
+                heart = Heart(model)
+                muscle = Muscle(model)
+                spleen = Spleen(model)
+                placental = Placental(model)
 
-            mysystem = System(model, skin, kidney, bladder, residual, liver, blood, lung, organ1, organ2, organ3,
-                              organ4, organ5, heart, muscle, spleen, placental)
-            sys = mysystem.DiscreteSystem()
-            d_hat = 1.74e-14 * np.ones((1, 1))
-            x_hat = np.zeros((14, 1))
-            sim = Simulator(mysystem, N, x_hat, d_hat, 1.4e-6, 5.0e-6, 0.04e-6, 0.0, 1, 0.0, 1, 0.0, 1, 0.0, 1, 0.0,
-                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, )
-            Tsim, cont, ulist = sim.Simulate(target, step, end)
-            plot_j = []
-            # plot_j is of the following form
-            # [ [[0.0, y1.1], [0.01, y1.2], ...] -> organ1,  [[0.0, y2.1], [0.0, y2.2], ...] -> organ2, ... ]
-            adm = []
-            for i in range(len(ulist)):
-                adm.append([Tsim[i], ulist[i]])
-            adm_j = json.dumps(adm)
+                mysystem = System(model, skin, kidney, bladder, residual, liver, blood, lung, organ1, organ2, organ3,
+                                  organ4, organ5, heart, muscle, spleen, placental)
+                sys = mysystem.DiscreteSystem()
+                d_hat = 1.74e-14 * np.ones((1, 1))
+                x_hat = np.zeros((14, 1))
+                sim = Simulator(mysystem, N, x_hat, d_hat, 1.4e-6, 5.0e-6, 0.04e-6, 0.0, 1, 0.0, 1, 0.0, 1, 0.0, 1, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, )
+                Tsim, cont, ulist = sim.Simulate(target, step, end)
+                plot_j = []
+                # plot_j is of the following form
+                # [ [[0.0, y1.1], [0.01, y1.2], ...] -> organ1,  [[0.0, y2.1], [0.0, y2.2], ...] -> organ2, ... ]
+                adm = []
+                for i in range(len(ulist)):
+                    adm.append([Tsim[i], ulist[i]])
+                adm_j = json.dumps(adm)
 
-            for c in cont:
-                vals = []
-                for i in range(len(Tsim)):
-                    vals.append([Tsim[i], c[i]])
+                for c in cont:
+                    vals = []
+                    for i in range(len(Tsim)):
+                        vals.append([Tsim[i], c[i]])
 
-                plot_j.append(vals)
+                    plot_j.append(vals)
 
-            json_object_plot = json.dumps(plot_j)
+                json_object_plot = json.dumps(plot_j)
 
-            params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True, 'change': True,
-                      'json': json_object_plot, 'adm': adm_j, 'tutorial': True, 'tutorial_result': True}
-            if request.is_ajax():
-                return HttpResponse(json_object_plot, 'application/json')
+                params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True, 'change': True,
+                          'json': json_object_plot, 'adm': adm_j, 'tutorial': True, 'tutorial_result': True}
+                if request.is_ajax():
+                    return HttpResponse(json_object_plot, 'application/json')
 
-            return render(request, "model_form.html", params)
+                return render(request, "model_form.html", params)
         elif method == "CloseLoop-PID":
             return Http404  # todo implement CloseLoop-PID defaults
         elif method == "OpenLoop":  # OpenLoop

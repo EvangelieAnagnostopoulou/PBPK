@@ -514,7 +514,7 @@
         </tr>
     </table>
 
-    <table id="organ1type">
+    <table id="organ1type"  style="display: none">
         <tr>
             <td>Type of organ:</td>
             <td><input type="radio" id="metabolising" class="metabolising" name="type"> Metabolizing</td>
@@ -3196,6 +3196,7 @@
 
                 // $("#organ" + counter).remove();
                 delete_organ('organ'+ counter);
+                $('#id_mod-organ'+ counter +'_name').val("");
                 $('#id_mod-organ' + counter + '_flow_factor').val("0.0");
                 $('#id_mod-organ' + counter + '_volume_fraction').val("0.0");
                 $('#id_mod-blood_organ' + counter + '_fraction').val("0.0");
@@ -4219,7 +4220,7 @@ $(function () {
       var trip11 = new Trip([
       {sel : $(".below"), content : "You can print and download the produced graph.", position : "n", delay:5000 , },
       {sel : $(".below"), content : "You can add and remove organs from graph by clicking on label.", position : "e", delay:5000 , },
-      {sel : $(".below"), content : "Congratulations!You have learned how simulate default model.", delay:5000 , },
+      {sel : $(".below"), content : "Congratulations!<br>You have learned how simulate the default model.", delay:5000 , },
       ],{
 
       });
@@ -4232,8 +4233,8 @@ $(function () {
     var trip1 = new Trip([
       { sel : $(".form-table"), content : "<h>Welcome to pbpk!</h><br>At the end of this tutorial you can run the default model.<br>Above you can see modelname, BW, hematocrit, CO.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
       { sel : $(".lung"), content : "Above you can see the organs included to default model.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
-      { sel : $(".blood"), content : "Click on blood to see blood parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#blood').on('click', function() {if ( tripIndex === 2 ) {trip1.next();} } )},},
-      { position: 'screen-center',content : "You can see blood volume. Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#blood-ok').on('click', function() {if ( tripIndex === 3 ) { trip2.start();}})   }, },
+      { sel : $(".blood"), content : "Click on <span style='color: #1abc9c'>blood</span> to see blood parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#blood').on('click', function() {if ( tripIndex === 2 ) {trip1.next();} } )},},
+      { position: 'screen-center',content : "You can see blood volume. Click <b><span style='color: #1abc9c'>OK</span></b> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#blood-ok').on('click', function() {if ( tripIndex === 3 ) { trip2.start();}})   }, },
 
     ],{
       delay: 1000,
@@ -4245,108 +4246,18 @@ $(function () {
 
       onTripChange : function (i, tripData) {
       console.log("current tripIndex1 : " + i);
-         /*$('#blood').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-                })
-        $('#lung').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-        })
-         $('#kidney').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-        })
-         $('#bladder').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-        })
-         $('#skin').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-        })
-         $('#residual').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-        })
-         $('#liver').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-        })
-         $('#blood-ok').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-                })
-         $('#lung-ok').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-                })
-         $('#kidney-ok').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-                })
-         $('#bladder-ok').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-                })
-         $('#skin-ok').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-                })
-         $('#residual-ok').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-                })
-         $('#liver-ok').on('click', function() {
-            if ( i === 1 ) {
-                trip1.next();
-                }
-                })  */
-         if ( i === 4 ) {
-            //trip1.pause();
-            //$('#lung').click();
-            dialogLung.dialog( "close" );
-         }
-         if ( i === 10 ) {
-            alert("onTripChange, go check your console !");
-            console.log("You can put your own function or data in tripData, then access it onTripChange !");
-            console.log("current tripIndex : " + i);
-            console.log("current tripData : ", tripData);
-
-             if ($("#dialog-setpoint").dialog( "isOpen" )===true) {
-            //true
-            alert("fgh");
-
-            } else {
-                //false
-
-            }
-          }
         }
     });
     var trip2 = new Trip([
-      { sel : $(".lung"),content : "Click on lung to see lung parameters.",  position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); if ( tripIndex === 0 ) { $('#lung').on('click', function() {if ($("#dialog-lung").dialog( "isOpen" )){trip2.next();} } ) } }, },
-      {sel : $(".lung-dialog"), position: "n", content : "<h>You can see lung flow, lung volume and blood in lung.</h><br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#lung-ok').on('click', function() {if ( tripIndex === 1 ) {trip3.start();}}) }, },
+      { sel : $(".lung"),content : "Click on <span style='color: #1abc9c'>lung</span> to see lung parameters.",  position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){ if ( tripIndex === 0 ) { $('#lung').on('click', function() {if ($("#dialog-lung").dialog( "isOpen" )){trip2.next();} } ) } }, },
+      {sel : $(".lung-dialog"), position: "n", content : "<h>You can see lung flow, lung volume and blood in lung.</h><br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#lung-ok').on('click', function() {if ( tripIndex === 1 ) {trip3.start();}}) }, },
       ],{
         onTripChange : function (i, tripData) {
         }
         });
     var trip3 = new Trip([
-      { sel : $(".kidney"), content : "Click on kidney to see kidney parameters.", position : "n" , delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#kidney').on('click', function() {if ( tripIndex === 0 ) { if ($("#dialog-kidney").dialog( "isOpen" )){trip3.next();}} } ) },},
-      {sel : $(".kidney-dialog"), position: "n", content : "You can see kidney flow, kidney volume and blood in kidney.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#kidney-ok').on('click', function() {if ( tripIndex === 1 ) {trip4.start();}}) }, },
+      { sel : $(".kidney"), content : "Click on <span style='color: #1abc9c'>kidney</span> to see kidney parameters.", position : "n" , delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#kidney').on('click', function() {if ( tripIndex === 0 ) { if ($("#dialog-kidney").dialog( "isOpen" )){trip3.next();}} } ) },},
+      {sel : $(".kidney-dialog"), position: "n", content : "You can see kidney flow, kidney volume and blood in kidney.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#kidney-ok').on('click', function() {if ( tripIndex === 1 ) {trip4.start();}}) }, },
 
       ],{
         onTripChange : function (i, tripData) {
@@ -4354,8 +4265,8 @@ $(function () {
 
       });
     var trip4 = new Trip([
-      { sel : $(".bladder"), content : "Click on bladder to see bladder parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#bladder').on('click', function() {if ( tripIndex === 0 ) {if ($("#dialog-bladder").dialog( "isOpen" )){trip4.next();}} } ) }, },
-       {sel : $(".bladder-dialog"), position: "n", content : "You can see bladder flow, bladder volume and blood in bladder.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#bladder-ok').on('click', function() {if ( tripIndex === 1 ) {trip5.start();}}) }, },
+      { sel : $(".bladder"), content : "Click on <span style='color: #1abc9c'>bladder</span> to see bladder parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#bladder').on('click', function() {if ( tripIndex === 0 ) {if ($("#dialog-bladder").dialog( "isOpen" )){trip4.next();}} } ) }, },
+       {sel : $(".bladder-dialog"), position: "n", content : "You can see bladder flow, bladder volume and blood in bladder.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#bladder-ok').on('click', function() {if ( tripIndex === 1 ) {trip5.start();}}) }, },
 
       ],{
       onTripChange : function (i, tripData) {
@@ -4364,8 +4275,8 @@ $(function () {
 
       });
     var trip5 = new Trip([
-      { sel : $(".skin"), content : "Click on skin to see skin parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#skin').on('click', function() {if ( tripIndex === 0 ) {trip5.next();} } ) }, },
-       {sel : $(".skin-dialog"), position: "n",content : "You can see skin flow, skin volume and blood in skin.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#skin-ok').on('click', function() {if ( tripIndex === 1 ) {trip6.start();}}) }, },
+      { sel : $(".skin"), content : "Click on <span style='color: #1abc9c'>skin</span> to see skin parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#skin').on('click', function() {if ( tripIndex === 0 ) {trip5.next();} } ) }, },
+       {sel : $(".skin-dialog"), position: "n",content : "You can see skin flow, skin volume and blood in skin.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#skin-ok').on('click', function() {if ( tripIndex === 1 ) {trip6.start();}}) }, },
 
       ],{
       onTripChange : function (i, tripData) {
@@ -4373,16 +4284,16 @@ $(function () {
 
       });
     var trip6 = new Trip([
-      { sel : $(".residual"), content : "Click on residual to see residual parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#residual').on('click', function() {if ( tripIndex === 0 ) {trip6.next();} } ) }, },
-       {sel : $(".residual-dialog"), position: "n", content : "You can see residual flow, residual volume and blood in residual.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#residual-ok').on('click', function() {if ( tripIndex === 1 ) {trip7.start();}}) }, },
+      { sel : $(".residual"), content : "Click on <span style='color: #1abc9c'>residual</span> to see residual parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#residual').on('click', function() {if ( tripIndex === 0 ) {trip6.next();} } ) }, },
+       {sel : $(".residual-dialog"), position: "n", content : "You can see residual flow, residual volume and blood in residual.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#residual-ok').on('click', function() {if ( tripIndex === 1 ) {trip7.start();}}) }, },
       ],{
       onTripChange : function (i, tripData) {
       }
 
       });
     var trip7 = new Trip([
-      { sel : $(".liver"), content : "Click on liver to see liver parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#liver').on('click', function() {if ( tripIndex === 0 ) {trip7.next();} } ) }, },
-       {sel : $(".liver-dialog"), position: "n",content : "You can see liver flow, liver volume and blood in liver.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#liver-ok').on('click', function() {if ( tripIndex === 1 ) {trip8.start();}}) }, },
+      { sel : $(".liver"), content : "Click on <span style='color: #1abc9c'>liver</span> to see liver parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#liver').on('click', function() {if ( tripIndex === 0 ) {trip7.next();} } ) }, },
+       {sel : $(".liver-dialog"), position: "n",content : "You can see liver flow, liver volume and blood in liver.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#liver-ok').on('click', function() {if ( tripIndex === 1 ) {trip8.start();}}) }, },
 
       ],{
       onTripChange : function (i, tripData) {
@@ -4390,10 +4301,10 @@ $(function () {
 
       });
     var trip8 = new Trip([
-      { sel : $(".drug-properties"), content : "Click on Define Drug Properties.", position : "e", delay:-1 ,onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#drug').on('click', function() {if ( tripIndex === 0 ) {trip8.next();} } ) },
+      { sel : $(".drug-properties"), content : "Click on <span style='color: #1abc9c'>Define Drug Properties</span>.", position : "e", delay:-1 ,onTripChange:  function (tripIndex, tripObject){ $('#drug').on('click', function() {if ( tripIndex === 0 ) {trip8.next();} } ) },
        },
       {sel : $(".drug-dialog"),position: "n", content : "You can see drug properties.", delay:2000 ,  },
-      {sel : $(".drug-dialog"),position: "e", content : "Scroll down to see drug properties for all included organs.<br> Click OK to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#drug-ok').on('click', function() {if ( tripIndex === 2 ) {trip9.start();}}) }, },
+      {sel : $(".drug-dialog"),position: "e", content : "Scroll down to see drug properties for all included organs.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#drug-ok').on('click', function() {if ( tripIndex === 2 ) {trip9.start();}}) }, },
 
       ],{
       onTripChange : function (i, tripData) {
@@ -4402,7 +4313,7 @@ $(function () {
       });
     var trip9 = new Trip([
 
-      { sel : $(".simulation-parameters"), content : "Click on Simulation Parameters and select Closed Loop-->MPC.", position : "e", delay: -1, onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#mpc').on('click', function() {if ( tripIndex === 0 ) {trip10.start();}}) },},
+      { sel : $(".simulation-parameters"), content : "Click on Simulation Parameters and select <span style='color: #1abc9c'>Closed Loop-->MPC</span>.", position : "e", delay: -1, onTripChange:  function (tripIndex, tripObject){$('#mpc').on('click', function() {if ( tripIndex === 0 ) {trip10.start();}}) },},
 
       ],{
       onTripChange : function (i, tripData) {
@@ -4410,9 +4321,9 @@ $(function () {
 
       });
        var trip10 = new Trip([
-      {sel : $(".closeloop-dialog"), position: "e",content : "Click Save changes.", delay:-1 , onTripChange:  function (tripIndex, tripObject){console.log("current tripIndex : " + tripIndex); $('#closeloop-save').on('click', function() {if ( tripIndex === 0 ) {trip10.next();}}) }, },
-      //{ sel : $(".ui-button-text"), content : "Click on Save.", position : "e" },
-      { sel : $(".create"), content : "Click Save to run the default model.", position : "e", delay:5000 },
+      {sel : $(".closeloop-dialog"), position: "e",content : "Click <span style='color: #1abc9c'>Save changes</span>.", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#closeloop-save').on('click', function() {if ( tripIndex === 0 ) {trip10.next();}}) }, },
+      //{ sel : $(".ui-button-text"), content : "Click <span style='color: #1abc9c'>Save</span>.", position : "e" },
+      { sel : $(".create"), content : "Click <span style='color: #1abc9c'>Save</span> to run the default model.", position : "e", delay:-1,  onTripChange:  function (tripIndex, tripObject){$('#Create_model').on('click', function() {if ( tripIndex === 0 ) {trip10.next();}}) }, },
       ],{
       onTripChange : function (i, tripData) {
       }

@@ -4210,6 +4210,32 @@ $(function () {
 			});
 
 		});
+
+		$(function() {
+			dialogOpen = $( "#dialog-open" ).dialog({
+				autoOpen: false,
+				modal: true,
+				width: 808,
+				height: 520,
+				left: 300,
+				top: 200,
+				buttons: {
+				"Save changes":{
+                    text: "Save changes",
+				    id: "openloop-save",
+				    'class': "btn-op-save",
+					click: function() {
+						openloop_send_vals();
+						check();
+
+
+					}
+					}
+				},
+			});
+
+		});
+
 </script>
 
 <!--Tutorial -->
@@ -4217,10 +4243,14 @@ $(function () {
     {% if tutorial %}
 
     {% if tutorial_result%}
+
       var trip11 = new Trip([
-      {sel : $(".below"), content : "You can print and download the produced graph.", position : "n", delay:5000 , },
-      {sel : $(".below"), content : "You can add and remove organs from graph by clicking on label.", position : "e", delay:5000 , },
-      {sel : $(".below"), content : "Congratulations!<br>You have learned how simulate the default model.", delay:5000 , },
+      {sel : $(".below"), content : "You can print and download the produced graph.", position : "n", delay:3000 , },
+      {sel : $(".below"), content : "You can add and remove organs from graph by clicking on label.", position : "e", delay:3000 , },
+      {sel : $(".simulation-parameters"), position:"e", content : "You can also run the default model using openloop simulation. <br> Click <span style='color: #1abc9c'>Simulation Parameters -> OpenLoop</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#open').on('click', function() {if ( tripIndex === 2 ) {trip11.next();}}) },  },
+      {sel : $(".fields"), position:"e", content : "Fill in the field Total Time with 10 and the field Number of Intervals with 4.<br> Next click <span style='color: #1abc9c'>Submit.</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#add').on('click', function() { if ($('#N_int').val() == 4 && $('#Time').val() == 10 ){trip11.next();} }) },  },
+      {sel : $(".tut-table"), position:"e", content : "As you can see the drug dosage is 2 μg/hr for each time of interval.<br>Change it from  2 to 0 for 2.5-5 sec. </br> Next, click Save changes. ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#openloop-save').on('click', function() { if ($('#txtbox1').val() == 0 ){trip11.next();} else { dialogOpen.dialog( "open" );} }) },  },
+      { sel : $(".create"), content : "Now, click again <span style='color: #1abc9c'>Save</span> to run the default model.", position : "e", delay:-1,  onTripChange:  function (tripIndex, tripObject){$('#Create_model').on('click', function() {trip11.next();}) }, },
       ],{
 
       });
@@ -4229,6 +4259,20 @@ $(function () {
          {
           trip11.start();
         });
+    {% elif tutorial_openloop_result %}
+
+     var trip12 = new Trip([
+      {sel : $(".below"), content : "Above you can see the results of openloop simulation.", position : "n", delay:3000 , },
+      {sel : $(".below"), content : "Congratulations!<br>You have learnt to simulate the default model.", delay:5000 , },
+      ],{
+
+      });
+
+      $(document).ready(function()
+         {
+          trip12.start();
+        });
+
     {% else %}
     var trip1 = new Trip([
       { sel : $(".form-table"), content : "<h>Welcome to pbpk!</h><br>At the end of this tutorial you can run the default model.<br>Above you can see modelname, BW, hematocrit, CO.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
@@ -4250,12 +4294,12 @@ $(function () {
     });
     var trip2 = new Trip([
       { sel : $(".lung"),content : "Click on <span style='color: #1abc9c'>lung</span> to see lung parameters.",  position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){ if ( tripIndex === 0 ) { $('#lung').on('click', function() {if ($("#dialog-lung").dialog( "isOpen" )){trip2.next();} } ) } }, },
-      {sel : $(".lung-dialog"), position: "n", content : "<h>You can see lung flow, lung volume and blood in lung.</h><br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#lung-ok').on('click', function() {if ( tripIndex === 1 ) {trip3.start();}}) }, },
+      {sel : $(".lung-dialog"), position: "n", content : "<h>You can see lung flow, lung volume and blood in lung.</h><br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#lung-ok').on('click', function() {if ( tripIndex === 1 ) {trip8.start();}}) }, },
       ],{
         onTripChange : function (i, tripData) {
         }
         });
-    var trip3 = new Trip([
+    /*var trip3 = new Trip([
       { sel : $(".kidney"), content : "Click on <span style='color: #1abc9c'>kidney</span> to see kidney parameters.", position : "n" , delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#kidney').on('click', function() {if ( tripIndex === 0 ) { if ($("#dialog-kidney").dialog( "isOpen" )){trip3.next();}} } ) },},
       {sel : $(".kidney-dialog"), position: "n", content : "You can see kidney flow, kidney volume and blood in kidney.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#kidney-ok').on('click', function() {if ( tripIndex === 1 ) {trip4.start();}}) }, },
 
@@ -4299,11 +4343,11 @@ $(function () {
       onTripChange : function (i, tripData) {
       }
 
-      });
+      }); */
     var trip8 = new Trip([
       { sel : $(".drug-properties"), content : "Click on <span style='color: #1abc9c'>Define Drug Properties</span>.", position : "e", delay:-1 ,onTripChange:  function (tripIndex, tripObject){ $('#drug').on('click', function() {if ( tripIndex === 0 ) {trip8.next();} } ) },
        },
-      {sel : $(".drug-dialog"),position: "n", content : "You can see drug properties.", delay:2000 ,  },
+      {sel : $(".drug-dialog"),position: "n", content : "You can see drug properties.", delay:1000 ,  },
       {sel : $(".drug-dialog"),position: "e", content : "Scroll down to see drug properties for all included organs.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#drug-ok').on('click', function() {if ( tripIndex === 2 ) {trip9.start();}}) }, },
 
       ],{
@@ -4313,7 +4357,7 @@ $(function () {
       });
     var trip9 = new Trip([
 
-      { sel : $(".simulation-parameters"), content : "Click on Simulation Parameters and select <span style='color: #1abc9c'>Closed Loop-->MPC</span>.", position : "e", delay: -1, onTripChange:  function (tripIndex, tripObject){$('#mpc').on('click', function() {if ( tripIndex === 0 ) {trip10.start();}}) },},
+      { sel : $(".simulation-parameters"), content : "Click on Simulation Parameters and select <span style='color: #1abc9c'>Closed Loop -> MPC</span>.", position : "e", delay: -1, onTripChange:  function (tripIndex, tripObject){$('#mpc').on('click', function() {if ( tripIndex === 0 ) {trip10.start();}}) },},
 
       ],{
       onTripChange : function (i, tripData) {

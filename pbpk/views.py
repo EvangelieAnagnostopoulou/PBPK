@@ -1711,7 +1711,7 @@ def tutorial(request):
                 json_object_plot = json.dumps(plot_j)
 
                 params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True,
-                          'change': True, 'json': json_object_plot, 'adm': adm_j, 'tutorial': True, 'tutorial_result': True}
+                          'change': True, 'json': json_object_plot, 'adm': adm_j, 'tutorial': True, 'tutorial_openloop_result': True}
                 if request.is_ajax():
                     return HttpResponse(json_object_plot, 'application/json')
                 return render(request, "model_form.html", params)

@@ -77,25 +77,5 @@
 
             }
 
-        $(function() {
-			dialogOpen = $( "#dialog-open" ).dialog({
-				autoOpen: false,
-				modal: true,
-				width: 808,
-				height: 520,
-				left: 300,
-				top: 200,
-				buttons: {
-				"Save changes":
-					function() {
-						openloop_send_vals();
-						check();
-
-
-					}
-				},
-			});
-
-		});
 
 

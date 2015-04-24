@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     url(r'^NewModel', login_required(views.InitPage)),
     url(r'^DeleteModel', login_required(views.delete)),
     url(r'^userprofile', login_required(views.user_profile)),
-    url(r'^tutorial', login_required(views.tutorial)),
+    url(r'^tutorial', views.tutorial),
     #url(r'^mpc_input?', views.MPCInput),
     #url(r'^results', views.MPCResults),
 

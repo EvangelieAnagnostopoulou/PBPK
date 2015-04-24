@@ -4247,10 +4247,14 @@ $(function () {
       var trip11 = new Trip([
       {sel : $(".below"), content : "You can print and download the produced graph.", position : "n", delay:3000 , },
       {sel : $(".below"), content : "You can add and remove organs from graph by clicking on label.", position : "e", delay:3000 , },
-      {sel : $(".simulation-parameters"), position:"e", content : "You can also run the default model using openloop simulation. <br> Click <span style='color: #1abc9c'>Simulation Parameters -> OpenLoop</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#open').on('click', function() {if ( tripIndex === 2 ) {trip11.next();}}) },  },
-      {sel : $(".fields"), position:"e", content : "Fill in the field Total Time with 10 and the field Number of Intervals with 4.<br> Next click <span style='color: #1abc9c'>Submit.</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#add').on('click', function() { if ($('#N_int').val() == 4 && $('#Time').val() == 10 ){trip11.next();} }) },  },
+      {sel : $(".simulation-parameters"), position:"e", content : "You can also run the default model using openloop simulation. <br> Click <span style='color: #1abc9c'>Simulation Parameters -> OpenLoop</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#open').on('click', function() {if ( tripIndex === 2 ) {trip12.start();}}) },  },
+      ],{
+
+      });
+      var trip12 = new Trip([
+      {sel : $(".fields"), position:"e", content : "Fill in the field Total Time with 10 and the field Number of Intervals with 4.<br> Next click <span style='color: #1abc9c'>Submit.</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#add').on('click', function() { if ($('#N_int').val() == 4 && $('#Time').val() == 10 ){trip11.next();}  })  },  },
       {sel : $(".tut-table"), position:"e", content : "As you can see the drug dosage is 2 μg/hr for each time of interval.<br>Change it from  2 to 0 for 2.5-5 sec. </br> Next, click Save changes. ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#openloop-save').on('click', function() { if ($('#txtbox1').val() == 0 ){trip11.next();} else { dialogOpen.dialog( "open" );} }) },  },
-      { sel : $(".create"), content : "Now, click again <span style='color: #1abc9c'>Save</span> to run the default model.", position : "e", delay:-1,  onTripChange:  function (tripIndex, tripObject){$('#Create_model').on('click', function() {trip11.next();}) }, },
+      { sel : $(".create"), content : "Now, click again <span style='color: #1abc9c'>Create model</span> to run the default model.", position : "e", delay:-1,  onTripChange:  function (tripIndex, tripObject){$('#Create_model').on('click', function() {trip11.next();}) }, },
       ],{
 
       });
@@ -4276,7 +4280,7 @@ $(function () {
     {% else %}
     var trip1 = new Trip([
       { sel : $(".form-table"), content : "<h>Welcome to pbpk!</h><br>At the end of this tutorial you can run the default model.<br>Above you can see modelname, BW, hematocrit, CO.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
-      { sel : $(".lung"), content : "Above you can see the organs included to default model.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
+      { sel : $(".lung"), content : "Below you can see the organs included to default model.", position : "n", showNavigation : true,showCloseBox : true, delay:-1 },
       { sel : $(".blood"), content : "Click on <span style='color: #1abc9c'>blood</span> to see blood parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#blood').on('click', function() {if ( tripIndex === 2 ) {trip1.next();} } )},},
       { position: 'screen-center',content : "You can see blood volume. Click <b><span style='color: #1abc9c'>OK</span></b> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#blood-ok').on('click', function() {if ( tripIndex === 3 ) { trip2.start();}})   }, },
 
@@ -4367,7 +4371,7 @@ $(function () {
        var trip10 = new Trip([
       {sel : $(".closeloop-dialog"), position: "e",content : "Click <span style='color: #1abc9c'>Save changes</span>.", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#closeloop-save').on('click', function() {if ( tripIndex === 0 ) {trip10.next();}}) }, },
       //{ sel : $(".ui-button-text"), content : "Click <span style='color: #1abc9c'>Save</span>.", position : "e" },
-      { sel : $(".create"), content : "Click <span style='color: #1abc9c'>Save</span> to run the default model.", position : "e", delay:-1,  onTripChange:  function (tripIndex, tripObject){$('#Create_model').on('click', function() {if ( tripIndex === 0 ) {trip10.next();}}) }, },
+      { sel : $(".create"), content : "Click <span style='color: #1abc9c'>Create model</span> to run the default model.", position : "e", delay:-1,  onTripChange:  function (tripIndex, tripObject){$('#Create_model').on('click', function() {if ( tripIndex === 0 ) {trip10.next();}}) }, },
       ],{
       onTripChange : function (i, tripData) {
       }

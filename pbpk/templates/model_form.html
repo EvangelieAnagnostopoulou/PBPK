@@ -4252,7 +4252,7 @@ $(function () {
 
       });
       var trip12 = new Trip([
-      {sel : $(".fields"), position:"e", content : "Fill in the field Total Time with 10 and the field Number of Intervals with 4.<br> Next click <span style='color: #1abc9c'>Submit.</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#add').on('click', function() { if ($('#N_int').val() == 4 && $('#Time').val() == 10 ){trip13.start();}  })  },  },
+      {sel : $(".fields"), position:"e", content : "Fill in the field Total Time with 10 and the field Number of Intervals with 4.<br> Next click <span style='color: #1abc9c'>Submit.</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#add').on('click', function() { if ($('#N_int').val() == 4 && $('#Time').val() == 10 ){trip13.start();}  });  $('#openloop-save').on('click', function() { if ($('#N_int').val() != 4 && $('#Time').val() != 10 ){ dialogOpen.dialog( "open" ); } })  },  },
       ],{
 
       });

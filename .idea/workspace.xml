@@ -27,8 +27,8 @@
       <file leaf-file-name="model_form.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pbpk/templates/model_form.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.67391306" vertical-offset="63872" max-vertical-offset="66060">
-              <caret line="4285" column="16" selection-start-line="4285" selection-start-column="16" selection-end-line="4285" selection-end-column="16" />
+            <state vertical-scroll-proportion="0.3979933" vertical-offset="63572" max-vertical-offset="66060">
+              <caret line="4254" column="481" selection-start-line="4254" selection-start-column="481" selection-end-line="4254" selection-end-column="481" />
               <folding>
                 <element signature="n#style#0;n#div#15;n#form#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#table#1;n#div#15;n#form#0;n#!!top" expanded="true" />
@@ -1034,8 +1034,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pbpk/templates/model_form.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.67391306" vertical-offset="63872" max-vertical-offset="66060">
-          <caret line="4285" column="16" selection-start-line="4285" selection-start-column="16" selection-end-line="4285" selection-end-column="16" />
+        <state vertical-scroll-proportion="0.3979933" vertical-offset="63572" max-vertical-offset="66060">
+          <caret line="4254" column="481" selection-start-line="4254" selection-start-column="481" selection-end-line="4254" selection-end-column="481" />
           <folding>
             <element signature="n#style#0;n#div#15;n#form#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#table#1;n#div#15;n#form#0;n#!!top" expanded="true" />

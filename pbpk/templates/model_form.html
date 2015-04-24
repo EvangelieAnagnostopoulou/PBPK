@@ -4252,9 +4252,18 @@ $(function () {
 
       });
       var trip12 = new Trip([
-      {sel : $(".fields"), position:"e", content : "Fill in the field Total Time with 10 and the field Number of Intervals with 4.<br> Next click <span style='color: #1abc9c'>Submit.</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#add').on('click', function() { if ($('#N_int').val() == 4 && $('#Time').val() == 10 ){trip11.next();}  })  },  },
-      {sel : $(".tut-table"), position:"e", content : "As you can see the drug dosage is 2 μg/hr for each time of interval.<br>Change it from  2 to 0 for 2.5-5 sec. </br> Next, click Save changes. ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#openloop-save').on('click', function() { if ($('#txtbox1').val() == 0 ){trip11.next();} else { dialogOpen.dialog( "open" );} }) },  },
-      { sel : $(".create"), content : "Now, click again <span style='color: #1abc9c'>Create model</span> to run the default model.", position : "e", delay:-1,  onTripChange:  function (tripIndex, tripObject){$('#Create_model').on('click', function() {trip11.next();}) }, },
+      {sel : $(".fields"), position:"e", content : "Fill in the field Total Time with 10 and the field Number of Intervals with 4.<br> Next click <span style='color: #1abc9c'>Submit.</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#add').on('click', function() { if ($('#N_int').val() == 4 && $('#Time').val() == 10 ){trip13.start();}  })  },  },
+      ],{
+
+      });
+      var trip13 = new Trip([
+      {sel : $(".tut-table"), position:"e", content : "As you can see the drug dosage is 2 μg/hr for each time of interval.<br>Change it from  2 to 0 for 2.5-5 sec. </br> Next, click Save changes. ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#openloop-save').on('click', function() { if ($('#txtbox1').val() == 0 ){trip14.start();} else { dialogOpen.dialog( "open" );} }) },  },
+
+      ],{
+
+      });
+      var trip14 = new Trip([
+      { sel : $(".create"), content : "Now, click again <span style='color: #1abc9c'>Create model</span> to run the default model.", position : "e", delay:-1,  onTripChange:  function (tripIndex, tripObject){$('#Create_model').on('click', function() {trip14.next();}) }, },
       ],{
 
       });
@@ -4265,7 +4274,7 @@ $(function () {
         });
     {% elif tutorial_openloop_result %}
 
-     var trip12 = new Trip([
+     var trip15 = new Trip([
       {sel : $(".below"), content : "Above you can see the results of openloop simulation.", position : "n", delay:3000 , },
       {sel : $(".below"), content : "Congratulations!<br>You have learnt to simulate the default model.", delay:5000 , },
       ],{
@@ -4274,7 +4283,7 @@ $(function () {
 
       $(document).ready(function()
          {
-          trip12.start();
+          trip15.start();
         });
 
     {% else %}

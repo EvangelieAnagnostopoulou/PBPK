@@ -24,11 +24,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="model_form.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="model_form.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pbpk/templates/model_form.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-18.666666" vertical-offset="63362" max-vertical-offset="65925">
-              <caret line="4254" column="270" selection-start-line="4254" selection-start-column="270" selection-end-line="4254" selection-end-column="270" />
+            <state vertical-scroll-proportion="0.67391306" vertical-offset="63872" max-vertical-offset="66060">
+              <caret line="4285" column="16" selection-start-line="4285" selection-start-column="16" selection-end-line="4285" selection-end-column="16" />
               <folding>
                 <element signature="n#style#0;n#div#15;n#form#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#table#1;n#div#15;n#form#0;n#!!top" expanded="true" />
@@ -37,10 +37,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pbpk/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.28346458" vertical-offset="0" max-vertical-offset="635">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
               <caret line="16" column="36" selection-start-line="16" selection-start-column="36" selection-end-line="16" selection-end-column="36" />
               <folding />
             </state>
@@ -148,8 +148,8 @@
         <option value="$PROJECT_DIR$/pbpk/views.py" />
         <option value="$PROJECT_DIR$/pbpk/templates/mainPage.html" />
         <option value="$PROJECT_DIR$/pbpk/templates/util/menu.html" />
-        <option value="$PROJECT_DIR$/pbpk/templates/model_form.html" />
         <option value="$PROJECT_DIR$/pbpk/urls.py" />
+        <option value="$PROJECT_DIR$/pbpk/templates/model_form.html" />
       </list>
     </option>
   </component>
@@ -1024,22 +1024,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pbpk/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
+          <caret line="16" column="36" selection-start-line="16" selection-start-column="36" selection-end-line="16" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pbpk/templates/model_form.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.666666" vertical-offset="63362" max-vertical-offset="65925">
-          <caret line="4254" column="270" selection-start-line="4254" selection-start-column="270" selection-end-line="4254" selection-end-column="270" />
+        <state vertical-scroll-proportion="0.67391306" vertical-offset="63872" max-vertical-offset="66060">
+          <caret line="4285" column="16" selection-start-line="4285" selection-start-column="16" selection-end-line="4285" selection-end-column="16" />
           <folding>
             <element signature="n#style#0;n#div#15;n#form#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#table#1;n#div#15;n#form#0;n#!!top" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pbpk/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.28346458" vertical-offset="0" max-vertical-offset="635">
-          <caret line="16" column="36" selection-start-line="16" selection-start-column="36" selection-end-line="16" selection-end-column="36" />
-          <folding />
         </state>
       </provider>
     </entry>

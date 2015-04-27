@@ -842,6 +842,7 @@ def Edit(request):
     if read_models:
         model_item = read_models[0]
 
+
         if (model_item.organ5_flow_factor) or (model_item.organ5_volume_fraction) or (model_item.blood_organ5_fraction) or (model_item.organ5_name):
             counter = counter + 5
         elif (model_item.organ4_flow_factor) or (model_item.organ4_volume_fraction) or (model_item.blood_organ4_fraction) or (model_item.organ4_name):
@@ -1132,15 +1133,28 @@ def Edit(request):
                         params = {'form': form, 'dform': dform, "save": True, "edit": True, 'error': error,
                                   "drugid": drugid, "modelid": modelid, 'send': True, 'counter': counter}
                         return render(request, "model_form.html", params)
+                    #if user does not change modelname save user changes to the existing model.
+                    if 'modelname' not in form.changed_data:
 
-                    if not read_drug:
-                        drug = dform.save()
-                        new_model = form.save()
-                        new_model.drugs.add(drug)
+                        if not read_drug:
+                            drug = dform.save()
+                            new_model = form.save()
+                            new_model.drugs.add(drug)
+                        else:
+                            drug = Drug.objects.get(pk=drugid)
+                            dform.save()
+                            form.save()
+                    #if user change modelname create new model and save it.
                     else:
-                        drug = Drug.objects.get(pk=drugid)
-                        dform.save()
-                        form.save()
+                        form = ModelForm(request.POST, prefix="mod")
+                        dform = DrugForm(request.POST, prefix="dr")
+                        new_drug = dform.save(commit=False)
+                        new_model = form.save(commit=False)
+                        new_model.username = request.user.username
+                        new_drug.save()
+                        new_model.save()
+                        new_model.drugs.add(new_drug)
+
                     params = {'form': form, 'dform': dform, 'edit': True, 'image': True, "drugid": drugid,
                               "modelid": modelid, 'send': True, 'change': True, 'counter': counter, 'adm': adm_j,
                               'json': json_object_plot}
@@ -1369,14 +1383,27 @@ def Edit(request):
                                   "drugid": drugid, "modelid": modelid, 'send': True, 'counter': counter}
                         return render(request, "model_form.html", params)
 
-                    if not read_drug:
-                        drug = dform.save()
-                        new_model = form.save()
-                        new_model.drugs.add(drug)
+                    #if user does not change modelname save user changes to the existing model.
+                    if 'modelname' not in form.changed_data:
+
+                        if not read_drug:
+                            drug = dform.save()
+                            new_model = form.save()
+                            new_model.drugs.add(drug)
+                        else:
+                            drug = Drug.objects.get(pk=drugid)
+                            dform.save()
+                            form.save()
+                    #if user change modelname create new model and save it.
                     else:
-                        drug = Drug.objects.get(pk=drugid)
-                        dform.save()
-                        form.save()
+                        form = ModelForm(request.POST, prefix="mod")
+                        dform = DrugForm(request.POST, prefix="dr")
+                        new_drug = dform.save(commit=False)
+                        new_model = form.save(commit=False)
+                        new_model.username = request.user.username
+                        new_drug.save()
+                        new_model.save()
+                        new_model.drugs.add(new_drug)
                     params = {'form': form, 'dform': dform, 'edit': True, 'image': True, "drugid": drugid,
                               "modelid": modelid, 'send': True, 'counter': counter, 'change': True, 'adm': adm_j,
                               'json': json_object_plot}

@@ -60,6 +60,7 @@ for( var i=0; i<params_json2.total_N ;i++) {
 
 }
 function createTable() {
+
     var a, b, tableElem, rowElem, colElem;
      a = document.getElementById('N_int').value;
      b = document.getElementById('Time').value;
@@ -91,11 +92,19 @@ function createTable() {
 
 
         $("#buttons").show();
+
         $("#dataTable").show();
 
         for( var i=0; i<a ;i++) {
-
+            if (i==a-1) {
             var table = document.getElementById('dataTable');
+            var header = table.createTHead();
+            var row = header.insertRow(0);
+            var cell = row.insertCell(0);
+            cell.innerHTML = "Time intervals";
+            var cell = row.insertCell(1);
+            cell.innerHTML = "Drug administration rate";
+            }
 
             //var rowCount = table.rows.length;
             var row = table.insertRow(i);

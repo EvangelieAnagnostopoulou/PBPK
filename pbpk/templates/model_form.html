@@ -4028,10 +4028,10 @@ $(function () {
             }],
                 //tickInterval: 0.0000001,
                 min: 0,
-                top: 220,
+                top: 230,
                 height: 100,
                 offset: 0,
-                lineWidth: 2
+                //lineWidth: 2
             }],
 
         tooltip: {
@@ -4115,6 +4115,11 @@ $(function () {
 				    id: "openloop-save",
 				    'class': "btn-op-save",
 					click: function() {
+					    //set time same as end time of the last field
+                        var i=$('#N_int').val()-1;
+                        var option_result = $('#txt'+i).val();
+                        var option_array=option_result.split("-");
+                        $('#Time').val(option_array[1]);
 						openloop_send_vals();
 						check();
 

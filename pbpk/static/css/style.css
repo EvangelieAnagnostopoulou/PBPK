@@ -483,6 +483,17 @@ border: black 2px solid;
     padding-left: 5px;
 }
 
+#dataTable td:nth-of-type(1) input {
+    width: 80%;
+    display: inline;
+}
+
+#dataTable td:nth-of-type(1) label {
+    width: 20%;
+    display: inline;
+    padding-left: 5px;
+}
+
 /* Start by setting display:none to make this hidden.
    Then we position it in relation to the viewport window
    with position:fixed. Width, height, top and left speak

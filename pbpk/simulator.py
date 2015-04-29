@@ -5,7 +5,7 @@ from kalman3 import KalmanFilter
 #import plotly.plotly as py
 class Simulator:
     def __init__(self, System, N, x_hat, d_hat, max_liver, max_kidney, max_influx, min_residual, max_residual, min_skin, max_skin, min_bladder, max_bladder, min_lung, max_lung, min_liver, min_kidney,
-                  min_heart, max_heart, min_muscle, max_muscle, min_spleen, max_spleen, min_placental, max_placental):
+                  min_heart, max_heart, min_muscle, max_muscle, min_spleen, max_spleen, min_placental, max_placental, time, tlist, ulist, step):
         self.System = System
         self.N = N
         self.x_hat = x_hat
@@ -31,6 +31,22 @@ class Simulator:
         self.max_spleen = max_spleen
         self.min_placental = min_placental
         self.max_placental = max_placental
+        self.T = time
+        self.tlist = tlist
+        self.ulist = ulist
+        self.step = step
+
+    def InputCloseProfile(self, T, tlist, ulist, step):
+        h = step
+        t = np.arange(tlist[0], T, h)
+        tlist.append(T)
+        inp = np.zeros((t.shape[0]))
+        n = len(tlist) - 1
+        m = len(t) - 1
+        inp[0:round(m * tlist[1]/T)] = ulist[0]
+        for i in range(1, n-1):  # Before: range(1, n)
+            inp[round(m * tlist[i]/T): round(m * tlist[i+1]/T) + 1] = ulist[i]
+        return t, inp
 
     def Simulate(self, ref, step, end):
         exit_status = 'optimal'
@@ -41,7 +57,9 @@ class Simulator:
         Q = np.eye(n)
         Q[0,0] = 10.0
         #Q[9,9] = 10.0
-        R = 100 * np.ones((1,1))
+        #set size of R equal to end+1
+        r = end + 1
+        R = r * np.ones((1,1))
         if Q.shape[0] >= 9:
             Q[9:10, 9:10] = 10.0
 
@@ -58,12 +76,15 @@ class Simulator:
             g['c_pl_c_last_{0}'.format(m)] = []
             g['c_pl_d_list_{0}'.format(m)] = []
         i, t, u = 0, 0, 0
+
+        time, targ = self.InputCloseProfile(self.T, self.tlist, self.ulist, self.step)
+        print time , targ
         while i <= end:
             print "------------------ New round -------------------"
             aug_state = np.append(self.x_hat, self.d_hat, axis = 0)
             aug_input = np.append(u * np.ones((1,1)), self.d_hat, axis = 1)
             ### -------------------------Continuous System Response ----------------------- ###
-            T = linspace(i, i + step, 100)
+            T = linspace(i, i + step, r)
             T, you, xout = lsim(self.System.ContinuousSystem(), u, T, self.x_hat)
             c_pl_c = xout[:,0]
             c_pl_c_last = c_pl_c[end]
@@ -75,7 +96,7 @@ class Simulator:
 
 
             ### --------------------------Discrete System Response ------------------------ ###
-            Td = linspace(i, i + step, 100)
+            Td = linspace(i, i + step, r)
             Td, yd, xd = lsim(self.System.DiscreteSystem(), u, Td, self.x_hat)
             for m in range(0, leng):
                 g['c_pl_d_{0}'.format(m)] = xd[:,m]
@@ -110,7 +131,7 @@ class Simulator:
             i += step
             t += step
 
-        T = linspace(i, i + step, 100)
+        T = linspace(i, i + step, r)
         T, yout, xout = lsim(self.System.ContinuousSystem(), u, T, self.x_hat)
         print("------")
         print tlist

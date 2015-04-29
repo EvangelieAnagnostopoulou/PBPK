@@ -242,6 +242,8 @@ def InitPage(request):
                             sys = mysystem.DiscreteSystem()
                             d_hat = 1.7408e-14 * np.ones((1, 1))
                             x_hat = np.zeros((sys.A.shape[0], 1))
+                            tlist= [0.0, 4.0, 8.0]
+                            ulist1 = [2.0, 2.0, 2.0]
                             sim = Simulator(mysystem, N, x_hat, d_hat, new_drug.max_liver, new_drug.max_kidney,
                                             new_drug.max_influx, new_drug.min_residual, new_drug.max_residual,
                                             new_drug.min_skin,
@@ -249,7 +251,7 @@ def InitPage(request):
                                             new_drug.min_lung, new_drug.max_lung, new_drug.min_liver,
                                             new_drug.min_kidney, new_drug.min_heart, new_drug.max_heart,
                                             new_drug.min_muscle, new_drug.max_muscle, new_drug.min_spleen,
-                                            new_drug.max_spleen, new_drug.min_placental, new_drug.max_placental)
+                                            new_drug.max_spleen, new_drug.min_placental, new_drug.max_placental, end, tlist, ulist1, step)
                             Tsim, cont, ulist = sim.Simulate(target, step, end)
                             plot_j = []
                             # plot_j is of the following form
@@ -344,7 +346,7 @@ def InitPage(request):
                                   "total_N": total_N, "error": error, 'counter': counter}
                         return render(request, "model_form.html", params)
                     else:
-                        total_time = int(total_time)
+                        total_time = int(float(total_time))
                         total_N = int(total_N)
                         k_met1 = float(k_met1)
                         k_bile1 = float(k_bile1)
@@ -611,8 +613,10 @@ def DefaultModel(request):
             sys = mysystem.DiscreteSystem()
             d_hat = 1.74e-14 * np.ones((1, 1))
             x_hat = np.zeros((14, 1))
+            tlist= [0.0, 4.0, 8.0]
+            ulist1 = [2.0, 2.0, 2.0]
             sim = Simulator(mysystem, N, x_hat, d_hat, 1.4e-6, 5.0e-6, 0.04e-6, 0.0, 1, 0.0, 1, 0.0, 1, 0.0, 1, 0.0,
-                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, )
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, end, tlist, ulist1, step )
             Tsim, cont, ulist = sim.Simulate(target, step, end)
             plot_j = []
             # plot_j is of the following form
@@ -662,7 +666,7 @@ def DefaultModel(request):
                           "total_N": total_N, "error": error}
                 return render(request, "model_form.html", params)
             else:
-                total_time = int(total_time)
+                total_time = int(float(total_time))
                 total_N = int(total_N)
                 dose1 = []
                 dose2 = []
@@ -909,6 +913,23 @@ def Edit(request):
             params = {'form': form, 'dform': dform, 'edit': True, "drugid": drugid, "modelid": modelid, 'send': True,
                       'counter': counter}
             return render(request, "model_form.html", params)
+        elif ( ( ( (form['lung_flow_factor'].value() != "0.0") | (form['lung_volume_fraction'].value() != "0.0") | (form['blood_lung_fraction'].value() != "0.0") )& ( (dform['pi_lung'].value() == "0.0") | (dform['p_lung'].value() == "0.0") ) )| (
+            ( (form['skin_flow_factor'].value() != "0.0") | (form['skin_volume_fraction'].value() != "0.0") | (form['blood_skin_fraction'].value() != "0.0") )& ( (dform['pi_skin'].value() == "0.0") | (dform['p_skin'].value() == "0.0") ) )| (
+            ( (form['kidney_flow_factor'].value() != "0.0") | (form['kidney_volume_fraction'].value() != "0.0") | (form['blood_kidney_fraction'].value() != "0.0") )& ( (dform['pi_kidney'].value() == "0.0") | (dform['p_kidney'].value() == "0.0") ) )| (
+            ( (form['bladder_flow_factor'].value() != "0.0") | (form['bladder_volume_fraction'].value() != "0.0") | (form['blood_bladder_fraction'].value() != "0.0") )& ( (dform['pi_bladder'].value() == "0.0") | (dform['p_bladder'].value() == "0.0") ) )| (
+            ( (form['blood_rest_fraction'].value() != "0.0") )& ( (dform['pi_rest'].value() == "0.0") | (dform['p_rest'].value() == "0.0") ) )| (
+            ( (form['liver_flow_factor'].value() != "0.0") | (form['liver_volume_fraction'].value() != "0.0") | (form['blood_liver_fraction'].value() != "0.0") )& ( (dform['pi_liver'].value() == "0.0") | (dform['p_liver'].value() == "0.0") ) )| (
+            ( (form['blood_volume_fraction'].value() != "0.0") )& ( (dform['pi_rbc'].value() == "0.0") | (dform['pi_plasma'].value() == "0.0") ) )| (
+            ( (form['organ1_flow_factor'].value() != "0.0") | (form['organ1_volume_fraction'].value() != "0.0") | (form['blood_organ1_fraction'].value() != "0.0") )& ( (dform['pi_organ1'].value() == "0.0") | (dform['p_organ1'].value() == "0.0") ) )| (
+            ( (form['organ2_flow_factor'].value() != "0.0") | (form['organ2_volume_fraction'].value() != "0.0") | (form['blood_organ2_fraction'].value() != "0.0") )& ( (dform['pi_organ2'].value() == "0.0") | (dform['p_organ2'].value() == "0.0") ) )| (
+            ( (form['organ3_flow_factor'].value() != "0.0") | (form['organ3_volume_fraction'].value() != "0.0") | (form['blood_organ3_fraction'].value() != "0.0") )& ( (dform['pi_organ3'].value() == "0.0") | (dform['p_organ3'].value() == "0.0") ) )| (
+            ( (form['organ4_flow_factor'].value() != "0.0") | (form['organ4_volume_fraction'].value() != "0.0") | (form['blood_organ4_fraction'].value() != "0.0") )& ( (dform['pi_organ4'].value() == "0.0") | (dform['p_organ4'].value() == "0.0") ) )| (
+            ( (form['organ5_flow_factor'].value() != "0.0") | (form['organ5_volume_fraction'].value() != "0.0") | (form['blood_organ5_fraction'].value() != "0.0") )& ( (dform['pi_organ5'].value() == "0.0") | (dform['p_organ5'].value() == "0.0") ) )
+        ):
+                error = "Model has some errors. Please check drug properties"
+                params = {'form': form, 'dform': dform, "edit": True, 'error': error, 'drugid': drugid, 'modelid': modelid, 'send':True,
+                          'counter': counter}
+                return render(request, "model_form.html", params)
 
         else:
             k_bile5 = 0.0
@@ -1095,12 +1116,14 @@ def Edit(request):
                         sys = mysystem.DiscreteSystem()
                         d_hat = 1.7408e-14 * np.ones((1, 1))
                         x_hat = np.zeros((sys.A.shape[0], 1))
+                        tlist= [0.0, 4.0, 8.0]
+                        ulist = [2.0, 2.0, 2.0]
                         sim = Simulator(mysystem, N, x_hat, d_hat, drug.max_liver, drug.max_kidney, drug.max_influx,
                                             drug.min_residual, drug.max_residual, drug.min_skin, drug.max_skin,
                                             drug.min_bladder, drug.max_bladder, drug.min_lung, drug.max_lung,
                                             drug.min_liver, drug.min_kidney,
                                             drug.min_heart, drug.max_heart, drug.min_muscle, drug.max_muscle,
-                                            drug.min_spleen, drug.max_spleen, drug.min_placental, drug.max_placental)
+                                            drug.min_spleen, drug.max_spleen, drug.min_placental, drug.max_placental, end, tlist, ulist, step)
                         Tsim, cont, ulist = sim.Simulate(target, step, end)
                         plot_j = []
 
@@ -1238,7 +1261,7 @@ def Edit(request):
                               "error": error, "drugid": drugid, "modelid": modelid, 'send': True, 'counter': counter}
                     return render(request, "model_form.html", params)
                 else:
-                    total_time = int(total_time)
+                    total_time = int(float(total_time))
                     total_N = int(total_N)
                     k_met1 = float(k_met1)
                     k_bile1 = float(k_bile1)

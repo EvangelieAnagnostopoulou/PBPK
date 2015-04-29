@@ -25,7 +25,8 @@ class SimulatorOpenLoop:
         self.T = T
         self.t_init = t_init
         self.ulist = ulist
-
+        print t_init
+        print ulist
 
     def InputProfile(self, T, tlist, ulist):
         h = (T - tlist[0]) * 1.0 / 1000.0
@@ -45,6 +46,7 @@ class SimulatorOpenLoop:
         Col = self.System.ContinuousSystem().C
         Dol = self.System.ContinuousSystem().D
         t, u = self.InputProfile(self.T, self.t_init, self.ulist)
+
 
         Tsim, ycont, xcont = forced_response(self.System.ContinuousSystem(), t, u)
 

@@ -99,7 +99,7 @@ class Models(models.Model):
 
     bw = models.FloatField(blank=True, null=True)
     h = models.FloatField(blank=True, null=True)
-    cardiac_output = models.FloatField(blank=True, null=True, default=0.0)
+    cardiac_output = models.FloatField(blank=True, null=True, default=0.0,)
     skin_flow_factor = models.FloatField(blank=True, null=True, default=0.0)
     skin_volume_fraction = models.FloatField(blank=True, null=True, default=0.0)
     blood_skin_fraction = models.FloatField(blank=True, null=True, default=0.0)

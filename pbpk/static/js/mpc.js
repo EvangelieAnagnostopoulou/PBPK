@@ -3,12 +3,14 @@
             a = $('#N_int').val();
             var list_dose=[]
             var list_time=[]
+            var list_end=[]
             for( var i=0; i<a ;i++) {
                  if ($('#txtbox'+i).length){
                     list_dose[i]=$('#txtbox'+i).val()
                     var option_result = $('#txt'+i).val();
                     var option_array=option_result.split("-");
                     list_time[i] = option_array[0];
+                    list_end[i] = option_array[1];
                     }
             }
 
@@ -61,11 +63,14 @@
                         if(list_time2[i] =! t){
                             er=1;
                         }
+
                     }
+
                     }
 
                   }
                 }
+
                 if(er==1){
                 alert('Wrong values')
                 }

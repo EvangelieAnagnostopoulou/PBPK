@@ -1,3 +1,4 @@
+
 <div id="dialog-setpoint" class="div-form-table organ-dialog closeloop-dialog" style=" display:none; width: 40%;"><b>Please enter Total Time and Number of Intervals:</b><br><br>
 	<form method="post">
         <label>
@@ -5,41 +6,63 @@
             <input type="number" id="Np"  class="form-control" value="{{form.N.value}}"/>
         </label>
         <br>
-        <label>
+        <!--<label>
             Concentration setpoint in Blood (μg/L):<br>
             <input type="text" id="target_p" class="form-control" value="{{form.target.value}}"/>
-        </label>
-
-        <hr>
+        </label> -->
         <label>
             Simulation Step (hr):<br>
             <input type="text" id="step_p" class="form-control" value="{{form.step.value}}"/>
         </label>
         <br>
-        <label>
+        <hr>
+        <p>Tuning Parameters</p>
+         <label>
+            Q (output weight):<br>
+            <input type="text" id="q_weight" class="form-control" value="{{0.25}}"/>
+        </label>
+        <br>
+         <label>
+            R (input weight):<br>
+            <input type="text" id="r_weight" class="form-control" value="{{0.25}}"/>
+        </label>
+
+        <!--<label>
             End Time (hr):<br>
             <input type="text" id="end_p"  class="form-control" value="{{form.end.value}}"/>
-        </label>
+        </label> -->
         <hr>
         <label>
             Total Time(hr):<br>
-            <input type="text" id="total_t" value={{0}} class="form-control" />
+            <input type="text" id="total_t" class="form-control" />
         </label>
 
         <label>
             Number of Intervals:<br>
-            <input type="text" id="inter" value={{0}} class="form-control" />
+            <input type="text" id="inter" class="form-control" />
         </label>
     </form>
-    <input type="button" id="add1" value="Submit" class="btn btn-block btn-lg btn-primary" style="width: 40%;" onclick="createTable1()">
+    <input type="button" id="submit_close" value="Submit" class="btn btn-block btn-lg btn-primary" style="width: 40%;" onclick="createTable1()">
     <br>
 
     <table id="tables" class="div-form-table" style=" display:none;">
 
     </table>
     <br>
-    <input type="button" value="Add Row" id="addr" class="btn btn-block btn-lg btn-primary" style=" display:none; width: 40%;"  onclick="addRow('tables')" />
-    <input type="button" value="Delete Row" id="del" onclick="deleteRow('tables')" class="btn btn-block btn-lg btn-primary" style=" display:none; width: 40%;"/>
+    <!--<input type="button" value="Add Row" id="addr" class="btn btn-block btn-lg btn-primary" style=" display:none; width: 40%;"  onclick="addRow('tables')" />
+    <input type="button" value="Delete Row" id="del" onclick="deleteRow('tables')" class="btn btn-block btn-lg btn-primary" style=" display:none; width: 40%;"/>  -->
+     <div id="buttons_close" style="display:none;">
+        <input type="checkbox" name="all" id= "all" >All fields get the value of the first.<br>
+        <input type="button" value="Add Row" id="addrowClose" class="btn btn-green btn-block btn-lg btn-primary" style="width: 40%;"  onclick="addRowClose('tables')" />
+        <input type="button" value="Delete Row" id="deleteClose" onclick="deleteLastRow('tables')" class="btn btn-red btn-block btn-lg btn-primary" style="width: 40%;"/>
+    </div>
+    <div style="display:none;">
+    <label>
+         Method parameters:<br>
+         <input type="text" id="params-close"  class="form-control" />
+    </label>
+
+    </div>
 
 </div>
 
@@ -49,7 +72,29 @@
 
 <script>
 
+var first_close=0;
+function get_closeloop(){
+
+var params_json3 = JSON.parse( $("#params-close").val() );
+
+for( var i=0; i<params_json3.intervals ;i++) {
+    if(params_json3.setpoint[i] != null){
+    $("#txtbox_close"+i).val(params_json3.setpoint[i])
+    }
+    if(params_json3.time[i] != null){
+    if(i == params_json3.end-1){
+          $('#txt_close'+i).val(params_json3.time[i]+'-'+params_json3.end)
+          }
+    else{
+          $('#txt_close'+i).val(params_json3.time[i]+'-'+params_json3.time_int_final[i])
+          }
+    }
+    }
+
+}
+
 function createTable1() {
+
     var a, b, tableElem, rowElem, colElem;
      a = document.getElementById('inter').value;
      b = document.getElementById('total_t').value;
@@ -81,98 +126,142 @@ function createTable1() {
 
 
         $("#tables").show();
-        $("#addr").show();
-         $("#del").show();
+        $("#buttons_close").show();
         for( var i=0; i<a;i++) {
 
-            var table = document.getElementById('tables');
-
-            //var rowCount = table.rows.length;
             var row = table.insertRow(i);
-
-            var cell1 = row.insertCell(0);
-            var element1 = document.createElement("input");
-            element1.type = "checkbox";
-            element1.name="chkbox[]";
-            cell1.appendChild(element1);
 
             D_arx=D*i;
             D_tel=(D*i)+D;
-            var cell2 = row.insertCell(1);
+
+
+            D_arx=D_arx.toFixed(4);
+            D_tel=D_tel.toFixed(4);
+
+            //Round last time
+            if (i == a-1){
+                D_tel=Math.round(D_tel);
+            }
+            var cell2 = row.insertCell(0);
             var element3 = document.createElement("input");
             element3.type = "text";
             element3.name = "txtbox[]";
             element3.className = 'form-control';
-            //cell2.css({"weight","30%"});
+            element3.id = "txt_close"+i;
             element3.value= D_arx + '-' + D_tel;
-            //cell2.innerHTML = D_arx + '-' + D_tel;
             cell2.appendChild(element3);
+            var pel = document.createElement("label");
+            pel.innerHTML='hr';
+            cell2.appendChild(pel);
 
-
-            var cell3 = row.insertCell(2);
+            var cell3 = row.insertCell(1);
             var element2 = document.createElement("input");
             element2.type = "text";
-            element2.name = "txtbox[]";
+            element2.id = "txtbox_close"+i;
             element2.className = 'form-control';
-            element2.value= '2ms/lt';
+            element2.value= '4e-7';
             cell3.appendChild(element2);
+            var element_label = document.createElement("label");
+            element_label.innerHTML='μg/L';
+            cell3.appendChild(element_label);
 
 
         }
+
+        //load the parameters from database only the first time user press submit
+            if(first_close==0){
+            get_closeloop()
+            first_close=1;
+            }
+            if (i==a-1) {
+                var table = document.getElementById('tables');
+                var header = table.createTHead();
+                var row = header.insertRow(0);
+                var cell = row.insertCell(0);
+                cell.innerHTML = "Time intervals";
+                var cell = row.insertCell(1);
+                cell.innerHTML = " Concentration Setpoint in Blood";
+            }
+
+
     }
 
+    //gives to all txtboxes the value of the first one if checkbox is checked.
+    $(document).ready(function () {
+        var ckbox = $('#all');
+        ckbox.on('click',function () {
+                $('#txtbox_close0').keyup(function() {
+                    if (ckbox.is(':checked')==true) {
+                        for( var i=0; i<a ;i++) {
+                            $('#txtbox_close'+i).val($(this).val());
+                            }
+                            }
+                     });
+
+
+        });
+    });
+
 }
-function addRow(tableID) {
+function addRowClose(tableID) {
 
             var table = document.getElementById(tableID);
 
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
 
-            var cell1 = row.insertCell(0);
-            var element1 = document.createElement("input");
-            element1.type = "checkbox";
-            element1.name="chkbox[]";
-            cell1.appendChild(element1);
-
-            var cell2 = row.insertCell(1);
+            var cell2 = row.insertCell(0);
             var element3 = document.createElement("input");
             element3.type = "text";
-            element3.name = "txtbox[]";
+            //element3.name = "txtbox[]";
+            element3.id = "txt_close"+rowCount;
             element3.className = 'form-control';
             cell2.appendChild(element3);
-            //cell2.innerHTML = rowCount + 1;
+            var pel = document.createElement("label");
+            pel.innerHTML='hr';
+            cell2.appendChild(pel);
 
-            var cell3 = row.insertCell(2);
+
+
+            var cell3 = row.insertCell(1);
             var element2 = document.createElement("input");
             element2.type = "text";
-            element2.name = "txtbox[]";
+            //element2.name = "txtbox[]";
+            element2.id = "txtbox_close"+rowCount;
             element2.className = 'form-control';
-            element2.value= '2ms/lt';
+            element2.value= '4e-7';
             cell3.appendChild(element2);
+            var element_label = document.createElement("label");
+            element_label.innerHTML='μg/L';
+            cell3.appendChild(element_label);
+
 
 
         }
 
-        function deleteRow(tableID) {
-            try {
-            var table = document.getElementById(tableID);
-            var rowCount = table.rows.length;
+        function deleteLastRow(tableID) {
+            try{
+                var table = document.getElementById(tableID);
+                var rowCount = table.rows.length-1;
 
-            for(var i=0; i<rowCount; i++) {
-                var row = table.rows[i];
-                var chkbox = row.cells[0].childNodes[0];
-                if(null != chkbox && true == chkbox.checked) {
-                    table.deleteRow(i);
-                    rowCount--;
-                    i--;
-                }
-
-
-            }
+                table.deleteRow(rowCount);
+                rowCount--;
             }catch(e) {
                 alert(e);
             }
+
         }
+        $('#addrowClose').click(function(){
+
+        document.getElementById('inter').value++;
+        first_close=0;
+
+        });
+
+        $('#deleteClose').click(function(){
+
+            document.getElementById('inter').value--;
+        });
+
 
 </script>

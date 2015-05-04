@@ -46,7 +46,7 @@ class SimulatorOpenLoop:
         Col = self.System.ContinuousSystem().C
         Dol = self.System.ContinuousSystem().D
         t, u = self.InputProfile(self.T, self.t_init, self.ulist)
-
+        print t,u
 
         Tsim, ycont, xcont = forced_response(self.System.ContinuousSystem(), t, u)
 

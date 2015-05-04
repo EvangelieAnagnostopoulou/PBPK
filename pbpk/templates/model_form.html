@@ -3130,9 +3130,13 @@
 		    //get the json object from the method_params field
 		    var params_json = JSON.parse( $("#id_mod-method_params").val() );
             $("#Np").val(params_json.N);
-            $("#target_p").val(params_json.target);
             $("#step_p").val(params_json.step);
-            $("#end_p").val(params_json.end);
+            $("#total_t").val(params_json.end);
+            $("#inter").val(params_json.intervals);
+            $("#params-close").val(JSON.stringify(params_json));
+            if ($("#total_t").val() != "" &&  $("#inter").val() != ""){
+                $("#submit_close").click();
+                }
             dialogSet.dialog( "open" );
         });
 
@@ -3142,11 +3146,13 @@
             $("#Time").val(params_json.total_time);
             $("#N_int").val(params_json.total_N);
             $("#params-open").val(JSON.stringify(params_json));
+            dialogOpen.dialog( "open" );
             //if Time and N_int field have values click submit
             if ($("#Time").val() != "" &&  $("#N_int").val() != ""){
-                $("#add").click();
-            }
+                $("#submit_open").click();
+                }
             dialogOpen.dialog( "open" );
+
 
 
         })
@@ -4081,13 +4087,37 @@ $(function () {
 				    text: "Save changes",
 			        id: "closeloop-save",
 					click: function() {
+
+                        //set time same as end time of the last field
+                        var i=$('#inter').val()-1;
+                        var option_result = $('#txt_close'+i).val();
+                        var option_array=option_result.split("-");
+                        $('#total_t').val(option_array[1]);
+
+                        interval = $('#inter').val();
+                        var list_setpoint=[]
+                        var list_time_close=[]
+                        var list_end=[]
+                        for( var i=0; i<interval ;i++) {
+                             if ($('#txtbox_close'+i).length){
+                                list_setpoint[i]=$('#txtbox_close'+i).val()
+                                var option_result = $('#txt_close'+i).val();
+                                var option_array=option_result.split("-");
+                                list_time_close[i] = option_array[0];
+                                list_end[i] = option_array[1];
+                                }
+                        }
                         //create json from values
                         var params_json = {
                             N: $("#Np").val(),
-                            target: $("#target_p").val(),
+                            intervals: $("#inter").val(),
                             step: $("#step_p").val(),
-                            end: $("#end_p").val()
+                            end: $("#total_t").val(),
+                            time: list_time_close,
+                            setpoint: list_setpoint,
+                            time_int_final: list_end
                         };
+                        //check closeloop function
 
                         //pass json to field to be read by the view
                         $("#id_mod-method_params").val( JSON.stringify(params_json) );

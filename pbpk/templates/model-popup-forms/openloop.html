@@ -11,7 +11,7 @@
             <input type="text" id="N_int" class="form-control fields" />
         </label>
     </form>
-    <input type="button" name= "add" id="add" value="Submit" class="btn btn-block btn-lg btn-primary" style="width: 40%;" onclick="createTable() ">
+    <input type="button" name= "add" id="submit_open" value="Submit" class="btn btn-block btn-lg btn-primary" style="width: 40%;" onclick="createTable() ">
     <br>
 
     <table id="dataTable" class="div-form-table tut-table" style=" display:none;">
@@ -138,6 +138,7 @@ function createTable() {
             var element_label = document.createElement("label");
             element_label.innerHTML='μg/hr';
             cell3.appendChild(element_label);
+
             }
             //load the parameters from database only the first time user press submit
             if(first==0){
@@ -145,14 +146,15 @@ function createTable() {
             first=1;
             }
             if (i==a-1) {
-            var table = document.getElementById('dataTable');
-            var header = table.createTHead();
-            var row = header.insertRow(0);
-            var cell = row.insertCell(0);
-            cell.innerHTML = "Time intervals";
-            var cell = row.insertCell(1);
-            cell.innerHTML = "Drug administration rate";
+                var table = document.getElementById('dataTable');
+                var header = table.createTHead();
+                var row = header.insertRow(0);
+                var cell = row.insertCell(0);
+                cell.innerHTML = "Time intervals";
+                var cell = row.insertCell(1);
+                cell.innerHTML = "Drug administration rate";
             }
+
 
     }
     //gives to all txtboxes the value of the first one if checkbox is checked.

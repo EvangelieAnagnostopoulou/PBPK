@@ -44,11 +44,11 @@ class Simulator:
         n = len(tlist) - 1
         m = len(t) - 1
         inp[0:round(m * tlist[1]/T)] = ulist[0]
-        for i in range(1, n-1):  # Before: range(1, n)
+        for i in range(1, n):  # Before: range(1, n)
             inp[round(m * tlist[i]/T): round(m * tlist[i+1]/T) + 1] = ulist[i]
         return t, inp
 
-    def Simulate(self, ref, step, end):
+    def Simulate(self, step, end):
         exit_status = 'optimal'
         #n = self.System.DiscreteSystem().A.shape[0]
         n = self.System.ContinuousSystem().A.shape[0]
@@ -76,9 +76,9 @@ class Simulator:
             g['c_pl_c_last_{0}'.format(m)] = []
             g['c_pl_d_list_{0}'.format(m)] = []
         i, t, u = 0, 0, 0
-
-        time, targ = self.InputCloseProfile(self.T, self.tlist, self.ulist, self.step)
-        print time , targ
+        count = 0
+        time, setpoint = self.InputCloseProfile(self.T, self.tlist, self.ulist, self.step)
+        print time, setpoint
         while i <= end:
             print "------------------ New round -------------------"
             aug_state = np.append(self.x_hat, self.d_hat, axis = 0)
@@ -115,7 +115,7 @@ class Simulator:
             self.x_hat, P = kalman.Step(u_matrix, c_pl_c_last)
 
             ### ------------------------------ MPC SOLVER --------------------------------- ###
-            solver = MPCSolver(self.System, self.N, self.x_hat, self.d_hat, ref, self.max_liver,
+            solver = MPCSolver(self.System, self.N, self.x_hat, self.d_hat, setpoint[count], self.max_liver,
                                self.max_kidney, self.max_influx, self.min_residual, self.max_residual, self.min_skin, self.max_skin, self.min_bladder, self.max_bladder, self.min_lung, self.max_lung, self.min_liver, self.min_kidney,
                                self.min_heart, self.max_heart, self.min_muscle, self.max_muscle, self.min_spleen,self.max_spleen, self.min_placental, self.max_placental)
             u, status = solver.Solver()
@@ -130,6 +130,7 @@ class Simulator:
             print t
             i += step
             t += step
+            count += 1
 
         T = linspace(i, i + step, r)
         T, yout, xout = lsim(self.System.ContinuousSystem(), u, T, self.x_hat)

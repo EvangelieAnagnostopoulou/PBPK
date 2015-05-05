@@ -5,7 +5,7 @@ from kalman3 import KalmanFilter
 #import plotly.plotly as py
 class Simulator:
     def __init__(self, System, N, x_hat, d_hat, max_liver, max_kidney, max_influx, min_residual, max_residual, min_skin, max_skin, min_bladder, max_bladder, min_lung, max_lung, min_liver, min_kidney,
-                  min_heart, max_heart, min_muscle, max_muscle, min_spleen, max_spleen, min_placental, max_placental, time, tlist, ulist, step):
+                  min_heart, max_heart, min_muscle, max_muscle, min_spleen, max_spleen, min_placental, max_placental, time, tlist, ulist, step, Qweight, Rweight):
         self.System = System
         self.N = N
         self.x_hat = x_hat
@@ -35,6 +35,8 @@ class Simulator:
         self.tlist = tlist
         self.ulist = ulist
         self.step = step
+        self.qw = Qweight
+        self.rw = Rweight
 
     def InputCloseProfile(self, T, tlist, ulist, step):
         h = step
@@ -117,7 +119,7 @@ class Simulator:
             ### ------------------------------ MPC SOLVER --------------------------------- ###
             solver = MPCSolver(self.System, self.N, self.x_hat, self.d_hat, setpoint[count], self.max_liver,
                                self.max_kidney, self.max_influx, self.min_residual, self.max_residual, self.min_skin, self.max_skin, self.min_bladder, self.max_bladder, self.min_lung, self.max_lung, self.min_liver, self.min_kidney,
-                               self.min_heart, self.max_heart, self.min_muscle, self.max_muscle, self.min_spleen,self.max_spleen, self.min_placental, self.max_placental)
+                               self.min_heart, self.max_heart, self.min_muscle, self.max_muscle, self.min_spleen,self.max_spleen, self.min_placental, self.max_placental, self.qw, self.rw)
             u, status = solver.Solver()
             if status != 'optimal':
                 exit_status = 'Not optimal'

@@ -9,7 +9,7 @@ import numpy as np
 class MPCSolver(System):
     def __init__(self, System, N, x_hat, d_hat, ref, max_liver, max_kidney, max_influx, min_residual, max_residual,
                  min_skin, max_skin, min_bladder, max_bladder, min_lung, max_lung, min_liver, min_kidney, min_heart,
-                 max_heart, min_muscle, max_muscle, min_spleen, max_spleen, min_placental, max_placental):
+                 max_heart, min_muscle, max_muscle, min_spleen, max_spleen, min_placental, max_placental, Qweight, Rweight):
         # self.del_list = System.ContinuousSystem()
         self.dsystem = System.DiscreteSystem()
         self.N = N
@@ -37,6 +37,8 @@ class MPCSolver(System):
         self.max_spleen = max_spleen
         self.min_placental = min_placental
         self.max_placental = max_placental
+        self.qw = Qweight
+        self.rw = Rweight
 
 
     def Solver(self):
@@ -52,13 +54,13 @@ class MPCSolver(System):
         [nQ, mQ] = self.dsystem.A.shape
         [nR, mR] = self.dsystem.B.shape
 
-        Q = np.eye(mQ, dtype="float") * 1./4.
-        '''Q[0:1,0:1] = 40.0
+        Q = np.eye(mQ, dtype="float") * self.qw
+        Q[0:1,0:1] = 40.0
         if Q.shape[0] >= 9:
             Q[9:10, 9:10] = 1000.0
 
-        Q *= 55000.0'''
-        R = 5.0* np.eye(mR, dtype="float")
+        Q *= 55000.0
+        R = self.rw * np.eye(mR, dtype="float")
         (K, X, E) = bb_dlqr(self.dsystem.A, self.dsystem.B, Q, R)
         Q_f = X
 

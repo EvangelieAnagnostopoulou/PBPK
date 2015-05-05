@@ -147,6 +147,8 @@ def InitPage(request):
                     end = params_json['end']
                     setpoint = params_json['setpoint']
                     time = params_json['time']
+                    Q = params_json['Q']
+                    R = params_json['R']
 
                     if not (check_number(N) and check_number(intervals) and check_number(step) and check_number(
                             end) and setpoint and time and check_number(k_bile1) and check_number(k_bile2) and check_number(
@@ -167,6 +169,8 @@ def InitPage(request):
                         intervals = int(intervals)
                         step = float(step)
                         end = float(end)
+                        Q = float(Q)
+                        R = float(R)
                         setpoint1 = []
                         setpoint2 = []
                         time1 = []
@@ -273,7 +277,7 @@ def InitPage(request):
                                             new_drug.min_lung, new_drug.max_lung, new_drug.min_liver,
                                             new_drug.min_kidney, new_drug.min_heart, new_drug.max_heart,
                                             new_drug.min_muscle, new_drug.max_muscle, new_drug.min_spleen,
-                                            new_drug.max_spleen, new_drug.min_placental, new_drug.max_placental, end, time1, setpoint1, step)
+                                            new_drug.max_spleen, new_drug.min_placental, new_drug.max_placental, end, time1, setpoint1, step, Q, R)
                             Tsim, cont, ulist = sim.Simulate(step, end)
                             plot_j = []
                             # plot_j is of the following form
@@ -574,7 +578,8 @@ def DefaultModel(request):
             end = params_json['end']
             setpoint = params_json['setpoint']
             time = params_json['time']
-
+            Q = params_json['Q']
+            R = params_json['R']
 
             # change1=default_form.has_changed()
             if not (check_number(N) and check_number(intervals) and check_number(step) and check_number(end) and setpoint and time):
@@ -592,6 +597,8 @@ def DefaultModel(request):
                 intervals = int(intervals)
                 step = float(step)
                 end = float(end)
+                Q = float(Q)
+                R = float(R)
                 setpoint1 = []
                 setpoint2 = []
                 time1 = []
@@ -659,7 +666,7 @@ def DefaultModel(request):
             d_hat = 1.74e-14 * np.ones((1, 1))
             x_hat = np.zeros((14, 1))
             sim = Simulator(mysystem, N, x_hat, d_hat, 1.4e-6, 5.0e-6, 0.04e-6, 0.0, 1, 0.0, 1, 0.0, 1, 0.0, 1, 0.0,
-                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, end, time1, setpoint1, step)
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, end, time1, setpoint1, step, Q, R)
             Tsim, cont, ulist = sim.Simulate(step, end)
             plot_j = []
             # plot_j is of the following form
@@ -1048,6 +1055,8 @@ def Edit(request):
                 end = params_json['end']
                 setpoint = params_json['setpoint']
                 time = params_json['time']
+                Q = params_json['Q']
+                R = params_json['R']
 
                 if not (check_number(N) and check_number(intervals) and check_number(step) and check_number(
                         end) and setpoint and time and check_number(k_bile1) and check_number(k_bile2) and check_number(
@@ -1073,6 +1082,8 @@ def Edit(request):
                     intervals = int(intervals)
                     step = float(step)
                     end = float(end)
+                    Q = float(Q)
+                    R = float(R)
                     setpoint1 = []
                     setpoint2 = []
                     time1 = []
@@ -1187,7 +1198,7 @@ def Edit(request):
                                             drug.min_bladder, drug.max_bladder, drug.min_lung, drug.max_lung,
                                             drug.min_liver, drug.min_kidney,
                                             drug.min_heart, drug.max_heart, drug.min_muscle, drug.max_muscle,
-                                            drug.min_spleen, drug.max_spleen, drug.min_placental, drug.max_placental, end, time1, setpoint1, step)
+                                            drug.min_spleen, drug.max_spleen, drug.min_placental, drug.max_placental, end, time1, setpoint1, step, Q, R)
                         Tsim, cont, ulist = sim.Simulate(step, end)
                         plot_j = []
 
@@ -1631,31 +1642,35 @@ def tutorial(request):
 
             params_json = json.loads(meth_par)
             N = params_json['N']
-            target = params_json['target']
+            intervals = params_json ['intervals']
             step = params_json['step']
             end = params_json['end']
+            setpoint = params_json['setpoint']
+            time = params_json['time']
+            Q = params_json['Q']
+            R = params_json['R']
 
             # change1=default_form.has_changed()
-            if not (check_number(N) and check_number(target) and check_number(step) and check_number(end)):
+            if not (check_number(N) and check_number(intervals) and check_number(step) and check_number(end)):
                 error = "The data you entered aren't valid. Please try again."
-                params = {'form': default_form, 'dform': default_drug_form, 'default': True, "N": N, "target": target,
+                params = {'form': default_form, 'dform': default_drug_form, 'default': True, "N": N, "intervals": intervals,
                           "step": step, "end": end, "error": error}
                 return render(request, "model_form.html", params)
             elif float(step) > float(end):
                 error = "Wrong step and/or end time."
-                params = {'form': default_form, 'dform': default_drug_form, 'default': True, "N": N, "target": target,
+                params = {'form': default_form, 'dform': default_drug_form, 'default': True, "N": N, "intervals": intervals,
                           "step": step, "end": end, "error": error}
                 return render(request, "model_form.html", params)
             else:
                 N = int(N)
-                target = float(target)
+                intervals = int(intervals)
                 step = float(step)
                 end = float(end)
+                Q = float(Q)
+                R = float(R)
             read_models = Models.objects.filter(modelname='default', pk=117)
-            if read_models and read_models[0].plot_params and N == int(35) and target == float(4e-7) and step == float(0.0833) and end == float(4):
+            if read_models and read_models[0].plot_params and N == int(35) and intervals == int(1) and step == float(0.0833) and end == float(4):
                 model_item = read_models[0]
-                print model_item.method_params
-                print model_item.plot_params
                 json_object_plot = json.loads(model_item.plot_params)
                 adm_j = json.loads(model_item.step_params)
                 params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True, 'change': True,
@@ -1664,6 +1679,26 @@ def tutorial(request):
                     return HttpResponse(json_object_plot, 'application/json')
                 return render(request, "model_form.html", params)
             else:
+                setpoint1 = []
+                setpoint2 = []
+                time1 = []
+                time2 = []
+                for e in setpoint:
+                    e = float(e)
+                    setpoint1.append(e)
+                    e = int(e)
+                    setpoint2.append(e)
+                    #add the last element twice due to add the last couple for plotting
+                last_d = int(setpoint1[-1])
+                setpoint2.append(last_d)
+
+                for t in time:
+                    t = float(t)
+                    time1.append(t)
+                    t = int(t)
+                    time2.append(t)
+                    #add the end time of simulation (time constists of initial times. For correct plotting it should be added one more couple)
+                time2.append(end)
 
                 model = PBPK_Model(0.03, 0.45, 16.5, 0.07, 0.0, 0.0164, 1.4e-6, 5.0e-6, 0.04e-6,
                                    0.058, 0.165, 0.03, 1.6, 0.0095, 0.091, 0.017, 0.24, 0.14, 0.12,
@@ -1701,8 +1736,8 @@ def tutorial(request):
                 d_hat = 1.74e-14 * np.ones((1, 1))
                 x_hat = np.zeros((14, 1))
                 sim = Simulator(mysystem, N, x_hat, d_hat, 1.4e-6, 5.0e-6, 0.04e-6, 0.0, 1, 0.0, 1, 0.0, 1, 0.0, 1, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, )
-                Tsim, cont, ulist = sim.Simulate(target, step, end)
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, end, time1, setpoint1, step, Q, R)
+                Tsim, cont, ulist = sim.Simulate(step, end)
                 plot_j = []
                 # plot_j is of the following form
                 # [ [[0.0, y1.1], [0.01, y1.2], ...] -> organ1,  [[0.0, y2.1], [0.0, y2.2], ...] -> organ2, ... ]

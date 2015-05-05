@@ -4024,7 +4024,8 @@ $(function () {
                 labels: {
 
                     formatter: function() {
-                     return parseFloat((this.value));
+                    return this.value.toExponential();
+                    //return parseFloat((this.value));
                     }
                 },
                 plotLines: [{
@@ -4042,7 +4043,7 @@ $(function () {
 
         tooltip: {
             formatter: function() {
-                return '<b>'+  parseFloat((this.y)) +'</b><br/>'+
+                return '<b>'+  this.y.toExponential(1) +'</b><br/>'+
                     'Time: '+ Highcharts.numberFormat(this.x, 2);
             }
 
@@ -4115,15 +4116,16 @@ $(function () {
                             end: $("#total_t").val(),
                             time: list_time_close,
                             setpoint: list_setpoint,
-                            time_int_final: list_end
+                            time_int_final: list_end,
+                            Q : $("#q_weight").val(),
+                            R : $("#r_weight").val(),
                         };
                         //check closeloop function
-
+                        check_closeloop();
                         //pass json to field to be read by the view
                         $("#id_mod-method_params").val( JSON.stringify(params_json) );
-                        $("#id_mod-method").val('CloseLoop-MPC');
 
-						dialogSet.dialog( "close" );
+
 					}
 				},
 				}
@@ -4149,10 +4151,9 @@ $(function () {
                         var i=$('#N_int').val()-1;
                         var option_result = $('#txt'+i).val();
                         var option_array=option_result.split("-");
-                        $('#Time').val(option_array[1]);
+                        $('#Time').val(eval(option_array[1]));
 						openloop_send_vals();
 						check();
-
 
 					}
 					}
@@ -4160,6 +4161,66 @@ $(function () {
 			});
 
 		});
+
+    //check if form is valid
+        function check_closeloop(){
+             var a = document.getElementById('inter').value;
+             var t = $('#total_t').val();
+             var prev="0";
+             var er=0;
+             var list_time=[]
+             var list_time2=[]
+              for( var i=0; i<a ;i++) {
+                if ($('#txtbox_close'+i).length){
+                    var option_result = $('#txt_close'+i).val();
+                    var option_array=option_result.split("-");
+                    list_time[i] = option_array[0];
+                    list_time2[i] = option_array[1];
+
+                    if (i==0){
+                        if (list_time[i] =! "0"){
+                            er=1;
+                        }
+                        else{
+                            var prev="0";
+                        }
+                    }
+                    else{
+                    prev= list_time2[i-1]
+                    if(list_time[i] == prev){
+                        prev= list_time2[i]
+
+                    }
+                    else{
+                        er=1;
+
+                    }
+                    if (parseInt(list_time[i]) > parseInt(list_time2[i])){
+                        er=1;
+                    }
+                    if (i == a-1){
+
+                        if(list_time2[i] =! t){
+                            er=1;
+                        }
+
+                    }
+
+                    }
+
+                  }
+                }
+
+                if(er==1){
+                alert('Wrong values')
+                }
+                else
+                {
+                $("#id_mod-method").val('CloseLoop-MPC');
+                dialogSet.dialog( "close" );
+                }
+
+            }
 
 </script>
 
@@ -4177,7 +4238,7 @@ $(function () {
 
       });
       var trip12 = new Trip([
-      {sel : $(".fields"), position:"e", content : "Fill in the field Total Time with 10 and the field Number of Intervals with 4.<br> Next click <span style='color: #1abc9c'>Submit.</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#add').on('click', function() { if ($('#N_int').val() == 4 && $('#Time').val() == 10 ){trip13.start();}  });  $('#openloop-save').on('click', function() { if ($('#N_int').val() != 4 && $('#Time').val() != 10 ){ dialogOpen.dialog( "open" ); } })  },  },
+      {sel : $(".fields"), position:"e", content : "Fill in the field Total Time with 10 and the field Number of Intervals with 4.<br> Next click <span style='color: #1abc9c'>Submit.</span> ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#submit_open').on('click', function() { if ($('#N_int').val() == 4 && $('#Time').val() == 10 ){trip13.start();}  });  $('#openloop-save').on('click', function() { if ($('#N_int').val() != 4 && $('#Time').val() != 10 ){ dialogOpen.dialog( "open" ); } })  },  },
       ],{
 
       });
@@ -4237,51 +4298,6 @@ $(function () {
         onTripChange : function (i, tripData) {
         }
         });
-    /*var trip3 = new Trip([
-      { sel : $(".kidney"), content : "Click on <span style='color: #1abc9c'>kidney</span> to see kidney parameters.", position : "n" , delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#kidney').on('click', function() {if ( tripIndex === 0 ) { if ($("#dialog-kidney").dialog( "isOpen" )){trip3.next();}} } ) },},
-      {sel : $(".kidney-dialog"), position: "n", content : "You can see kidney flow, kidney volume and blood in kidney.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#kidney-ok').on('click', function() {if ( tripIndex === 1 ) {trip4.start();}}) }, },
-
-      ],{
-        onTripChange : function (i, tripData) {
-        }
-
-      });
-    var trip4 = new Trip([
-      { sel : $(".bladder"), content : "Click on <span style='color: #1abc9c'>bladder</span> to see bladder parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#bladder').on('click', function() {if ( tripIndex === 0 ) {if ($("#dialog-bladder").dialog( "isOpen" )){trip4.next();}} } ) }, },
-       {sel : $(".bladder-dialog"), position: "n", content : "You can see bladder flow, bladder volume and blood in bladder.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#bladder-ok').on('click', function() {if ( tripIndex === 1 ) {trip5.start();}}) }, },
-
-      ],{
-      onTripChange : function (i, tripData) {
-
-      }
-
-      });
-    var trip5 = new Trip([
-      { sel : $(".skin"), content : "Click on <span style='color: #1abc9c'>skin</span> to see skin parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#skin').on('click', function() {if ( tripIndex === 0 ) {trip5.next();} } ) }, },
-       {sel : $(".skin-dialog"), position: "n",content : "You can see skin flow, skin volume and blood in skin.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#skin-ok').on('click', function() {if ( tripIndex === 1 ) {trip6.start();}}) }, },
-
-      ],{
-      onTripChange : function (i, tripData) {
-      }
-
-      });
-    var trip6 = new Trip([
-      { sel : $(".residual"), content : "Click on <span style='color: #1abc9c'>residual</span> to see residual parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#residual').on('click', function() {if ( tripIndex === 0 ) {trip6.next();} } ) }, },
-       {sel : $(".residual-dialog"), position: "n", content : "You can see residual flow, residual volume and blood in residual.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#residual-ok').on('click', function() {if ( tripIndex === 1 ) {trip7.start();}}) }, },
-      ],{
-      onTripChange : function (i, tripData) {
-      }
-
-      });
-    var trip7 = new Trip([
-      { sel : $(".liver"), content : "Click on <span style='color: #1abc9c'>liver</span> to see liver parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#liver').on('click', function() {if ( tripIndex === 0 ) {trip7.next();} } ) }, },
-       {sel : $(".liver-dialog"), position: "n",content : "You can see liver flow, liver volume and blood in liver.<br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#liver-ok').on('click', function() {if ( tripIndex === 1 ) {trip8.start();}}) }, },
-
-      ],{
-      onTripChange : function (i, tripData) {
-      }
-
-      }); */
     var trip8 = new Trip([
       { sel : $(".drug-properties"), content : "Click on <span style='color: #1abc9c'>Define Drug Properties</span>.", position : "e", delay:-1 ,onTripChange:  function (tripIndex, tripObject){ $('#drug').on('click', function() {if ( tripIndex === 0 ) {trip8.next();} } ) },
        },

@@ -1615,7 +1615,7 @@ def tutorial(request):
                                       'blood_volume_fraction': 0.5, 'lung_flow_factor': 1.0,
                                       'lung_volume_fraction': 0.007,
                                       'blood_lung_fraction': 0.5, 'method': 'none',
-                                      'method_params': '{"N": 35, "target": 4.0e-7, "step": 0.0833, "end": 4}'})
+                                      'method_params': '{"N": 35, "intervals": 4, "step": 0.0833, "end": 4, "time": [0, 1, 2, 3 ], "setpoint": [4e-07, 4e-07, 4e-07, 4e-07], "time_int_final": [1, 2, 3, 4]}'})
     default_drug_form = DrugForm(prefix='dr',
                                  initial={'drug_name': 'default drug', 'max_liver': 1.4e-6, 'max_kidney': 5.0e-6,
                                           'max_influx': 0.04e-6,
@@ -1668,17 +1668,6 @@ def tutorial(request):
                 end = float(end)
                 Q = float(Q)
                 R = float(R)
-            read_models = Models.objects.filter(modelname='default', pk=117)
-            if read_models and read_models[0].plot_params and N == int(35) and intervals == int(1) and step == float(0.0833) and end == float(4):
-                model_item = read_models[0]
-                json_object_plot = json.loads(model_item.plot_params)
-                adm_j = json.loads(model_item.step_params)
-                params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True, 'change': True,
-                          'json': json_object_plot, 'adm': adm_j, 'tutorial': True, 'tutorial_result': True}
-                if request.is_ajax():
-                    return HttpResponse(json_object_plot, 'application/json')
-                return render(request, "model_form.html", params)
-            else:
                 setpoint1 = []
                 setpoint2 = []
                 time1 = []
@@ -1699,6 +1688,18 @@ def tutorial(request):
                     time2.append(t)
                     #add the end time of simulation (time constists of initial times. For correct plotting it should be added one more couple)
                 time2.append(end)
+
+            read_models = Models.objects.filter(modelname='default', pk=117)
+            if read_models and read_models[0].plot_params and N == int(35) and intervals == int(4) and step == float(0.0833) and end == float(4):
+                model_item = read_models[0]
+                json_object_plot = json.loads(model_item.plot_params)
+                adm_j = json.loads(model_item.step_params)
+                params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True, 'change': True,
+                          'json': json_object_plot, 'adm': adm_j, 'tutorial': True, 'tutorial_result': True}
+                if request.is_ajax():
+                    return HttpResponse(json_object_plot, 'application/json')
+                return render(request, "model_form.html", params)
+            else:
 
                 model = PBPK_Model(0.03, 0.45, 16.5, 0.07, 0.0, 0.0164, 1.4e-6, 5.0e-6, 0.04e-6,
                                    0.058, 0.165, 0.03, 1.6, 0.0095, 0.091, 0.017, 0.24, 0.14, 0.12,

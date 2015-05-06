@@ -4093,7 +4093,7 @@ $(function () {
                         var i=$('#inter').val()-1;
                         var option_result = $('#txt_close'+i).val();
                         var option_array=option_result.split("-");
-                        $('#total_t').val(option_array[1]);
+                        $('#total_t').val(eval(option_array[1]));
 
                         interval = $('#inter').val();
                         var list_setpoint=[]

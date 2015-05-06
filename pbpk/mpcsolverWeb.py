@@ -55,11 +55,11 @@ class MPCSolver(System):
         [nR, mR] = self.dsystem.B.shape
 
         Q = np.eye(mQ, dtype="float") * self.qw
-        Q[0:1,0:1] = 40.0
+        '''Q[0:1,0:1] = 40.0
         if Q.shape[0] >= 9:
             Q[9:10, 9:10] = 1000.0
 
-        Q *= 55000.0
+        Q *= 55000.0'''
         R = self.rw * np.eye(mR, dtype="float")
         (K, X, E) = bb_dlqr(self.dsystem.A, self.dsystem.B, Q, R)
         Q_f = X

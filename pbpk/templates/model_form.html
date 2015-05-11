@@ -3133,6 +3133,8 @@
             $("#step_p").val(params_json.step);
             $("#total_t").val(params_json.end);
             $("#inter").val(params_json.intervals);
+            $("#q_weight").val(params_json.Q);
+            $("#r_weight").val(params_json.R);
             $("#params-close").val(JSON.stringify(params_json));
             if ($("#total_t").val() != "" &&  $("#inter").val() != ""){
                 $("#submit_close").click();
@@ -4002,7 +4004,7 @@ $(function () {
                 height: 150,
                 min: 0,
                 title: {
-                    text: 'Administration Rate (μg/hr)'
+                    text: 'Administration Rate (g/hr)'
                 },
                 labels: {
                     format: '{value:.2f}',
@@ -4019,7 +4021,7 @@ $(function () {
 
             }, {
                 title: {
-                    text: 'State variables (μg/L)'
+                    text: 'State variables (g/L)'
                 },
                 labels: {
 
@@ -4243,7 +4245,7 @@ $(function () {
 
       });
       var trip13 = new Trip([
-      {sel : $(".tut-table"), position:"e", content : "As you can see the drug dosage is 2 μg/hr for each time of interval.<br>Change it from  2 to 0 for 2.5-5 sec. </br> Next, click Save changes. ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#openloop-save').on('click', function() { if ($('#txtbox1').val() == 0 ){trip14.start();} else { dialogOpen.dialog( "open" );} }) },  },
+      {sel : $(".tut-table"), position:"e", content : "As you can see the drug dosage is 2 g/hr for each time of interval.<br>Change it from  2 to 0 for 2.5-5 sec. </br> Next, click Save changes. ", position : "e", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#openloop-save').on('click', function() { if ($('#txtbox1').val() == 0 ){trip14.start();} else { dialogOpen.dialog( "open" );} }) },  },
 
       ],{
 

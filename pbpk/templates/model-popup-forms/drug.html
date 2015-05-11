@@ -16,7 +16,7 @@
                     {% else %}
                     <td><input type="text" id="max_influx" value="{{dform.max_influx.value}}" class="form-control"></td>
                     {% endif %}
-                <td><em>(μg/hr)</em></td>
+                <td><em>(g/hr)</em></td>
             </tr>
             <tr>
                 <td><input type="text" id="residual_selected" style="display:none"></td>
@@ -101,7 +101,7 @@
                     {% else %}
                     <td><input type="text" id="min_rest" placeholder="0.0" value={{dform.min_residual.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -110,7 +110,7 @@
                     {% else %}
                     <td><input type="text" id="max_rest" placeholder="inf" value={{dform.max_residual.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
             <hr>
@@ -146,7 +146,7 @@
                     {% else %}
                     <td><input type="text" id="min_sk" placeholder="0.0" value={{dform.min_skin.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -155,7 +155,7 @@
                     {% else %}
                     <td><input type="text" id="max_sk" placeholder="inf" value={{dform.max_skin.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
              <hr>
@@ -199,7 +199,7 @@
                     {% else %}
                     <td><input type="text" id="min_kidney" placeholder="0.0" value={{0.0}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -208,7 +208,7 @@
                     {% else %}
                     <td><input type="text" id="max_kidney" placeholder="inf" value={{dform.max_kidney.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
             <hr>
@@ -245,7 +245,7 @@
                     {% else %}
                     <td><input type="text" id="min_bl" placeholder="0.0" value={{dform.min_bladder.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -254,7 +254,7 @@
                     {% else %}
                     <td><input type="text" id="max_bl" placeholder="inf" value={{dform.max_bladder.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
             <hr>
@@ -307,7 +307,7 @@
                     {% else %}
                     <td><input type="text" id="min_liv" placeholder="0.0" value={{0.0}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -316,7 +316,7 @@
                     {% else %}
                     <td><input type="text" id="max_liv" placeholder="inf" value={{dform.max_liver.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
              <hr>
@@ -381,7 +381,7 @@
                     {% else %}
                     <td><input type="text" id="min_lg" placeholder="0.0" value={{dform.min_lung.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -390,7 +390,7 @@
                     {% else %}
                     <td><input type="text" id="max_lg" placeholder="inf" value={{dform.max_lung.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
              <hr>
@@ -630,7 +630,7 @@
                     {% else %}
                     <td><input type="text" id="min_h" placeholder="0.0" value={{dform.min_heart.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -639,7 +639,7 @@
                     {% else %}
                     <td><input type="text" id="max_h" placeholder="inf" value={{dform.max_heart.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
             <hr>
@@ -674,7 +674,7 @@
                     {% else %}
                     <td><input type="text" id="min_m" placeholder="0.0" value={{dform.min_muscle.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -683,7 +683,7 @@
                     {% else %}
                     <td><input type="text" id="max_m" placeholder="inf" value={{dform.max_muscle.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
             <hr>
@@ -718,7 +718,7 @@
                     {% else %}
                     <td><input type="text" id="min_sp" placeholder="0.0" value={{dform.min_spleen.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -727,7 +727,7 @@
                     {% else %}
                     <td><input type="text" id="max_sp" placeholder="inf" value={{dform.max_spleen.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
             <hr>
@@ -762,7 +762,7 @@
                     {% else %}
                     <td><input type="text" id="min_p" placeholder="0.0" value={{dform.min_placental.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
                 <tr>
                     <td>Maximum Concentration</td>
@@ -771,7 +771,7 @@
                     {% else %}
                     <td><input type="text" id="max_p" placeholder="inf" value={{dform.max_placental.value}} class="form-control"></td>
                     {% endif %}
-                    <td><em>(μg/L)</em></td>
+                    <td><em>(g/L)</em></td>
                 </tr>
             </table>
             <hr>

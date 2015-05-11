@@ -115,7 +115,6 @@ class Simulator:
 
             kalman = KalmanFilter(A, B, C, self.x_hat, P, Q, R)
             self.x_hat, P = kalman.Step(u_matrix, c_pl_c_last)
-
             ### ------------------------------ MPC SOLVER --------------------------------- ###
             solver = MPCSolver(self.System, self.N, self.x_hat, self.d_hat, setpoint[count], self.max_liver,
                                self.max_kidney, self.max_influx, self.min_residual, self.max_residual, self.min_skin, self.max_skin, self.min_bladder, self.max_bladder, self.min_lung, self.max_lung, self.min_liver, self.min_kidney,

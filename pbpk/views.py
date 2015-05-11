@@ -28,7 +28,7 @@ def InitPage(request):
         submit = ""
         counter = 1
         form = ModelForm(initial={'bw': 0.03, 'h': 0.45, "method": "None",
-                                  "method_params": '{"N": 35, "target": 4.0e-7, "step": 0.0833, "end": 4.0}', },
+                                  "method_params": '{"N": 5, "intervals": 4, "step": 0.0833, "end": 4, "time": [0, 1, 2, 3 ], "setpoint": [4e-07, 4e-07, 4e-07, 4e-07], "time_int_final": [1, 2, 3, 4], "Q": 0.25, "R":5}', },
                          prefix="mod")
         dform = DrugForm(prefix="dr", initial={'drug_name': ''})
 
@@ -546,7 +546,7 @@ def DefaultModel(request):
                                       'blood_volume_fraction': 0.5, 'lung_flow_factor': 1.0,
                                       'lung_volume_fraction': 0.007,
                                       'blood_lung_fraction': 0.5, 'method': 'none',
-                                      'method_params': '{"N": 35, "intervals": 4, "step": 0.0833, "end": 4, "time": [0, 1, 2, 3 ], "setpoint": [4e-07, 4e-07, 4e-07, 4e-07], "time_int_final": [1, 2, 3, 4]}'})
+                                      'method_params': '{"N": 5, "intervals": 4, "step": 0.0833, "end": 4, "time": [0, 1, 2, 3 ], "setpoint": [4e-07, 4e-07, 4e-07, 4e-07], "time_int_final": [1, 2, 3, 4], "Q": 0.25, "R":5}'})
     default_drug_form = DrugForm(prefix='dr',
                                  initial={'drug_name': 'default drug', 'max_liver': 1.4e-6, 'max_kidney': 5.0e-6,
                                           'max_influx': 0.04e-6,
@@ -1057,7 +1057,6 @@ def Edit(request):
                 time = params_json['time']
                 Q = params_json['Q']
                 R = params_json['R']
-
                 if not (check_number(N) and check_number(intervals) and check_number(step) and check_number(
                         end) and setpoint and time and check_number(k_bile1) and check_number(k_bile2) and check_number(
                         k_bile3) and check_number(k_bile4)
@@ -1615,7 +1614,7 @@ def tutorial(request):
                                       'blood_volume_fraction': 0.5, 'lung_flow_factor': 1.0,
                                       'lung_volume_fraction': 0.007,
                                       'blood_lung_fraction': 0.5, 'method': 'none',
-                                      'method_params': '{"N": 35, "intervals": 4, "step": 0.0833, "end": 4, "time": [0, 1, 2, 3 ], "setpoint": [4e-07, 4e-07, 4e-07, 4e-07], "time_int_final": [1, 2, 3, 4]}'})
+                                      'method_params': '{"N": 5, "intervals": 4, "step": 0.0833, "end": 4, "time": [0, 1, 2, 3 ], "setpoint": [4e-07, 4e-07, 4e-07, 4e-07], "time_int_final": [1, 2, 3, 4], "Q": 0.25, "R":5}'})
     default_drug_form = DrugForm(prefix='dr',
                                  initial={'drug_name': 'default drug', 'max_liver': 1.4e-6, 'max_kidney': 5.0e-6,
                                           'max_influx': 0.04e-6,
@@ -1690,7 +1689,7 @@ def tutorial(request):
                 time2.append(end)
 
             read_models = Models.objects.filter(modelname='default', pk=117)
-            if read_models and read_models[0].plot_params and N == int(35) and intervals == int(4) and step == float(0.0833) and end == float(4):
+            if read_models and read_models[0].plot_params and N == int(5) and intervals == int(4) and step == float(0.0833) and end == float(4):
                 model_item = read_models[0]
                 json_object_plot = json.loads(model_item.plot_params)
                 adm_j = json.loads(model_item.step_params)

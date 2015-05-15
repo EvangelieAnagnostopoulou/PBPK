@@ -4,18 +4,28 @@ from cvxopt import solvers, matrix
 from scipy.linalg import block_diag
 import numpy as np
 
-
+def ss_opt(a, b, c, bd, cd, ref, d_hat):
+    mq = a.shape[0]
+    mr = b.shape[1]
+    a_mpc = np.bmat([[a - np.eye(mq), b], [c, np.zeros((mr, mr))]])
+    b_mpc = np.bmat([[-np.dot(bd, d_hat)], [ref - np.dot(cd, d_hat)]])
+    x_mpc = np.linalg.solve(a_mpc, b_mpc)
+    x_ = x_mpc[0:mq, :]
+    u_ = x_mpc[mq::, :]
+    return x_, u_
 
 class MPCSolver(System):
-    def __init__(self, System, N, x_hat, d_hat, ref, max_liver, max_kidney, max_influx, min_residual, max_residual,
+    def __init__(self, System, N, x_hat, d_hat, x_, u_,  max_liver, max_kidney, max_influx, min_residual, max_residual,
                  min_skin, max_skin, min_bladder, max_bladder, min_lung, max_lung, min_liver, min_kidney, min_heart,
                  max_heart, min_muscle, max_muscle, min_spleen, max_spleen, min_placental, max_placental, Qweight, Rweight):
         # self.del_list = System.ContinuousSystem()
+        self.del_list = System.ContinuousSystem()
         self.dsystem = System.DiscreteSystem()
         self.N = N
         self.d_hat = d_hat
         self.x_hat = x_hat
-        self.r = ref
+        self.x_ = x_
+        self.u_ = u_
         self.max_kidney = max_kidney
         self.max_liver = max_liver
         self.max_influx = max_influx
@@ -40,143 +50,109 @@ class MPCSolver(System):
         self.qw = Qweight
         self.rw = Rweight
 
-
     def Solver(self):
         Bd = np.zeros((self.dsystem.A.shape[0], self.d_hat.shape[0]))
-        # Bd = np.array([[1.], [0.], [0.], [0.], [1.], [0.], [3.], [2.], [0.], [1.], [0.], [0.], [0.], [1.]])
 
-        #print Bd_new
-        # Bd = Bd_new
         Cd = np.array([[1.]])
-        print np.linalg.matrix_rank(np.bmat([[(np.eye(self.dsystem.A.shape[0]) - self.dsystem.A), -Bd],
-                                            [self.dsystem.C, Cd]])) == \
-            self.dsystem.A.shape[0] + self.d_hat.shape[0]
+
         [nQ, mQ] = self.dsystem.A.shape
         [nR, mR] = self.dsystem.B.shape
 
-        Q = np.eye(mQ, dtype="float") * self.qw
-        #Q = np.eye(mQ, dtype="float") * 0.25
-        '''Q[0:1,0:1] = 40.0
-        if Q.shape[0] >= 9:
-            Q[9:10, 9:10] = 1000.0
+        qmpc = np.eye(mQ, dtype="float") * self.qw
+        #qmpc[0:1, 0:1] = 40.0
+        #qmpc[9-len(self.del_list), 9-len(self.del_list)] = 1000.0
+        #qmpc *= 5500.0
+        rmpc = self.rw * np.eye(mR, dtype="float")  # 5.0
+        (kl, ll, el) = bb_dlqr(self.dsystem.A, self.dsystem.B, qmpc, rmpc)
+        q_fmpc = ll
 
-        Q *= 55000.0'''
-        R = self.rw * np.eye(mR, dtype="float")
-        #R = 5.0 * np.eye(mR, dtype="float")
-        (K, X, E) = bb_dlqr(self.dsystem.A, self.dsystem.B, Q, R)
-        Q_f = X
-
-        Lx = np.bmat([[(self.dsystem.A - np.eye(mQ, dtype='float')), self.dsystem.B],
-                      [self.dsystem.C, np.zeros( (self.dsystem.C.shape[0],
-                                                  self.dsystem.B.shape[1]), dtype='float')]])
-
-        Rx = np.bmat([[np.dot(-Bd, self.d_hat)],
-                      [self.r - np.dot(Cd, self.d_hat)]])
-
-        xu = np.linalg.solve(Lx, Rx)
-        self.x_ = xu[0:self.dsystem.A.shape[0], :]
-        self.u_ = xu[self.dsystem.A.shape[0]::, :]
-
-
-        ## Equality Constraints ##
-        Atil = np.zeros( (self.N * mQ, self.N * (mR + mQ)),dtype="float" )
-        first_row_Atil = np.bmat([-self.dsystem.B, np.eye(mQ, dtype="float")],)
-        second_row_Atil = np.bmat([-self.dsystem.A, -self.dsystem.B, np.eye(mQ, dtype="float")])
-        Atil[0:nR, 0:(mQ + mR)] = first_row_Atil
+        # Equality Constraints #
+        a_til = np.zeros((self.N * mQ, self.N * (mR + mQ)), dtype="float")
+        first_row = np.bmat([-self.dsystem.B, np.eye(mQ, dtype="float")])
+        second_row = np.bmat([-self.dsystem.A, -self.dsystem.B, np.eye(mQ, dtype="float")])
+        a_til[0:nR, 0:(mQ + mR)] = first_row
 
         for k in range(1, self.N):
-            Atil[k*nR:(k+1)*nR,
-                 k*mR+(k-1)*mQ:(k+1)*mR+(k+1)*mQ] = second_row_Atil
+            a_til[k*nR:(k+1)*nR, k*mR+(k-1)*mQ:(k+1)*mR+(k+1)*mQ] = second_row
 
-        ###
-        btil = np.zeros( (self.N*mQ, 1), dtype="float" )
-        #btil[0:mQ] = np.dot(self.dsystem.A, self.x_hat)
-        btil[0:mQ] = np.dot(Bd, self.d_hat) + np.dot(self.dsystem.A, self.x_hat)
-        for k in range(1,self.N):
-            btil[k*nR : (k+1)*nR] = np.dot(Bd, self.d_hat)
-        ###
+        #
+        b_til = np.zeros((self.N*mQ, 1), dtype="float")
+        b_til[0:mQ] = np.dot(Bd, self.d_hat) + np.dot(self.dsystem.A, self.x_hat)
+        for k in range(1, self.N):
+            b_til[k*nR: (k+1)*nR] = np.dot(Bd, self.d_hat)
+        #
 
-        ## Inequality Constraints ##
-        H = np.zeros( (self.N*(mQ+mR),self.N*(mQ+mR)), dtype="float" )
-        for k in range(0,self.N):
-            H[(k)*mR+(k)*mQ:(k+1)*mR+(k)*mQ,
-              (k)*mR+(k)*mQ:(k+1)*mR+(k)*mQ] = R
-            H[(k+1)*mR+(k)*mQ:(k+1)*mR+(k+1)*mQ,
-              (k+1)*mR+(k)*mQ:(k+1)*mR+(k+1)*mQ] = Q
+        # Inequality Constraints #
+        hc = np.zeros((self.N*(mQ+mR), self.N*(mQ+mR)), dtype="float")
+        for k in range(0, self.N):
+            hc[k*mR+k*mQ:(k+1)*mR+k*mQ, k*mR+k*mQ:(k+1)*mR+k*mQ] = rmpc
+            hc[(k+1)*mR+k*mQ:(k+1)*mR+(k+1)*mQ, (k+1)*mR+k*mQ:(k+1)*mR+(k+1)*mQ] = qmpc
             if k == self.N-1:
-                H[(k+1)*mR+(k)*mQ:(k+1)*mR+(k+1)*mQ,
-                  (k+1)*mR+(k)*mQ:(k+1)*mR+(k+1)*mQ] = Q_f
-
-        ## Construct G ##
-        first_col_G = np.bmat([[-np.eye(mR, dtype="float")], [np.eye(mR, dtype="float")]])
-        second_col_G = np.bmat([[-np.eye(mQ, dtype="float")], [np.eye(mQ, dtype="float")]])
-        G_block = block_diag(first_col_G, second_col_G)
-        G = G_block
+                hc[(k+1)*mR+k*mQ:(k+1)*mR+(k+1)*mQ, (k+1)*mR+k*mQ:(k+1)*mR+(k+1)*mQ] = q_fmpc
+        hc *= 2.
+        # Construct G #
+        first_col_g = np.bmat([[-np.eye(mR, dtype="float")], [np.eye(mR, dtype="float")]])
+        second_col_g = np.bmat([[-np.eye(mQ, dtype="float")], [np.eye(mQ, dtype="float")]])
+        g_block = block_diag(first_col_g, second_col_g)
+        g = g_block
         for k in range(0, self.N-1):
-            G = block_diag(G_block, G)
+            g = block_diag(g_block, g)
 
+        # Construct h #
+        h = np.zeros((2*self.N*(mQ+mR), 1), dtype="float")
+        u_low = np.zeros((mR, 1), dtype="float")
+        u_up = np.ones((mR, 1), dtype="float")
+        x_low = np.zeros((mQ, 1), dtype="float")
 
-        ## Construct h ##
-        h = np.zeros( (2*self.N*(mQ+mR), 1), dtype="float" )
-        u_low = 0.0
-        u_up = self.max_influx
-        for k in range(0,self.N):
-            u_low = np.zeros( (mR,1), dtype="float" )
-            u_up = self.max_influx * np.ones( (mR, 1), dtype="float" )
-            x_low = np.zeros( (mQ, 1),dtype="float" )
-            x_low[3:4,:] = self.min_lung
-            x_low[5:6,:] = self.min_skin
-            x_low[7:8,:] = self.min_bladder
-            x_low[9:10,:] = self.min_liver
-            x_low[11:12,:] = self.min_residual
-            x_low[13:14,:] = self.min_kidney
-            x_low[25:26,:] = self.min_heart
-            x_low[27:28,:] = self.min_muscle
-            x_low[29:30,:] = self.min_spleen
-            x_low[33:34,:] = self.min_placental
-            x_up =  np.ones( (mQ, 1), dtype="float" )
-            x_up[3:4,:] = self.max_lung
-            x_up[5:6,:] = self.max_skin
-            x_up[7:8,:] = self.max_bladder
-            x_up[9:10,:] = self.max_liver
-            x_up[11:12,:] = self.max_residual
-            x_up[13:14,:] = self.max_kidney
-            x_up[25:26,:] = self.max_heart
-            x_up[27:28,:] = self.max_muscle
-            x_up[29:30,:] = self.max_spleen
-            x_up[33:34,:] = self.max_placental
+        x_low[3:4,:] = self.min_lung
+        x_low[5:6,:] = self.min_skin
+        x_low[7:8,:] = self.min_bladder
+        x_low[9:10,:] = self.min_liver
+        x_low[11:12,:] = self.min_residual
+        x_low[13:14,:] = self.min_kidney
+        x_low[25:26,:] = self.min_heart
+        x_low[27:28,:] = self.min_muscle
+        x_low[29:30,:] = self.min_spleen
+        x_low[33:34,:] = self.min_placental
+        x_up =  np.ones( (mQ, 1), dtype="float" )
+        x_up[3:4,:] = self.max_lung
+        x_up[5:6,:] = self.max_skin
+        x_up[7:8,:] = self.max_bladder
+        x_up[9:10,:] = self.max_liver
+        x_up[11:12,:] = self.max_residual
+        x_up[13:14,:] = self.max_kidney
+        x_up[25:26,:] = self.max_heart
+        x_up[27:28,:] = self.max_muscle
+        x_up[29:30,:] = self.max_spleen
+        x_up[33:34,:] = self.max_placental
 
-            h[2*(k)*mR+2*(k)*mQ:2*(k)*mR+2*(k)*mQ+mR] = -u_low
-            h[2*(k)*mR+2*(k)*mQ+mR:2*(k+1)*mR+2*(k)*mQ] = u_up
-            h[2*(k+1)*mR+2*(k)*mQ:2*(k+1)*mR+2*(k)*mQ+mQ] = -x_low
-            h[2*(k)*mR+2*(k)*mQ+2*mR+mQ:2*(k+1)*mR+2*(k+1)*mQ] = x_up
+        for k in range(0, self.N):
+            h[2*k*mR+2*k*mQ:2*k*mR+2*k*mQ+mR] = u_low
+            h[2*k*mR+2*k*mQ+mR:2*(k+1)*mR+2*k*mQ] = u_up
+            h[2*(k+1)*mR+2*k*mQ:2*(k+1)*mR+2*k*mQ+mQ] = x_low
+            h[2*k*mR+2*k*mQ+2*mR+mQ:2*(k+1)*mR+2*(k+1)*mQ] = x_up
 
+        plin = np.zeros((1, self.N*(mQ+mR)), dtype="float")
+        a_lin = np.dot(self.x_.T, qmpc)
+        b_lin = np.dot(self.u_.T, rmpc)
+        lin = np.bmat([[b_lin, a_lin]])
+        for i in range(0, self.N*(mQ+mR), (mQ+mR)):
+            plin[0, i:i+(mQ+mR)] = lin
+        f = np.dot(self.x_.T, q_fmpc)
+        flin = np.concatenate((b_lin, f), axis=1)
+        plin[0, (self.N-1)*(mQ+mR)::] = flin
+        plin = -2. * plin.T
 
-        p = np.zeros( (1, self.N*(mQ+mR)), dtype="float" )
-        alin = np.dot(self.x_.T, Q)
-        blin = np.dot(self.u_.T, R)
-        lin = np.bmat([[blin, alin]])
-        for i in range(0,self.N*(mQ+mR),(mQ+mR)):
-            p[0,i:i+(mQ+mR)] = lin
-        f = np.dot(self.x_.T, Q_f)
-        flin = np.concatenate((blin, f), axis = 1)
-        p[0,(self.N-1)*(mQ+mR):self.N*(mQ+mR)] = flin
-
-        p = -1.0 * p.T
-
-        #G = np.zeros((2*self.N*(mQ+mR),self.N*(mQ+mR)),dtype="float")
-        #h = np.zeros((2*self.N*(mQ+mR),1),dtype="float")
-        sol = solvers.qp(matrix(H), matrix(p), matrix(G), matrix(h),
-                         matrix(Atil), matrix(btil))
+        solvers.options['abstol'] = 1.e-324
+        sol = solvers.qp(matrix(hc), matrix(plin), matrix(g), matrix(h),
+                         matrix(a_til), matrix(b_til))
 
         if sol['x'][0] <= 0:
             u = 0
         else:
             u = sol['x'][0]
-        #print sol['x']
-        print u
-        return u, sol['status']
 
+        return u, sol['status']
 
 '''
 N = 35

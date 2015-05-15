@@ -4045,7 +4045,7 @@ $(function () {
 
         tooltip: {
             formatter: function() {
-                return '<b>'+  this.y.toExponential(1) +'</b><br/>'+
+                return '<b>'+  this.y.toExponential(2) +'</b><br/>'+
                     'Time: '+ Highcharts.numberFormat(this.x, 2);
             }
 
@@ -4336,6 +4336,6 @@ $(document).ready(function()
   trip1.start();
 });
 {% endif %}
-    {% endif %}
+{% endif %}
 </script>
 {% endblock %}

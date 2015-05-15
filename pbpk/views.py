@@ -675,7 +675,6 @@ def DefaultModel(request):
             for i in range(len(ulist)):
                 adm.append([Tsim[i], ulist[i]])
             adm_j = json.dumps(adm)
-
             for c in cont:
                 vals = []
                 for i in range(len(Tsim)):
@@ -1641,7 +1640,7 @@ def tutorial(request):
 
             params_json = json.loads(meth_par)
             N = params_json['N']
-            intervals = params_json ['intervals']
+            intervals = params_json['intervals']
             step = params_json['step']
             end = params_json['end']
             setpoint = params_json['setpoint']
@@ -1868,3 +1867,4 @@ def tutorial(request):
             error = "Please define the simulation parameters "
             params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'error': error, 'tutorial': True}
             return render(request, "model_form.html", params)
+

@@ -27,5 +27,6 @@ class KalmanFilter:
         size = self.current_prob_estimate.shape[0]
         # eye(n) = nxn identity matrix
         self.current_prob_estimate = (np.eye(size) - kalman_gain * self.C) * predicted_prob_estimate
-        return self.current_state_estimate, self.current_prob_estimate
+        return self.current_state_estimate
+            #\, self.current_prob_estimate
 

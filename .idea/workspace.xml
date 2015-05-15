@@ -27,9 +27,15 @@
       <file leaf-file-name="model_form.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pbpk/templates/model_form.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.0250837" vertical-offset="60092" max-vertical-offset="65205">
-              <caret line="4047" column="53" selection-start-line="4047" selection-start-column="53" selection-end-line="4047" selection-end-column="53" />
+            <state vertical-scroll-proportion="-0.2006689" vertical-offset="4275" max-vertical-offset="65205">
+              <caret line="277" column="60" selection-start-line="277" selection-start-column="60" selection-end-line="277" selection-end-column="60" />
               <folding>
+                <element signature="n#style#0;n#div#2;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#3;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#4;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#5;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#6;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#7;n#form#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#15;n#form#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#table#1;n#div#15;n#form#0;n#!!top" expanded="true" />
               </folding>
@@ -622,7 +628,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="47" y="24" width="1873" height="1056" extended-state="7" />
+    <frame x="47" y="24" width="1873" height="1056" extended-state="6" />
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1075,9 +1081,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pbpk/templates/model_form.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.0250837" vertical-offset="60092" max-vertical-offset="65205">
-          <caret line="4047" column="53" selection-start-line="4047" selection-start-column="53" selection-end-line="4047" selection-end-column="53" />
+        <state vertical-scroll-proportion="-0.2006689" vertical-offset="4275" max-vertical-offset="65205">
+          <caret line="277" column="60" selection-start-line="277" selection-start-column="60" selection-end-line="277" selection-end-column="60" />
           <folding>
+            <element signature="n#style#0;n#div#2;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#3;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#4;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#5;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#6;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#7;n#form#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#15;n#form#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#table#1;n#div#15;n#form#0;n#!!top" expanded="true" />
           </folding>

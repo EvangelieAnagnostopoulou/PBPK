@@ -37,7 +37,9 @@
     <br>
 
     <table id="tables" class="div-form-table" style=" display:none;">
-
+        <thead>
+            <h id="dataTableHeaderCloseloop" style="visibility: hidden;">Time Concentration<span style="margin-left:64px"></span>Setpoint in Blood</h>
+        </thead>
     </table>
     <br>
     <!--<input type="button" value="Add Row" id="addr" class="btn btn-block btn-lg btn-primary" style=" display:none; width: 40%;"  onclick="addRow('tables')" />
@@ -117,6 +119,7 @@ function createTable1() {
 
 
         $("#tables").show();
+        $("#dataTableHeaderCloseloop").css({"visibility":"visible"});
         $("#buttons_close").show();
         for( var i=0; i<a;i++) {
 

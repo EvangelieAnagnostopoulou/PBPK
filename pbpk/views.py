@@ -1,4 +1,5 @@
 import json
+from django.db import IntegrityError
 from django.shortcuts import render, redirect, render_to_response
 from django import forms
 import numpy as np
@@ -313,8 +314,15 @@ def InitPage(request):
                                   'change': True, 'json': json_object_plot, 'adm': adm_j}
                         if request.is_ajax():
                             return HttpResponse(json_object_plot, 'application/json')
-                        new_drug.save()
-                        new_model.save()
+
+                        try:
+                            new_drug.save()
+                            new_model.save()
+                        except IntegrityError:
+                            error = "Modelname already exists."
+                            params = {'form': form, 'dform': dform, "save": True, 'error': error, 'counter': counter}
+                            return render(request, "model_form.html", params)
+
                         new_model.drugs.add(new_drug)
                         return render(request, "model_form.html", params)
                 elif meth == "OpenLoop":
@@ -502,8 +510,15 @@ def InitPage(request):
                               'change': True, 'json': json_object_plot, 'adm': adm_j}
                     if request.is_ajax():
                         return HttpResponse(json_object_plot, 'application/json')
-                    new_drug.save()
-                    new_model.save()
+
+                    try:
+                        new_drug.save()
+                        new_model.save()
+                    except IntegrityError:
+                        error = "Modelname already exists."
+                        params = {'form': form, 'dform': dform, "save": True, 'error': error, 'counter': counter}
+                        return render(request, "model_form.html", params)
+
                     new_model.drugs.add(new_drug)
                     return render(request, "model_form.html", params)
                 else:
@@ -512,8 +527,14 @@ def InitPage(request):
                     return render(request, "model_form.html", params)
             else:
 
-                new_drug = dform.save()
-                new_model = form.save()
+                try:
+                    new_drug = dform.save()
+                    new_model = form.save()
+                except IntegrityError:
+                    error = "Modelname already exists."
+                    params = {'form': form, 'dform': dform, "save": True, 'error': error, 'counter': counter}
+                    return render(request, "model_form.html", params)
+
                 new_model.username = request.user.username
 
                 new_model.drugs.clear()
@@ -1369,7 +1390,7 @@ def Edit(request):
                     #add the end time of simulation (time consists of initial times. For correct plotting it should be added one more couple)
                     time2.append(total_time)
 
-                if (not form.has_changed()) and (not dform.has_changed()):
+                if (not form.has_changed()) and (not dform.has_changed()) and model_item.plot_params:
                     # if model & drug haven't changed, load from database
                     json_object_plot = json.loads(model_item.plot_params)
                     adm_j = json.loads(model_item.step_params)
@@ -1868,3 +1889,510 @@ def tutorial(request):
             params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'error': error, 'tutorial': True}
             return render(request, "model_form.html", params)
 
+def tutorial_create(request):
+    if request.method == 'GET':
+        submit = ""
+        counter = 1
+        form = ModelForm(initial={'bw': 0.03, 'h': 0.45, "method": "None",
+                                  "method_params": '{"N": 5, "intervals": 4, "step": 0.0833, "end": 4, "time": [0, 1, 2, 3 ], "setpoint": [4e-07, 4e-07, 4e-07, 4e-07], "time_int_final": [1, 2, 3, 4], "Q": 0.25, "R":5}', },
+                         prefix="mod")
+        dform = DrugForm(prefix="dr", initial={'drug_name': ''})
+
+        return render(request, "model_form.html", {'dform': dform, 'form': form, 'submit': submit, 'counter': counter, 't_create':True})
+
+    if request.method == 'POST':
+        form = ModelForm(request.POST, prefix="mod")
+        dform = DrugForm(request.POST, prefix="dr")
+        meth = request.POST.get('mod-method')
+        submit = request.POST.get('submit_id')
+        counter = request.POST.get('counter_id')
+
+        if not form.is_valid() or not dform.is_valid():
+            params = {'form': form, 'dform': dform, "save": True, 'submit': submit, 'counter': counter}
+            return render(request, "model_form.html", params)
+        elif ((form['blood_volume_fraction'].value() == "0.0") | (form['lung_flow_factor'].value() == "0.0") | (
+                    form['lung_volume_fraction'].value() == "0.0") | (form['blood_lung_fraction'].value() == "0.0") | (
+                    dform['p_lung'].value() == "0.0")):
+            if ((form['blood_volume_fraction'].value() == "0.0") & ((form['lung_flow_factor'].value() == "0.0") | (
+                        form['lung_volume_fraction'].value() == "0.0") | (form['blood_lung_fraction'].value() == "0.0") | (
+                        dform['p_lung'].value() == "0.0"))):
+                error = "Cannot be created model without blood and lung."
+                params = {'form': form, 'dform': dform, "save": True, 'error': error, 'submit': submit,
+                          'counter': counter}
+                return render(request, "model_form.html", params)
+            elif (form['blood_volume_fraction'].value() == "0.0"):
+                error = "Cannot be created model without blood."
+                params = {'form': form, 'dform': dform, "save": True, 'error': error, 'submit': submit,
+                          'counter': counter}
+                return render(request, "model_form.html", params)
+            elif ((form['lung_flow_factor'].value() == "0.0") | (form['lung_volume_fraction'].value() == "0.0") | (
+                        form['blood_lung_fraction'].value() == "0.0") | (dform['p_lung'].value() == "0.0")):
+                error = "Cannot be created model without lung."
+                params = {'form': form, 'dform': dform, "save": True, 'error': error, 'submit': submit,
+                          'counter': counter}
+                return render(request, "model_form.html", params)
+            elif (((form['skin_flow_factor'].value()) + (form['liver_flow_factor'].value()) + (
+                    form['kidney_flow_factor'].value()) + (form['bladder_flow_factor'].value())) > 1):
+                error = " Inavalid flow factor combination. The sum of skin, liver, kidney and bladder flow factors must be less than 1."
+                params = {'form': form, 'dform': dform, "save": True, 'error': error, 'submit': submit,
+                          'counter': counter}
+                return render(request, "model_form.html", params)
+            elif (((form['skin_volume_fraction'].value()) + (form['liver_volume_fraction'].value()) + (
+                    form['kidney_volume_fraction'].value()) + (form['bladder_flow_factor'].value()) + form[
+                'lung_volume_fraction'].value()) > 1):
+                error = " Inavalid volume fraction combination. The sum of skin, liver, kidney, bladder and lung volume fractions must be less than 1."
+                params = {'form': form, 'dform': dform, "save": True, 'error': error, 'submit': submit,
+                          'counter': counter}
+                return render(request, "model_form.html", params)
+        else:
+            k_bile5 = 0.0
+            k_met5 = 0.0
+            k_bile4 = 0.0
+            k_met4 = 0.0
+            k_bile3 = 0.0
+            k_met3 = 0.0
+            k_bile2 = 0.0
+            k_met2 = 0.0
+            k_bile1 = 0.0
+            k_met1 = 0.0
+            type1 = ""
+            const1 = ""
+            type2 = ""
+            const2 = ""
+            type3 = ""
+            const3 = ""
+            type4 = ""
+            const4 = ""
+            type5 = ""
+            const5 = ""
+            if submit == "Run":
+                if meth == "CloseLoop-MPC":
+                    new_drug = dform.save(commit=False)
+                    new_model = form.save(commit=False)
+                    new_model.username = request.user.username
+                    # new_model.drugs.clear()
+                    #convert method_params to json and read values
+                    if new_drug.organ1_params:
+                        org1_params_json = json.loads(new_drug.organ1_params)
+                        if org1_params_json[0]:
+                            type1 = org1_params_json[0]['type']
+                            if type1 == "met":
+                                const1 = org1_params_json[0]['const']
+                                k_met1 = org1_params_json[0]['k_met']
+                                k_bile1 = org1_params_json[0]['k_bile']
+                                print (const1)
+                            print(type1)
+                        if org1_params_json[1]:
+                            type2 = org1_params_json[1]['type']
+                            if type2 == "met":
+                                const2 = org1_params_json[1]['const']
+                                k_met2 = org1_params_json[1]['k_met']
+                                k_bile2 = org1_params_json[1]['k_bile']
+                        if org1_params_json[2]:
+                            type3 = org1_params_json[2]['type']
+                            if type3 == "met":
+                                const3 = org1_params_json[2]['const']
+                                k_met3 = org1_params_json[2]['k_met']
+                                k_bile3 = org1_params_json[2]['k_bile']
+                        if org1_params_json[3]:
+                            type4 = org1_params_json[3]['type']
+                            if type4 == "met":
+                                const4 = org1_params_json[3]['const']
+                                k_met4 = org1_params_json[3]['k_met']
+                                k_bile4 = org1_params_json[3]['k_bile']
+                        if org1_params_json[4]:
+                            type5 = org1_params_json[4]['type']
+                            if type5 == "met":
+                                const5 = org1_params_json[4]['const']
+                                k_met5 = org1_params_json[4]['k_met']
+                                k_bile5 = org1_params_json[4]['k_bile']
+                    params_json = json.loads(new_model.method_params)
+                    N = params_json['N']
+                    intervals = params_json['intervals']
+                    step = params_json['step']
+                    end = params_json['end']
+                    setpoint = params_json['setpoint']
+                    time = params_json['time']
+                    Q = params_json['Q']
+                    R = params_json['R']
+
+                    if not (check_number(N) and check_number(intervals) and check_number(step) and check_number(
+                            end) and setpoint and time and check_number(k_bile1) and check_number(k_bile2) and check_number(
+                            k_bile3) and check_number(k_bile4)
+                            and check_number(k_bile5) and check_number(k_met1) and check_number(
+                            k_met2) and check_number(k_met3) and check_number(k_met4) and check_number(k_met5)):
+                        error = "The data you entered aren't valid. Please try again."
+                        return render(request, "model_form.html",
+                                      {"form": form, "N": N, "target": intervals, "error": error, "step": step, "end": end,
+                                       'counter': counter})
+                    elif float(step) > float(end):
+                        error = "Wrong step and/or end time."
+                        return render(request, "model_form.html",
+                                      {"form": form, "N": N, "target": intervals, "error": error, "step": step, "end": end,
+                                       'counter': counter})
+                    else:
+                        N = int(N)
+                        intervals = int(intervals)
+                        step = float(step)
+                        end = float(end)
+                        Q = float(Q)
+                        R = float(R)
+                        setpoint1 = []
+                        setpoint2 = []
+                        time1 = []
+                        time2 = []
+                        for e in setpoint:
+                            e = float(e)
+                            setpoint1.append(e)
+                            e = int(e)
+                            setpoint2.append(e)
+                            #add the last element twice due to add the last couple for plotting
+                        last_d = int(setpoint1[-1])
+                        setpoint2.append(last_d)
+
+                        for t in time:
+                            t = float(t)
+                            time1.append(t)
+                            t = int(t)
+                            time2.append(t)
+                            #add the end time of simulation (time constists of initial times. For correct plotting it should be added one more couple)
+                        time2.append(end)
+
+                        k_met1 = float(k_met1)
+                        k_bile1 = float(k_bile1)
+                        k_met2 = float(k_met2)
+                        k_bile2 = float(k_bile2)
+                        k_met3 = float(k_met3)
+                        k_bile3 = float(k_bile3)
+                        k_met4 = float(k_met4)
+                        k_bile4 = float(k_bile4)
+                        k_met5 = float(k_met5)
+                        k_bile5 = float(k_bile5)
+
+                        model = PBPK_Model(new_model.bw, new_model.h, new_model.cardiac_output, new_drug.k_met,
+                                           new_drug.k_bile, new_drug.k_kidney, new_drug.max_liver, new_drug.max_kidney,
+                                           new_drug.max_influx,
+                                           new_model.skin_flow_factor, new_model.skin_volume_fraction,
+                                           new_model.blood_skin_fraction, new_drug.p_skin, new_drug.pi_skin,
+                                           new_model.kidney_flow_factor, new_model.kidney_volume_fraction,
+                                           new_model.blood_kidney_fraction, new_drug.p_kidney, new_drug.pi_kidney,
+                                           new_model.bladder_flow_factor, new_model.bladder_volume_fraction,
+                                           new_model.blood_bladder_fraction, new_drug.p_bladder, new_drug.pi_bladder,
+                                           new_model.blood_rest_fraction, new_drug.p_rest, new_drug.pi_rest,
+                                           new_model.liver_flow_factor, new_model.liver_volume_fraction,
+                                           new_model.blood_liver_fraction, new_drug.p_liver, new_drug.pi_liver,
+                                           new_model.blood_volume_fraction, new_drug.pi_rbc, new_drug.pi_plasma,
+                                           new_model.lung_flow_factor, new_model.lung_volume_fraction,
+                                           new_model.blood_lung_fraction, new_drug.p_lung, new_drug.pi_lung,
+                                           new_drug.min_residual, new_drug.max_residual, new_drug.min_skin,
+                                           new_drug.max_skin, new_drug.min_bladder, new_drug.max_bladder,
+                                           new_drug.min_lung, new_drug.max_lung, new_drug.min_liver,
+                                           new_drug.min_kidney,
+                                           new_model.organ1_flow_factor, new_model.organ1_volume_fraction,
+                                           new_model.blood_organ1_fraction, new_drug.p_organ1, new_drug.pi_organ1,
+                                           type1, const1, k_met1, k_bile1,
+                                           new_model.organ2_flow_factor, new_model.organ2_volume_fraction,
+                                           new_model.blood_organ2_fraction, new_drug.p_organ2, new_drug.pi_organ2,
+                                           type2, const2, k_met2, k_bile2,
+                                           new_model.organ3_flow_factor, new_model.organ3_volume_fraction,
+                                           new_model.blood_organ3_fraction, new_drug.p_organ3, new_drug.pi_organ3,
+                                           type3, const3, k_met3, k_bile3,
+                                           new_model.organ4_flow_factor, new_model.organ4_volume_fraction,
+                                           new_model.blood_organ4_fraction, new_drug.p_organ4, new_drug.pi_organ4,
+                                           type4, const4, k_met4, k_bile4,
+                                           new_model.organ5_flow_factor, new_model.organ5_volume_fraction,
+                                           new_model.blood_organ5_fraction, new_drug.p_organ5, new_drug.pi_organ5,
+                                           type5, const5, k_met5, k_bile5,
+                                           new_model.heart_flow_factor, new_model.heart_volume_fraction,
+                                           new_model.blood_heart_fraction, new_drug.p_heart, new_drug.pi_heart,
+                                           new_model.muscle_flow_factor, new_model.muscle_volume_fraction,
+                                           new_model.blood_muscle_fraction, new_drug.p_muscle, new_drug.pi_muscle,
+                                           new_model.spleen_flow_factor, new_model.spleen_volume_fraction,
+                                           new_model.blood_spleen_fraction, new_drug.p_spleen, new_drug.pi_spleen,
+                                           new_model.placental_flow_factor, new_model.placental_volume_fraction,
+                                           new_model.blood_placental_fraction, new_drug.p_placental,
+                                           new_drug.pi_placental)
+                        skin = Skin(model)
+                        kidney = Kidney(model)
+                        bladder = Bladder(model)
+                        residual = Residual(model)
+                        liver = Liver(model)
+                        blood = Blood(model)
+                        lung = Lung(model)
+                        organ1 = Organ1(model)
+                        organ2 = Organ2(model)
+                        organ3 = Organ3(model)
+                        organ4 = Organ4(model)
+                        organ5 = Organ5(model)
+                        heart = Heart(model)
+                        muscle = Muscle(model)
+                        spleen = Spleen(model)
+                        placental = Placental(model)
+                        try:
+                            mysystem = System(model, skin, kidney, bladder, residual, liver, blood, lung, organ1,
+                                              organ2, organ3, organ4, organ5, heart, muscle, spleen, placental)
+                            sys = mysystem.DiscreteSystem()
+                            d_hat = 1.7408e-14 * np.ones((1, 1))
+                            x_hat = np.zeros((sys.A.shape[0], 1))
+                            tlist= [0.0, 4.0, 8.0]
+                            ulist1 = [2.0, 2.0, 2.0]
+                            sim = Simulator(mysystem, N, x_hat, d_hat, new_drug.max_liver, new_drug.max_kidney,
+                                            new_drug.max_influx, new_drug.min_residual, new_drug.max_residual,
+                                            new_drug.min_skin,
+                                            new_drug.max_skin, new_drug.min_bladder, new_drug.max_bladder,
+                                            new_drug.min_lung, new_drug.max_lung, new_drug.min_liver,
+                                            new_drug.min_kidney, new_drug.min_heart, new_drug.max_heart,
+                                            new_drug.min_muscle, new_drug.max_muscle, new_drug.min_spleen,
+                                            new_drug.max_spleen, new_drug.min_placental, new_drug.max_placental, end, time1, setpoint1, step, Q, R)
+                            Tsim, cont, ulist = sim.Simulate(step, end)
+                            plot_j = []
+                            # plot_j is of the following form
+                            # [ [[0.0, y1.1], [0.01, y1.2], ...] -> organ1,  [[0.0, y2.1], [0.0, y2.2], ...] -> organ2, ... ]
+                            adm = []
+                            for i in range(len(ulist)):
+                                adm.append([Tsim[i], ulist[i]])
+                            adm_j = json.dumps(adm)
+                            new_model.step_params = adm_j
+
+                            for c in cont:
+                                vals = []
+                                for i in range(len(Tsim)):
+                                    vals.append([Tsim[i], c[i]])
+
+                                plot_j.append(vals)
+
+                            json_object_plot = json.dumps(plot_j)
+                            new_model.plot_params = json_object_plot
+
+                        except RuntimeError as re:
+                            print(re)
+                            error = "An error occurred while creating the model."
+                            params = {'form': form, 'dform': dform, "save": True, 'error': error, 'counter': counter}
+                            return render(request, "model_form.html", params)
+                        except Exception as e:
+                            print(e)
+                            error = "An error occurred while creating the model."
+                            params = {'form': form, 'dform': dform, "save": True, 'error': error, 'counter': counter}
+                            return render(request, "model_form.html", params)
+
+                        params = {'form': form, 'dform': dform, 'save': True, 'image': True, 'counter': counter,
+                                  'change': True, 'json': json_object_plot, 'adm': adm_j, 't_create_final':True}
+                        if request.is_ajax():
+                            return HttpResponse(json_object_plot, 'application/json')
+                        new_drug.save()
+                        new_model.save()
+                        new_model.drugs.add(new_drug)
+                        return render(request, "model_form.html", params)
+                elif meth == "OpenLoop":
+                    new_drug = dform.save(commit=False)
+                    new_model = form.save(commit=False)
+                    new_model.username = request.user.username
+
+                    # new_model.drugs.clear()
+                    #new_model.save(commit=False)
+                    #convert method_params to json and read values
+                    if new_drug.organ1_params:
+                        org1_params_json = json.loads(new_drug.organ1_params)
+                        if org1_params_json[0]:
+                            type1 = org1_params_json[0]['type']
+                            if type1 == "met":
+                                const1 = org1_params_json[0]['const']
+                                print (const1)
+                            print(type1)
+                        if org1_params_json[1]:
+                            type2 = org1_params_json[1]['type']
+                            if type2 == "met":
+                                const2 = org1_params_json[1]['const']
+                        if org1_params_json[2]:
+                            type3 = org1_params_json[2]['type']
+                            if type3 == "met":
+                                const3 = org1_params_json[2]['const']
+                        if org1_params_json[3]:
+                            type4 = org1_params_json[3]['type']
+                            if type4 == "met":
+                                const4 = org1_params_json[3]['const']
+                        if org1_params_json[4]:
+                            type5 = org1_params_json[4]['type']
+                            if type5 == "met":
+                                const5 = org1_params_json[4]['const']
+                    params_json = json.loads(new_model.method_params)
+                    total_time = params_json['total_time']
+                    total_N = params_json['total_N']
+                    dose = params_json['dose']
+                    time = params_json['time']
+                    dose1 = []
+                    dose2 = []
+                    time1 = []
+                    time2 = []
+                    if not (check_number(total_time) and check_number(total_N) and dose and time and check_number(
+                            k_bile1) and check_number(k_bile2) and check_number(k_bile3) and check_number(k_bile4)
+                            and check_number(k_bile5) and check_number(k_met1) and check_number(
+                            k_met2) and check_number(k_met3) and check_number(k_met4) and check_number(k_met5) ):
+                        error = "The data you entered aren't valid. Please try again."
+                        params = {'form': form, 'dform': dform, 'save': True, "total_time": total_time,
+                                  "total_N": total_N, "error": error, 'counter': counter}
+                        return render(request, "model_form.html", params)
+                    elif time > total_time:
+                        error = "Wrong parameters for total time and initial time"
+                        params = {'form': form, 'dform': dform, 'save': True, "total_time": total_time,
+                                  "total_N": total_N, "error": error, 'counter': counter}
+                        return render(request, "model_form.html", params)
+                    else:
+                        total_time = int(float(total_time))
+                        total_N = int(total_N)
+                        k_met1 = float(k_met1)
+                        k_bile1 = float(k_bile1)
+                        k_met2 = float(k_met2)
+                        k_bile2 = float(k_bile2)
+                        k_met3 = float(k_met3)
+                        k_bile3 = float(k_bile3)
+                        k_met4 = float(k_met4)
+                        k_bile4 = float(k_bile4)
+                        k_met5 = float(k_met5)
+                        k_bile5 = float(k_bile5)
+                        #convert list to list of floats and to list of ints
+                        for e in dose:
+                            e = float(e)
+                            dose1.append(e)
+                            e = int(e)
+                            dose2.append(e)
+                            #add the last element twice due to add the last couple for plotting
+                        last_d = int(dose1[-1])
+                        dose2.append(last_d)
+
+                        for t in time:
+                            t = float(t)
+                            time1.append(t)
+                            t = int(t)
+                            time2.append(t)
+                            #add the end time of simulation (time constists of initial times. For correct plotting it should be added one more couple)
+                    time2.append(total_time)
+
+                    model = PBPK_Model(new_model.bw, new_model.h, new_model.cardiac_output, new_drug.k_met,
+                                       new_drug.k_bile, new_drug.k_kidney, new_drug.max_liver, new_drug.max_kidney,
+                                       new_drug.max_influx,
+                                       new_model.skin_flow_factor, new_model.skin_volume_fraction,
+                                       new_model.blood_skin_fraction, new_drug.p_skin, new_drug.pi_skin,
+                                       new_model.kidney_flow_factor, new_model.kidney_volume_fraction,
+                                       new_model.blood_kidney_fraction, new_drug.p_kidney, new_drug.pi_kidney,
+                                       new_model.bladder_flow_factor, new_model.bladder_volume_fraction,
+                                       new_model.blood_bladder_fraction, new_drug.p_bladder, new_drug.pi_bladder,
+                                       new_model.blood_rest_fraction, new_drug.p_rest, new_drug.pi_rest,
+                                       new_model.liver_flow_factor, new_model.liver_volume_fraction,
+                                       new_model.blood_liver_fraction, new_drug.p_liver, new_drug.pi_liver,
+                                       new_model.blood_volume_fraction, new_drug.pi_rbc, new_drug.pi_plasma,
+                                       new_model.lung_flow_factor, new_model.lung_volume_fraction,
+                                       new_model.blood_lung_fraction, new_drug.p_lung, new_drug.pi_lung,
+                                       new_drug.min_residual, new_drug.max_residual, new_drug.min_skin,
+                                       new_drug.max_skin, new_drug.min_bladder, new_drug.max_bladder, new_drug.min_lung,
+                                       new_drug.max_lung, new_drug.min_liver, new_drug.min_kidney,
+                                       new_model.organ1_flow_factor, new_model.organ1_volume_fraction,
+                                       new_model.blood_organ1_fraction, new_drug.p_organ1, new_drug.pi_organ1, type1,
+                                       const1, k_met1, k_bile1,
+                                       new_model.organ2_flow_factor, new_model.organ2_volume_fraction,
+                                       new_model.blood_organ2_fraction, new_drug.p_organ2, new_drug.pi_organ2, type2,
+                                       const2, k_met2, k_bile2,
+                                       new_model.organ3_flow_factor, new_model.organ3_volume_fraction,
+                                       new_model.blood_organ3_fraction, new_drug.p_organ3, new_drug.pi_organ3, type3,
+                                       const3, k_met3, k_bile3,
+                                       new_model.organ4_flow_factor, new_model.organ4_volume_fraction,
+                                       new_model.blood_organ4_fraction, new_drug.p_organ4, new_drug.pi_organ4, type4,
+                                       const4, k_met4, k_bile4,
+                                       new_model.organ5_flow_factor, new_model.organ5_volume_fraction,
+                                       new_model.blood_organ5_fraction, new_drug.p_organ5, new_drug.pi_organ5, type5,
+                                       const5, k_met5, k_bile5,
+                                       new_model.heart_flow_factor, new_model.heart_volume_fraction,
+                                       new_model.blood_heart_fraction, new_drug.p_heart, new_drug.pi_heart,
+                                       new_model.muscle_flow_factor, new_model.muscle_volume_fraction,
+                                       new_model.blood_muscle_fraction, new_drug.p_muscle, new_drug.pi_muscle,
+                                       new_model.spleen_flow_factor, new_model.spleen_volume_fraction,
+                                       new_model.blood_spleen_fraction, new_drug.p_spleen, new_drug.pi_spleen,
+                                       new_model.placental_flow_factor, new_model.placental_volume_fraction,
+                                       new_model.blood_placental_fraction, new_drug.p_placental, new_drug.pi_placental)
+                    skin = Skin(model)
+                    kidney = Kidney(model)
+                    bladder = Bladder(model)
+                    residual = Residual(model)
+                    liver = Liver(model)
+                    blood = Blood(model)
+                    lung = Lung(model)
+                    organ1 = Organ1(model)
+                    organ2 = Organ2(model)
+                    organ3 = Organ3(model)
+                    organ4 = Organ4(model)
+                    organ5 = Organ5(model)
+                    heart = Heart(model)
+                    muscle = Muscle(model)
+                    spleen = Spleen(model)
+                    placental = Placental(model)
+
+                    try:
+                        mysystem = System(model, skin, kidney, bladder, residual, liver, blood, lung, organ1, organ2,
+                                          organ3, organ4, organ5, heart, muscle, spleen, placental)
+                        sim = SimulatorOpenLoop(mysystem, total_time, time1, dose1)
+                        t, u = input_profile(total_time, time1, dose1)
+                        cont, Tsim = sim.Simulate()
+                        plot_j = []
+                        # plot_j is of the following form
+                        # [ [[0.0, y1.1], [0.01, y1.2], ...] -> organ1,  [[0.0, y2.1], [0.0, y2.2], ...] -> organ2, ... ] contains state variables of all organs
+                        # adm_j contains administration rate
+                        adm = []
+                        for i in range(len(time2)):
+                            adm.append([time2[i], dose2[i]])
+                        print new_model.step_params
+                        adm_j = json.dumps(adm)
+                        new_model.step_params = adm_j
+                        print new_model.step_params
+                        print adm_j
+                        for c in cont:
+                            vals = []
+                            for i in range(len(Tsim)):
+                                vals.append([Tsim[i], c[i]])
+                            plot_j.append(vals)
+
+                        json_object_plot = json.dumps(plot_j)
+                        new_model.plot_params = json_object_plot
+
+                    except RuntimeError as re:
+                        print(re)
+                        error = "An error occurred while creating the model."
+                        params = {'form': form, 'dform': dform, "save": True, 'error': error, 'counter': counter}
+                        return render(request, "model_form.html", params)
+                    except Exception as e:
+                        print(e)
+                        error = "An error occurred while creating the model."
+                        params = {'form': form, 'dform': dform, "save": True, 'error': error, 'counter': counter}
+                        return render(request, "model_form.html", params)
+
+                    params = {'form': form, 'dform': dform, 'save': True, 'image': True, 'counter': counter,
+                              'change': True, 'json': json_object_plot, 'adm': adm_j, 't_create':True}
+                    if request.is_ajax():
+                        return HttpResponse(json_object_plot, 'application/json')
+                    new_drug.save()
+                    new_model.save()
+                    new_model.drugs.add(new_drug)
+                    return render(request, "model_form.html", params)
+                else:
+                    error = "Your should define simulation parameters first."
+                    params = {'form': form, 'dform': dform, "save": True, 'error': error, 'counter': counter, 't_create':True}
+                    return render(request, "model_form.html", params)
+            else:
+
+                new_drug = dform.save()
+                new_model = form.save()
+                new_model.username = request.user.username
+
+                new_model.drugs.clear()
+                new_model.save()
+                new_model.drugs.add(new_drug)
+
+                modelid = new_model.id
+                drugid = new_drug.id
+
+                error = "Your model have been saved. If you want to run it, define simulation parameters."
+                # params = {'form': form, 'dform': dform, "save": True,'edit':True, 'error': error, 'modelid':modelid, 'drugid':drugid}
+                #return render(request, "model_form.html", params)
+                return redirect(
+                    '/edit_model?username=' + request.user.username + '&modelname=' + new_model.modelname + '&modelid=' + str(
+                        modelid) + '&drugname=' + new_drug.drug_name + '&drugid=' + str(drugid) + '&error=' + error,
+                    {'error': error})

@@ -895,6 +895,7 @@
 				{% else %}
 				"Save changes":{
 				    text: "Save changes",
+				    id: "res-sv",
 					click: function() {
 						$("#id_mod-blood_rest_fraction").val( $("#res_b_f").val() );
 
@@ -978,6 +979,7 @@
 				{% else %}
 				"Save changes":{
 				    text: "Save changes",
+				    id: "kidney-sv",
 					click: function() {
 						$("#id_mod-kidney_flow_factor").val( $("#kid_f_f").val() );
 						$("#id_mod-kidney_volume_fraction").val( $("#kid_v_f").val() );
@@ -1105,6 +1107,7 @@
 				{% else %}
 				"Save changes": {
                     text: "Save changes",
+                    id: "blood-sv",
                     click : function() {
 						$("#id_mod-blood_volume_fraction").val( $("#blo_v_f").val() );
 						dialogBlood.dialog( "close" );
@@ -1165,6 +1168,7 @@
 				{% else %}
 				"Save changes":{
 				    text: "Save changes",
+				    id: "lung-sv",
 					click: function() {
 						$("#id_mod-lung_flow_factor").val( $("#lg_f_f").val() );
 						$("#id_mod-lung_volume_fraction").val( $("#lg_v_f").val() );
@@ -4336,6 +4340,79 @@ $(document).ready(function()
   trip1.start();
 });
 {% endif %}
+{% endif %}
+
+{% if t_create %}
+ var trip1 = new Trip([
+      { sel : $(".form-table"), content : "In this tutorial you will create a new model.<br>Above you can see default BW and hematocrit.<br> Please enter name <b><span style='color: #1abc9c'>test model</span></b> for your model.", position : "n", showCloseBox : true, delay:-1, onTripChange:  function (tripIndex, tripObject){ $('#id_mod-modelname').on('change', function() {if (  $('#id_mod-modelname').val() == "testmodel" ){ trip1.next();}})  }, },
+      { sel : $("#id_mod-cardiac_output"), content : "Enter <b><span style='color: #1abc9c'>16.0</span></b>  to CO.", position : "e", delay:-1, onTripChange:  function (tripIndex, tripObject){ $('#id_mod-cardiac_output').on('change', function() {if (  $('#id_mod-cardiac_output').val() == "16.0"  ){ trip1.next();}})  }, },
+      { sel : $(".blood"), content : "Click on <span style='color: #1abc9c'>blood</span> to add blood parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#blood').on('click', function() {if ( tripIndex === 2 ) {trip1.next();} } )},},
+      { position: 'screen-center',content : "Fill in blood volume with 0.5.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#blo_v_f').on('change', function() {if ( $('#blo_v_f').val()  == 0.5 ) { trip1.next();}})   }, },
+      { sel :  $("#blo_v_f") ,content : "Click <b><span style='color: #1abc9c'>Save Changes</span></b> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#blood-sv').on('click', function() {  trip1.next();})   }, },
+      { sel : $(".lung"), content : "Click on <span style='color: #1abc9c'>lung</span> to add lung parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#lung').on('click', function() { trip1.next();} )},},
+      { sel :  $("#lg_f_f"), content : "Fill in lung flow with 1.0", position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#lg_f_f').on('change', function() {if ( $('#lg_f_f').val()  == 1.0 ) { trip1.next();}})   }, },
+      { sel :  $("#lg_v_f"), content : "Fill in lung volume with 0.007", position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#lg_v_f').on('change', function() {if ( $('#lg_v_f').val()  == 0.007 ) { trip1.next();}})   }, },
+      { sel :  $("#lg_b_f"), content : "Fill in blood in lung 0.5.", position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#lg_b_f').on('change', function() {if ( $('#lg_b_f').val()  == 0.5 ) { trip1.next();}})   }, },
+      { sel :  $("#lg_b_f") ,content : "Click <b><span style='color: #1abc9c'>Save Changes</span></b> to proceed.", delay:-1 ,onTripChange:  function (tripIndex, tripObject){ $('#lung-sv').on('click', function() {  trip1.next();})  }, },
+      { sel : $(".kidney"), content : "Click on <span style='color: #1abc9c'>kidney</span> to add lung parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#kidney').on('click', function() { trip1.next();} )},},
+      { sel :  $("#kid_f_f"), content : "Fill in kidney flow with 0.091", position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#kid_f_f').on('change', function() {if ( $('#kid_f_f').val()  == 0.091 ) { trip1.next();}})   }, },
+      { sel :  $("#kid_v_f"), content : "Fill in kidney volume with 0.017", position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#kid_v_f').on('change', function() {if ( $('#kid_v_f').val()  == 0.017 ) { trip1.next();}})   }, },
+      { sel :  $("#kid_b_f"), content : "Fill in blood in kidney 0.24. Click <b><span style='color: #1abc9c'>Save Changes</span></b> to proceed.", position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#kid_b_f').on('change', function() {if ( $('#kid_b_f').val()  == 0.24 ) { trip1.next();}})   }, },
+      { sel :  $("#kid_b_f") ,content : "Click <b><span style='color: #1abc9c'>Save Changes</span></b> to proceed.", delay:-1 ,onTripChange:  function (tripIndex, tripObject){ $('#kidney-sv').on('click', function() {  trip1.next();})  }, },
+      { sel : $(".residual"), content : "Click on <span style='color: #1abc9c'>residual</span> to add residual parameters.", position : "n", delay:-1 ,  onTripChange:  function (tripIndex, tripObject){ $('#residual').on('click', function() { trip1.next(); } )},},
+      { position: 'screen-center',content : "Fill in blood volume with 0.04.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#res_b_f').on('change', function() {if ( $('#res_b_f').val()  == 0.04 ) { trip1.next();}})   }, },
+      { position: 'screen-center' ,content : "Click <b><span style='color: #1abc9c'>Save Changes</span></b> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#res-sv').on('click', function() {  trip1.next();})   }, },
+      { sel :  $(".drug-properties") , position : "s",content : "Click on <b><span style='color: #1abc9c'>Define drug properties</span></b>.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#drug').on('click', function() {  trip1.next();})   }, },
+      { sel :  $("#drugname") ,content : "Fill in <b><span style='color: #1abc9c'>drugname</span></b> with drugtest.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#drugname').on('change', function() { if ( $('#drugname').val()  == "drugtest" ) trip1.next();})   }, },
+      { sel :  $("#max_influx") ,content : "Fill in <b><span style='color: #1abc9c'>Maximum Influx Rate</span></b> with 4e-8.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#max_influx').on('change', function() { if ( $('#max_influx').val()  == "4e-8" ) trip1.next();})   }, },
+      { sel :  $("#p_rest") ,content : "Fill in <b><span style='color: #1abc9c'>P</span></b> with 1.6.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#p_rest').on('change', function() { if ( $('#p_rest').val()  == "1.6" ) trip1.next();})   }, },
+      { sel :  $("#pi_rest") ,content : "Fill in <b><span style='color: #1abc9c'>π</span></b> with 0.0095.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#pi_rest').on('change', function() { if ( $('#pi_rest').val()  == "0.0095" ) trip1.next();})   }, },
+      { sel :  $("#p_kid") ,content : "Fill in <b><span style='color: #1abc9c'>P</span></b> with 0.14.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#p_kid').on('change', function() { if ( $('#p_kid').val()  == "0.14" ) trip1.next();})   }, },
+      { sel :  $("#pi_kid") ,content : "Fill in <b><span style='color: #1abc9c'>π</span></b> with 0.12.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#pi_kid').on('change', function() { if ( $('#pi_kid').val()  == "0.12" ) trip1.next();})   }, },
+      { sel :  $("#kin_kidney") ,content : "Fill in <b><span style='color: #1abc9c'>k_kidney</span></b> with 0.0164.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#kin_kidney').on('change', function() { if ( $('#kin_kidney').val()  == "0.0164" ) trip1.next();})   }, },
+      { sel :  $("#pi_rb") ,content : "Fill in <b><span style='color: #1abc9c'>Pi Red Blood Cells</span></b> with 1.3.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#pi_rb').on('change', function() { if ( $('#pi_rb').val()  == "1.3" ) trip1.next();})   }, },
+      { sel :  $("#pi_pl") ,content : "Fill in <b><span style='color: #1abc9c'>Pi Plasma</span></b> with 0.81.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#pi_pl').on('change', function() { if ( $('#pi_pl').val()  == "0.81" ) trip1.next();})   }, },
+      { sel :  $("#p_lg") ,content : "Fill in <b><span style='color: #1abc9c'>P</span></b> with 0.44.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#p_lg').on('change', function() { if ( $('#p_lg').val()  == "0.44" ) trip1.next();})   }, },
+      { sel :  $("#pi_lg") ,content : "Fill in <b><span style='color: #1abc9c'>π</span></b> with 0.94.", delay:-1 , position : "e", onTripChange:  function (tripIndex, tripObject){ $('#pi_lg').on('change', function() { if ( $('#pi_lg').val()  == "0.94" ) trip1.next();})   }, },
+      { sel : $(".simulation-parameters"), content : "Click on Simulation Parameters and select <span style='color: #1abc9c'>Model Predictive Control</span>.", position : "e", delay: -1, onTripChange:  function (tripIndex, tripObject){$('#mpc').on('click', function() { trip1.next();}) },},
+      { sel : $(".closeloop-dialog"), position: "e",content : "Click <span style='color: #1abc9c'>Save changes</span>.", delay:-1 , onTripChange:  function (tripIndex, tripObject){$('#closeloop-save').on('click', function() { trip1.next();}) }, },
+      { sel : $(".create"), content : "Click <span style='color: #1abc9c'>Create model</span> to run the default model.", position : "s", delay:-1,  onTripChange:  function (tripIndex, tripObject){$('#Create_model').on('click', function() { trip2.start();}) }, },
+    ],{
+      delay: 1000,
+      onTripPause : function (tripIndex, tripObject){
+        setInterval(tripObject,3000);
+        console.log('pause : ', tripIndex);
+
+      },
+
+      onTripChange : function (i, tripData) {
+      console.log("current tripIndex1 : " + i);
+        }
+    });
+    var trip2 = new Trip([
+      { sel : $(".lung"),content : "Click on <span style='color: #1abc9c'>lung</span> to see lung parameters.",  position : "n", delay:-1 , onTripChange:  function (tripIndex, tripObject){ if ( tripIndex === 0 ) { $('#lung').on('click', function() {if ($("#dialog-lung").dialog( "isOpen" )){trip2.next();} } ) } }, },
+      {sel : $(".lung-dialog"), position: "n", content : "<h>You can see lung flow, lung volume and blood in lung.</h><br> Click <span style='color: #1abc9c'>OK</span> to proceed.", delay:-1 , onTripChange:  function (tripIndex, tripObject){ $('#lung-ok').on('click', function() {if ( tripIndex === 1 ) {trip8.start();}}) }, },
+      ],{
+        onTripChange : function (i, tripData) {
+        }
+        });
+    $(document).ready(function()
+     {
+      trip1.start();
+    });
+
+{% elif t_create_final %}
+var trip2 = new Trip([
+      {sel : $(".below"), content : "Above you can see the results of model predictive control simulation.", position : "n", delay:3000 , },
+      {sel : $(".below"), content : "Congratulations!<br>You have learnt to create new model.", delay:5000 , },
+      ],{
+
+      });
+
+      $(document).ready(function()
+         {
+          trip2.start();
+        });
 {% endif %}
 </script>
 {% endblock %}

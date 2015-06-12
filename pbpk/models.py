@@ -95,7 +95,7 @@ class Drug(models.Model):
 class Models(models.Model):
     id = models.AutoField(primary_key=True)
     username = models.TextField(db_column='userName', blank=False)  # Field name made lowercase.
-    modelname = models.TextField(db_column='modelName', blank=False)  # Field name made lowercase.
+    modelname = models.TextField(db_column='modelName', blank=False,  error_messages={'unique':"This modelname has already been registered."})  # Field name made lowercase.
 
     bw = models.FloatField(blank=True, null=True)
     h = models.FloatField(blank=True, null=True)
@@ -165,7 +165,8 @@ class Models(models.Model):
 
     class Meta:
         db_table = 'models'
-        unique_together = ('username', 'modelname',)
+        unique_together = (('username', 'modelname'),)
+
 
 post_save.connect(on_user_create, sender=User)
 

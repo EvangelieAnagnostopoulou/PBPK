@@ -72,7 +72,9 @@ class Simulator:
         A = self.System.DiscreteSystem().A
         B = self.System.DiscreteSystem().B
         C = self.System.DiscreteSystem().C
-        Bd = np.array([[1.], [0.], [0.], [0], [1.], [0.], [3.], [2.], [0.], [1.], [0.], [0.], [0.], [1.]])
+        #Bd = np.array([[1.], [0.], [0.], [0], [1.], [0.], [3.], [2.], [0.], [1.], [0.], [0.], [0.], [1.]])
+        nx=len(A)
+        Bd =  np.zeros((nx,1))
         Cd = np.array([[1.]])
         if is_strictly_schur(A):
             print "A is strictly Schur."
@@ -84,7 +86,6 @@ class Simulator:
             print "A is not strictly Schur."
         ulist = []
         tlist = []
-
         a_kalman = np.bmat([[A, Bd],
                             [np.zeros((B.shape[1], A.shape[1])), np.eye(B.shape[1])]])
         b_kalman = np.bmat([[B], [np.zeros((B.shape[1], B.shape[1]))]])

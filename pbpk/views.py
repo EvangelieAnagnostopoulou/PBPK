@@ -997,7 +997,7 @@ def Edit(request):
             ( (form['organ5_flow_factor'].value() != "0.0") | (form['organ5_volume_fraction'].value() != "0.0") | (form['blood_organ5_fraction'].value() != "0.0") )& ( (dform['pi_organ5'].value() == "0.0") | (dform['p_organ5'].value() == "0.0") ) )
         ):
                 error = "Model has some errors. Please check drug properties"
-                params = {'form': form, 'dform': dform, "edit": True, 'error': error, 'drugid': drugid, 'modelid': modelid, 'send':True,
+                params = {'form': form, 'dform': dform, "edit": True, 'error': error, 'drugid': drugid, 'modelid': modelid, 'send': True,
                           'counter': counter}
                 return render(request, "model_form.html", params)
 

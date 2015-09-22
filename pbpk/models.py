@@ -22,7 +22,7 @@ def on_user_create(sender, instance, created, **kwargs):
                                           kidney_flow_factor="0.091", kidney_volume_fraction="0.017",blood_kidney_fraction="0.24",bladder_flow_factor="0.0033", bladder_volume_fraction= "0.0009",
                                           blood_bladder_fraction="0.03", blood_rest_fraction ="0.04", liver_flow_factor="0.162", liver_volume_fraction="0.055", blood_liver_fraction="0.31",
                                           blood_volume_fraction="0.5", lung_flow_factor="1.0", lung_volume_fraction="0.007", blood_lung_fraction="0.5", method="CloseLoop-MPC",
-                                          method_params='{"N": 35, "target": 4.0e-7, "step": 0.0833, "end": 4}')
+                                          method_params='{"N": 5, "intervals": 4, "step": 0.0833, "end": 4, "time": [0, 1, 2, 3 ], "setpoint": [4e-07, 4e-07, 4e-07, 4e-07], "time_int_final": [1, 2, 3, 4], "Q": 0.25, "R":5}')
         m1.drugs.add(d1)
 
 

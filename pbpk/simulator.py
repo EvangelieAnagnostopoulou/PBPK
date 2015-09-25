@@ -73,9 +73,12 @@ class Simulator:
         B = self.System.DiscreteSystem().B
         C = self.System.DiscreteSystem().C
         #Bd = np.array([[1.], [0.], [0.], [0], [1.], [0.], [3.], [2.], [0.], [1.], [0.], [0.], [0.], [1.]])
+        Bd = np.array([[1.], [0.], [0.], [0], [1.], [0.], [3.], [2.], [0.], [1.], [0.], [0.], [0.], [1.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.], [0.]])
         nx=len(A)
-        Bd =  np.zeros((nx,1))
+        Bd = Bd[:nx]
         Cd = np.array([[1.]])
+        print ('------------------')
+        print self.max_influx
         if is_strictly_schur(A):
             print "A is strictly Schur."
             # Bd = np.zeros((n, 1))

@@ -107,6 +107,7 @@ class System(PBPK_Model, Skin, Kidney, Bladder, Residual,
             mid_matrix = np.zeros((self.A.shape[0], 2))
             mid_matrix[0:1, :] = np.array([[self.model.kidney_flow / self.model.plasma_volume, 0]])
             mid_matrix[self.A.shape[0] - 2:self.A.shape[0], :] = np.array([[(-self.model.pi_kidney -
+                                                                              self.model.k_kidney*self.model.blood_kidney -
                                                                              self.model.kidney_flow)
                                                                           / self.model.blood_kidney,
                                                                           (self.model.pi_kidney / self.model.p_kidney)
@@ -431,6 +432,7 @@ class System(PBPK_Model, Skin, Kidney, Bladder, Residual,
             mid_matrix = np.zeros((self.A.shape[0], 2))
             mid_matrix[0:1, :] = np.array([[self.model.kidney_flow / self.model.plasma_volume, 0]])
             mid_matrix[self.A.shape[0] - 2:self.A.shape[0], :] = np.array([[(-self.model.pi_kidney -
+                                                                            self.model.k_kidney*self.model.blood_kidney -
                                                                              self.model.kidney_flow)
                                                                           / self.model.blood_kidney,
                                                                           (self.model.pi_kidney / self.model.p_kidney)

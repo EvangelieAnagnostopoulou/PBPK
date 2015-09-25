@@ -101,7 +101,7 @@ class MPCSolver(System):
         # Construct h #
         h = np.zeros((2*self.N*(mQ+mR), 1), dtype="float")
         u_low = np.zeros((mR, 1), dtype="float")
-        u_up = np.ones((mR, 1), dtype="float")
+        u_up = self.max_influx*np.ones((mR, 1), dtype="float")
         x_low = np.zeros((mQ, 1), dtype="float")
 
         x_low[3:4,:] = self.min_lung

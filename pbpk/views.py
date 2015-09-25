@@ -999,6 +999,7 @@ def Edit(request):
                 error = "Model has some errors. Please check drug properties"
                 params = {'form': form, 'dform': dform, "edit": True, 'error': error, 'drugid': drugid, 'modelid': modelid, 'send': True,
                           'counter': counter}
+
                 return render(request, "model_form.html", params)
 
         else:
@@ -1708,7 +1709,7 @@ def tutorial(request):
                     #add the end time of simulation (time constists of initial times. For correct plotting it should be added one more couple)
                 time2.append(end)
 
-            read_models = Models.objects.filter(modelname='default', pk=117)
+            read_models = Models.objects.filter(modelname='default', pk=128)
             if read_models and read_models[0].plot_params and N == int(5) and intervals == int(4) and step == float(0.0833) and end == float(4):
                 model_item = read_models[0]
                 json_object_plot = json.loads(model_item.plot_params)

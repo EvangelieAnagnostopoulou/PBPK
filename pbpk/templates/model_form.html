@@ -786,11 +786,11 @@
     </label>
     <label>
         Plot parameters:<br>
-        {{form.plot_params}}
+        <textarea cols="40" id="id_mod-plot_params" name="mod-plot_params" rows="10"></textarea>
     </label>
     <label>
         Step parameters:<br>
-        {{form.step_params}}
+        <textarea cols="40" id="id_mod-step_params" name="mod-step_params" rows="10"></textarea>
     </label>
 </div>
 
@@ -826,6 +826,8 @@
 
 <script>
     ModelForm = {
+        pk: '{{form.instance.pk}}',
+        token: '{{ csrf_token }}',
         default: {% if default %}true{% else %}false{% endif %},
         tutorial: {% if tutorial %}true{% else %}false{% endif %},
         edit: {% if edit %}true{% else %}false{% endif %},
@@ -839,4 +841,5 @@
     };
 </script>
 <script src="/static/js/model_form.js"></script>
+
 {% endblock %}

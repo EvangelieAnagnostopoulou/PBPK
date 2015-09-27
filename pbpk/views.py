@@ -1,6 +1,6 @@
 import json
 from django.db import IntegrityError
-from django.shortcuts import render, redirect, render_to_response
+from django.shortcuts import render, redirect, render_to_response, get_object_or_404
 from django import forms
 import numpy as np
 from pbpk.simulator import Simulator
@@ -1889,6 +1889,17 @@ def tutorial(request):
             error = "Please define the simulation parameters "
             params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'error': error, 'tutorial': True}
             return render(request, "model_form.html", params)
+
+
+def get_plot_params(request, pk):
+    model = Models.objects.get(pk=pk)
+    return HttpResponse(json.dumps(model.plot_params))
+
+
+def get_step_params(request, pk):
+    model = Models.objects.get(pk=pk)
+    return HttpResponse(json.dumps(model.step_params))
+
 
 def tutorial_create(request):
     if request.method == 'GET':

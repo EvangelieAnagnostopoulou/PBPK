@@ -26,5 +26,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #url(r'^ajax_color_request/$', views.ajax_color_request),
 
-
+    # api
+    url(r'^get_plot_params/(?P<pk>\d+)/', views.get_plot_params),
+    url(r'^get_step_params/(?P<pk>\d+)/', views.get_step_params),
 )

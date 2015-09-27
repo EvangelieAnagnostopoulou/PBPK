@@ -22,13 +22,15 @@ $(function() {
                         $.ajax({
                             url: url,
                             type: 'POST',
-                            data: 'json',
+                            data: {
+                                csrfmiddlewaretoken: ModelForm.token,
+                            },
                             cache: 'false',
                             success: function(data, textStatus, jqXHR) {
                                    //data=data.replace('data: test/png;base64', ' ')
                                    $("#loading").hide();
                              }
-                             });
+                        });
                     });
 
 
@@ -2808,289 +2810,295 @@ if (ModelForm.default || ModelForm.edit || ModelForm.save) {
         })
 
 if (ModelForm.edit || ModelForm.image) {
-    //if form has changed get the new values for plotting
-    if (ModelForm.change) {
-        $("#id_mod-step_params").val("{{adm}}");
-        $("#id_mod-plot_params").val("{{json}}");
-    }
+    var organs_active;
+    //id_mod-plot_params
+    $.ajax({
+        url: '/get_step_params/' + ModelForm.pk,
+        success: function(data) {
+            $("#id_mod-step_params").val(data);
+            var admin_rate = JSON.parse($("#id_mod-step_params").val() );
 
-    var admin_rate = JSON.parse($("#id_mod-step_params").val() );
+            organs_active = [{
+                            name: 'Administration rate',
+                            data: JSON.parse(admin_rate),
+                            step: true
+                        }];
 
-    organs_active = [{
-                    name: 'Administration rate',
-                    data: admin_rate,
-                    step: true
-                }];
+            $.ajax({
+            url: '/get_plot_params/' + ModelForm.pk,
+            success: function(data) {
+                $("#id_mod-plot_params").val(data);
+                var c = JSON.parse(JSON.parse($("#id_mod-plot_params").val()));
+                //c = JSON.parse("{{ json }}");
 
-    var c = JSON.parse($("#id_mod-plot_params").val());
-    //c = JSON.parse("{{ json }}");
+                var c_len= c.length;
+                if($("#id_mod-method").val()  == "OpenLoop")
+                    bl = c[1];
+                else
+                    bl = c[0];
+                lu = c[3];
+                var num=5;
 
-    var c_len= c.length;
-    if($("#id_mod-method").val()  == "OpenLoop")
-        bl = c[1];
-    else
-        bl = c[0];
-    lu = c[3];
-    var num=5;
+                organs_active.push({
+                            name: 'Blood',
+                            data: bl,
+                            yAxis: 1,
+                        }, {
+                            name: 'Lung',
+                            data: lu,
+                            yAxis: 1,
+                        });
 
-    organs_active.push({
-                name: 'Blood',
-                data: bl,
-                yAxis: 1,
-            }, {
-                name: 'Lung',
-                data: lu,
-                yAxis: 1,
-            });
+                if(checked_sk==1){
+                    sk = c[num]
+                    num=num+2;
+                    organs_active.push({
+                            name: 'Skin',
+                            data:  sk,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    sk=[]
+                }
+                if(checked_bla==1){
+                    bla = c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: 'Bladder',
+                            data: bla,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    bla=[]
+                }
+                if(checked_liv==1){
+                    liv = c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: 'Liver',
+                            data:  liv,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    liv=[]
+                }
+                if(checked_res==1){
+                    res = c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: 'Residual',
+                            data:  res,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    res=[]
+                }
+                if(checked_k==1){
+                    ki = c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: 'Kidney',
+                            color: '#F1A9A0',
+                            data:  ki,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    ki=[]
+                }
+                if($('#organ1').data('clicked')){
+                    organ1= c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: $("#organ1").val() ,
+                            color: '#00FFFF',
+                            data:  organ1,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    organ1=[]
+                }
+                if($('#organ2').data('clicked')){
+                    organ2= c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: $("#organ2").val(),
+                            color: '#6666FF',
+                            data:  organ2,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    organ2=[]
+                }
+                if($('#organ3').data('clicked')){
+                    organ3= c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: $("#organ3").val(),
+                            color: '#FFCC33',
+                            data:  organ3,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    organ3=[]
+                }
+                if($('#organ4').data('clicked')){
+                    organ4= c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: $("#organ4").val(),
+                            color: '#00CC66',
+                            data:  organ4,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    organ4=[]
+                }
+                if($('#organ5').data('clicked')){
+                    organ5= c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: $("#organ5").val(),
+                            color: '#3399FF',
+                            data:  organ5,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    organ5=[]
+                }
+                if(checked_h==1){
+                    hear = c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: 'Heart',
+                            data:  hear,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    hear=[]
+                }
+                if(checked_m==1){
+                    mu = c[num]
+                    num=num+2
+                    organs_active.push({
+                            name: 'Muscle',
+                            data:  mu,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    mu=[]
+                }
+                if(checked_sp==1){
+                    sp = c[num]
+                    num=num+2
+                    organs_active.push({
+                            name: 'Spleen',
+                            color: '#1BBC9B',
+                            data:  sp,
+                            yAxis: 1,
+                        });
+                }
+                else{
+                    sp=[]
+                }
+                if(checked_p==1){
+                    place = c[num];
+                    num=num+2;
+                    organs_active.push({
+                            name: 'Placental',
+                            color: '#CC00CC',
+                            data:  place,
+                            yAxis: 1,
 
-    if(checked_sk==1){
-        sk = c[num]
-        num=num+2;
-        organs_active.push({
-                name: 'Skin',
-                data:  sk,
-                yAxis: 1,
-            });
-    }
-    else{
-        sk=[]
-    }
-    if(checked_bla==1){
-        bla = c[num];
-        num=num+2;
-        organs_active.push({
-                name: 'Bladder',
-                data: bla,
-                yAxis: 1,
-            });
-    }
-    else{
-        bla=[]
-    }
-    if(checked_liv==1){
-        liv = c[num];
-        num=num+2;
-        organs_active.push({
-                name: 'Liver',
-                data:  liv,
-                yAxis: 1,
-            });
-    }
-    else{
-        liv=[]
-    }
-    if(checked_res==1){
-        res = c[num];
-        num=num+2;
-        organs_active.push({
-                name: 'Residual',
-                data:  res,
-                yAxis: 1,
-            });
-    }
-    else{
-        res=[]
-    }
-    if(checked_k==1){
-        ki = c[num];
-        num=num+2;
-        organs_active.push({
-                name: 'Kidney',
-                color: '#F1A9A0',
-                data:  ki,
-                yAxis: 1,
-            });
-    }
-    else{
-        ki=[]
-    }
-    if($('#organ1').data('clicked')){
-        organ1= c[num];
-        num=num+2;
-        organs_active.push({
-                name: $("#organ1").val() ,
-                color: '#00FFFF',
-                data:  organ1,
-                yAxis: 1,
-            });
-    }
-    else{
-        organ1=[]
-    }
-    if($('#organ2').data('clicked')){
-        organ2= c[num];
-        num=num+2;
-        organs_active.push({
-                name: $("#organ2").val(),
-                color: '#6666FF',
-                data:  organ2,
-                yAxis: 1,
-            });
-    }
-    else{
-        organ2=[]
-    }
-    if($('#organ3').data('clicked')){
-        organ3= c[num];
-        num=num+2;
-        organs_active.push({
-                name: $("#organ3").val(),
-                color: '#FFCC33',
-                data:  organ3,
-                yAxis: 1,
-            });
-    }
-    else{
-        organ3=[]
-    }
-    if($('#organ4').data('clicked')){
-        organ4= c[num];
-        num=num+2;
-        organs_active.push({
-                name: $("#organ4").val(),
-                color: '#00CC66',
-                data:  organ4,
-                yAxis: 1,
-            });
-    }
-    else{
-        organ4=[]
-    }
-    if($('#organ5').data('clicked')){
-        organ5= c[num];
-        num=num+2;
-        organs_active.push({
-                name: $("#organ5").val(),
-                color: '#3399FF',
-                data:  organ5,
-                yAxis: 1,
-            });
-    }
-    else{
-        organ5=[]
-    }
-    if(checked_h==1){
-        hear = c[num];
-        num=num+2;
-        organs_active.push({
-                name: 'Heart',
-                data:  hear,
-                yAxis: 1,
-            });
-    }
-    else{
-        hear=[]
-    }
-    if(checked_m==1){
-        mu = c[num]
-        num=num+2
-        organs_active.push({
-                name: 'Muscle',
-                data:  mu,
-                yAxis: 1,
-            });
-    }
-    else{
-        mu=[]
-    }
-    if(checked_sp==1){
-        sp = c[num]
-        num=num+2
-        organs_active.push({
-                name: 'Spleen',
-                color: '#1BBC9B',
-                data:  sp,
-                yAxis: 1,
-            });
-    }
-    else{
-        sp=[]
-    }
-    if(checked_p==1){
-        place = c[num];
-        num=num+2;
-        organs_active.push({
-                name: 'Placental',
-                color: '#CC00CC',
-                data:  place,
-                yAxis: 1,
+                        });
+                }
+                else{
+                    place=[]
+                }
 
-            });
-    }
-    else{
-        place=[]
-    }
+                $('#below').highcharts({
+                    title: {
+                        text: 'Expected response of the system',
+                        x: -20 //center,
+                    },
 
-$(function () {
-    $('#below').highcharts({
-        title: {
-            text: 'Expected response of the system',
-            x: -20 //center,
-        },
+                    xAxis: {
+                       title: {
+                            text: 'Time (hr)'
+                        },
+                    },
+                    yAxis: [{
+                            height: 150,
+                            min: 0,
+                            title: {
+                                text: 'Administration Rate (g/hr)'
+                            },
+                            labels: {
+                                format: '{value:.2f}',
+                                formatter: function() {
+                                 return parseFloat((this.value));
+                                }
+                            },
 
-        xAxis: {
-           title: {
-                text: 'Time (hr)'
-            },
-        },
-        yAxis: [{
-                height: 150,
-                min: 0,
-                title: {
-                    text: 'Administration Rate (g/hr)'
-                },
-                labels: {
-                    format: '{value:.2f}',
-                    formatter: function() {
-                     return parseFloat((this.value));
-                    }
-                },
+                            plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }],
 
-                plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }],
+                        }, {
+                            title: {
+                                text: 'State variables (g/L)'
+                            },
+                            labels: {
 
-            }, {
-                title: {
-                    text: 'State variables (g/L)'
-                },
-                labels: {
+                                formatter: function() {
+                                return this.value.toExponential();
+                                //return parseFloat((this.value));
+                                }
+                            },
+                            plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }],
+                            //tickInterval: 0.0000001,
+                            min: 0,
+                            top: 230,
+                            height: 100,
+                            offset: 0,
+                            //lineWidth: 2
+                        }],
 
-                    formatter: function() {
-                    return this.value.toExponential();
-                    //return parseFloat((this.value));
-                    }
-                },
-                plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }],
-                //tickInterval: 0.0000001,
-                min: 0,
-                top: 230,
-                height: 100,
-                offset: 0,
-                //lineWidth: 2
-            }],
+                    tooltip: {
+                        formatter: function() {
+                            return '<b>'+  this.y.toExponential(2) +'</b><br/>'+
+                                'Time: '+ Highcharts.numberFormat(this.x, 2);
+                        }
 
-        tooltip: {
-            formatter: function() {
-                return '<b>'+  this.y.toExponential(2) +'</b><br/>'+
-                    'Time: '+ Highcharts.numberFormat(this.x, 2);
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle',
+                        borderWidth: 0
+                    },
+                    series: organs_active
+                });
             }
-
-        },
-        legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle',
-            borderWidth: 0
-        },
-        series: organs_active
-    });
+        });
+    }
 });
 
 }

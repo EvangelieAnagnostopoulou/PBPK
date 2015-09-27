@@ -324,6 +324,7 @@ def InitPage(request):
                             return render(request, "model_form.html", params)
 
                         new_model.drugs.add(new_drug)
+                        import pdb;pdb.set_trace()
                         return render(request, "model_form.html", params)
                 elif meth == "OpenLoop":
                     new_drug = dform.save(commit=False)
@@ -1893,12 +1894,12 @@ def tutorial(request):
 
 def get_plot_params(request, pk):
     model = Models.objects.get(pk=pk)
-    return HttpResponse(json.dumps(model.plot_params))
+    return HttpResponse(model.plot_params)
 
 
 def get_step_params(request, pk):
     model = Models.objects.get(pk=pk)
-    return HttpResponse(json.dumps(model.step_params))
+    return HttpResponse(model.step_params)
 
 
 def tutorial_create(request):

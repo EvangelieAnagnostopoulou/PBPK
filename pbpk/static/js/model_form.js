@@ -2820,7 +2820,7 @@ if (ModelForm.edit || ModelForm.image) {
 
             organs_active = [{
                             name: 'Administration rate',
-                            data: JSON.parse(admin_rate),
+                            data: admin_rate,
                             step: true
                         }];
 
@@ -2828,7 +2828,7 @@ if (ModelForm.edit || ModelForm.image) {
             url: '/get_plot_params/' + ModelForm.pk,
             success: function(data) {
                 $("#id_mod-plot_params").val(data);
-                var c = JSON.parse(JSON.parse($("#id_mod-plot_params").val()));
+                var c = JSON.parse($("#id_mod-plot_params").val());
                 //c = JSON.parse("{{ json }}");
 
                 var c_len= c.length;

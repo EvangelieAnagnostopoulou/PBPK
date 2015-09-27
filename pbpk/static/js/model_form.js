@@ -2809,29 +2809,8 @@ if (ModelForm.default || ModelForm.edit || ModelForm.save) {
 
         })
 
-if (ModelForm.edit || ModelForm.image) {
-    var organs_active;
-    //id_mod-plot_params
-    $.ajax({
-        url: '/get_step_params/' + ModelForm.pk,
-        success: function(data) {
-            $("#id_mod-step_params").val(data);
-            var admin_rate = JSON.parse($("#id_mod-step_params").val() );
-
-            organs_active = [{
-                            name: 'Administration rate',
-                            data: admin_rate,
-                            step: true
-                        }];
-
-            $.ajax({
-            url: '/get_plot_params/' + ModelForm.pk,
-            success: function(data) {
-                $("#id_mod-plot_params").val(data);
-                var c = JSON.parse($("#id_mod-plot_params").val());
-                //c = JSON.parse("{{ json }}");
-
-                var c_len= c.length;
+function draw_chart(organs_active, c) {
+    var c_len= c.length;
                 if($("#id_mod-method").val()  == "OpenLoop")
                     bl = c[1];
                 else
@@ -3027,7 +3006,7 @@ if (ModelForm.edit || ModelForm.image) {
                     place=[]
                 }
 
-                $('#below').highcharts({
+    $('#below').highcharts({
                     title: {
                         text: 'Expected response of the system',
                         x: -20 //center,
@@ -3096,6 +3075,34 @@ if (ModelForm.edit || ModelForm.image) {
                     },
                     series: organs_active
                 });
+}
+
+if (typeof(ModelForm.json) != "undefined") {
+    draw_chart(JSON.parse(ModelForm.adm), JSON.parse(ModelForm.json));
+}
+else if (ModelForm.edit || ModelForm.image) {
+    var organs_active, model_source;
+    //id_mod-plot_params
+
+    $.ajax({
+        url: '/get_step_params/' + ModelForm.pk,
+        success: function(data) {
+            $("#id_mod-step_params").val(data);
+            var admin_rate = JSON.parse($("#id_mod-step_params").val() );
+
+            organs_active = [{
+                            name: 'Administration rate',
+                            data: admin_rate,
+                            step: true
+                        }];
+
+            $.ajax({
+            url: '/get_plot_params/' + ModelForm.pk,
+            success: function(data) {
+                $("#id_mod-plot_params").val(data);
+                var c = JSON.parse($("#id_mod-plot_params").val());
+
+                draw_chart(organs_active, c);
             }
         });
     }
@@ -3114,7 +3121,7 @@ if (ModelForm.edit || ModelForm.image) {
 
 //MPC dialog
 
-     $(function() {
+
 			dialogSet = $( "#dialog-setpoint" ).dialog({
 				autoOpen: false,
 				modal: true,
@@ -3170,9 +3177,7 @@ if (ModelForm.edit || ModelForm.image) {
 				}
 			});
 
-		});
 
-		$(function() {
 			dialogOpen = $( "#dialog-open" ).dialog({
 				autoOpen: false,
 				modal: true,
@@ -3198,8 +3203,6 @@ if (ModelForm.edit || ModelForm.image) {
 					}
 				},
 			});
-
-		});
 
     //check if form is valid
         function check_closeloop(){

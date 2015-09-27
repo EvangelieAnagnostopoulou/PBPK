@@ -805,7 +805,7 @@ def DefaultModel(request):
                 adm = []
                 for i in range(len(time2)):
                     adm.append([time2[i], dose2[i]])
-                adm_j = json.dumps(adm)
+                adm_j = adm
                 print adm_j
                 for c in cont:
                     vals = []
@@ -813,7 +813,7 @@ def DefaultModel(request):
                         vals.append([Tsim[i], c[i]])
                     plot_j.append(vals)
 
-                json_object_plot = json.dumps(plot_j)
+                json_object_plot = plot_j
 
                 params = {'form': default_form, 'dform': default_drug_form, 'default': True, 'image': True,
                           'change': True, 'json': json_object_plot, 'adm': adm_j}

@@ -839,6 +839,11 @@
         t_create: {% if t_create %}true{% else %}false{% endif %},
         t_create_final: {% if t_create_final %}true{% else %}false{% endif %}
     };
+
+    {% if json %}
+        ModelForm.json = '{{json}}';
+        ModelForm.adm = '{{adm}}';
+    {% endif %}
 </script>
 <script src="/static/js/model_form.js"></script>
 

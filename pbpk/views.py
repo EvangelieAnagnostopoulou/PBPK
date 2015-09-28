@@ -1136,6 +1136,14 @@ def Edit(request):
                     k_bile4 = float(k_bile4)
                     k_met5 = float(k_met5)
                     k_bile5 = float(k_bile5)
+                '''model = Models.objects.get(pk=model_item.id)
+                print model
+                if model_item.step_params == "":
+                    form.fields['step_params'].initial =model.step_params
+                if model_item.plot_params == "":
+                    form.fields['plot_params'].initial =model.plot_params
+                print form
+                print form.has_changed()'''
 
                 if (not form.has_changed()) and (not dform.has_changed()) and model_item.plot_params:
                     # if model & drug haven't changed, load from database

@@ -40,7 +40,7 @@
                                    $('#organ1').data('clicked', true);
                                    if($('#blood').data('clicked') || $('#Blood2').data('clicked') ){
                                         canvas.style.display="block";
-                                        neworgan($("#div-placental").position().left,$("#div-placental").position().top);
+                                        neworgan($("#div-placental").position().left, $("#div-placental").position().top);
                                     }
 
                                    /* $('#metabolise').click(function() {
@@ -78,17 +78,7 @@
                                     $("#id_mod-organ" + counter + "_flow_factor").val( $("#org2_f_fc").val() );
                                     $("#id_mod-organ" + counter + "_volume_fraction").val( $("#org2_v_fc").val() );
                                     $("#id_mod-blood_organ" + counter + "_fraction").val( $("#org2_b_fc").val() );
-                                    /*$("#p_organ" + counter).val( $("#p_org2c").val() );
-                                    $("#pi_organ" + counter ).val( $("#pi_org2c").val() );
-                                    var nam=$("#org2c").val();
-                                    //Get the type of the organ
-                                   $("#organ" + counter + "type").val( $('#dialog-organ2create').find('input:checked').val() );
-                                   //If type of organ is non metabolising
-                                   if( $("#organ" + counter + "type").val() == "met"){
-                                        //Get the selected option(constains) from pop up window
-                                        $('select[name="constains2" ]').val($('select[name="const"]').val() );
 
-                                        }*/
 
                                    $("#organ" + counter).val($("#org2c").val() );
                                    $("#id_mod-organ2_name").val($("#org2c").val() );

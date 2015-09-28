@@ -240,7 +240,6 @@ class Kidney(PBPK_Model):
         # u : C_art
         self.model = PBPK_Model
     def KidneyA(self):
-        print self.model.k_kidney
         if self.model.kidney_flow != 0:
             self.A = np.array([[0, 0, (self.model.kidney_flow / self.model.blood_kidney), 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                 (-self.model.kidney_flow- self.model.pi_kidney - self.model.k_kidney * self.model.blood_kidney) / self.model.blood_kidney,

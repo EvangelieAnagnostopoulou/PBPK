@@ -77,8 +77,6 @@ class Simulator:
         nx=len(A)
         Bd = Bd[:nx]
         Cd = np.array([[1.]])
-        print ('------------------')
-        print self.max_influx
         if is_strictly_schur(A):
             print "A is strictly Schur."
             # Bd = np.zeros((n, 1))

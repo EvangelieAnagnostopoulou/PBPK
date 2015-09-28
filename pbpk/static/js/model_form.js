@@ -28,6 +28,7 @@ $(function() {
                             cache: 'false',
                             success: function(data, textStatus, jqXHR) {
                                    //data=data.replace('data: test/png;base64', ' ')
+                                   data=JSON.parse(data)
                                    $("#loading").hide();
                              }
                         });
@@ -1361,176 +1362,6 @@ $(function() {
 
 		}
 
-            var p = $( "#Blood2" );
-            var BloodPos = p.position();
-            var p1 = $( "#skin" );
-            var SkinPos = p1.position();
-            var p2 = $( "#kidney" );
-            var KidPos = p2.position();
-            var p3 = $( "#bladder" );
-            var BlPos = p3.position();
-            var p4 = $( "#liver" );
-            var LivPos = p4.position();
-            var p5 = $( "#lung" );
-            var LungPos = p5.position();
-            var p6 = $( "#residual" );
-            var ResPos = p6.position();
-            var p7 = $( "#blood" );
-            var BloPos = p7.position();
-            var p8= $("#div-placental");
-            var Org1Pos= p8.position();
-            var p9 = $( "#heart" );
-            var HeartPos = p9.position();
-            var p10 = $( "#muscle" );
-            var MusclePos = p10.position();
-            var p11 = $( "#spleen" );
-            var SplPos = p11.position();
-            var p13 = $( "#placental" );
-            var PlPos = p13.position();
-
-
-//Canvas-Position of darts\
-
-            //Add darts
-            //Lung
-			var c = document.getElementById("canvas");
-			var ctx1 = c.getContext("2d");
-
-            //Lung darts
-			function lung(){
-
-			    var c = document.getElementById("canvas");
-			    var ctx1 = c.getContext("2d");
-
-                ctx1.moveTo((p.width()/2)+BloodPos.left,LungPos.top+p2.height()-92);
-                ctx1.lineTo((p.width()/2)+BloodPos.left,BloodPos.top-92);
-                ctx1.stroke();
-
-                var ctx1 = c.getContext("2d");
-                ctx1.moveTo(LungPos.left,LungPos.top+p2.height()-92);
-                ctx1.lineTo((p.width()/2)+BloodPos.left,LungPos.top+p2.height()-92);
-                ctx1.stroke();
-
-                var ctx1 = c.getContext("2d");
-                ctx1.moveTo(LungPos.left-10,LungPos.top+p2.height()-92);
-                ctx1.lineTo(LungPos.left-20,LungPos.top+p2.height()-5-92);
-                ctx1.stroke();
-
-                var ctx1 = c.getContext("2d");
-                ctx1.moveTo(LungPos.left-10,LungPos.top+p2.height()-92);
-                ctx1.lineTo(LungPos.left-20,LungPos.top+p2.height()+5-92);
-                ctx1.stroke();
-
-                ctx1.moveTo(BloPos.left+12+(p7.width()/2),LungPos.top-92+p2.height());
-                ctx1.lineTo(LungPos.left+12+p2.width(),LungPos.top-92+p2.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(BloPos.left+12+(p7.width()/2),BloodPos.top-92);
-                ctx1.lineTo(BloPos.left+12+(p7.width()/2),LungPos.top-92+p2.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(BloPos.left+12+(p7.width()/2)-5,BloodPos.top-10-92);
-                ctx1.lineTo(BloPos.left+12+(p7.width()/2),BloodPos.top-92);
-                ctx1.stroke();
-
-                ctx1.moveTo(BloPos.left+12+(p7.width()/2)+5,BloodPos.top-10-92);
-                ctx1.lineTo(BloPos.left+12+(p7.width()/2),BloodPos.top-92);
-                ctx1.stroke();
-            }
-
-            //Darts for kidney, bladder, skin, residual
-            function organ_dart(organ){
-
-                ctx1.moveTo(organ.position().left,organ.position().top-92+organ.height());
-                ctx1.lineTo(BloodPos.left+p1.width(),organ.position().top-92+organ.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(BloPos.left,organ.position().top-92+organ.height());
-                ctx1.lineTo(organ.position().left+14+p1.width(),organ.position().top-92+organ.height());
-                ctx1.stroke();
-
-                //belos
-
-                ctx1.moveTo(organ.position().left+24+p1.width(),organ.position().top-92+organ.height()+5);
-                ctx1.lineTo(organ.position().left+14+p1.width(),organ.position().top-92+organ.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(organ.position().left+24+p1.width(),organ.position().top-92+organ.height()-5);
-                ctx1.lineTo(organ.position().left+14+p1.width(),organ.position().top-92+organ.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(BloodPos.left+p1.width()+13,organ.position().top-92+organ.height()+5);
-                ctx1.lineTo(BloodPos.left+p1.width()+3,organ.position().top-92+organ.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(BloodPos.left+p1.width()+13,organ.position().top-92+organ.height()-5);
-                ctx1.lineTo(BloodPos.left+p1.width()+3,organ.position().top-92+organ.height());
-                ctx1.stroke();
-                }
-
-
-
-            //Liver Darts
-            function liver(){
-                ctx1.moveTo(LivPos.left,LivPos.top-92+p3.height());
-                ctx1.lineTo(BloodPos.left+p1.width(),LivPos.top-92+p2.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(BloPos.left,LivPos.top-92+p3.height());
-                ctx1.lineTo(LivPos.left+14+p4.width(),LivPos.top-92+p2.height());
-                ctx1.stroke();
-
-                //liver-belos
-
-                ctx1.moveTo(LivPos.left+24+p4.width(),LivPos.top-92+p2.height()+5);
-                ctx1.lineTo(LivPos.left+14+p4.width(),LivPos.top-92+p2.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(LivPos.left+24+p4.width(),LivPos.top-92+p2.height()-5);
-                ctx1.lineTo(LivPos.left+14+p4.width(),LivPos.top-92+p2.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(BloodPos.left+p1.width()+13,LivPos.top-92+p2.height()+5);
-                ctx1.lineTo(BloodPos.left+p1.width()+3,LivPos.top-92+p2.height());
-                ctx1.stroke();
-
-                ctx1.moveTo(BloodPos.left+p1.width()+13,LivPos.top-92+p2.height()-5);
-                ctx1.lineTo(BloodPos.left+p1.width()+3,LivPos.top-92+p2.height());
-                ctx1.stroke();
-                }
-
-
-            // Added organs darts
-
-            function neworgan(left,top){
-
-            ctx1.moveTo(left,top-92+p3.height());
-			ctx1.lineTo(BloodPos.left+p1.width(),top-92+p2.height());
-			ctx1.stroke();
-
-			ctx1.moveTo(BloPos.left,top-92+p3.height());
-			ctx1.lineTo(BlPos.left+19+p1.width(),top-92+p2.height());
-			ctx1.stroke();
-
-			//residual-belos
-
-			ctx1.moveTo(BlPos.left+29+p1.width(),top-92+p2.height()-5);
-			ctx1.lineTo(BlPos.left+19+p1.width(),top-92+p2.height());
-			ctx1.stroke();
-
-			ctx1.moveTo(BlPos.left+29+p1.width(),top-92+p2.height()+5);
-			ctx1.lineTo(BlPos.left+19+p1.width(),top-92+p2.height());
-			ctx1.stroke();
-
-			ctx1.moveTo(BloodPos.left+p1.width()+13, top-92+p2.height()+5);
-			ctx1.lineTo(BloodPos.left+p1.width()+3, top-92+p2.height());
-			ctx1.stroke();
-
-			ctx1.moveTo(BloodPos.left+p1.width()+13, top-92+p2.height()-5);
-			ctx1.lineTo(BloodPos.left+p1.width()+3, top-92+p2.height());
-			ctx1.stroke();
-
-            }
 
 if (ModelForm.default || ModelForm.edit || ModelForm.save) {
 
@@ -3078,7 +2909,13 @@ function draw_chart(organs_active, c) {
 }
 
 if (typeof(ModelForm.json) != "undefined") {
-    draw_chart(JSON.parse(ModelForm.adm), JSON.parse(ModelForm.json));
+	organs_active = [{
+                            name: 'Administration rate',
+                            data: JSON.parse(ModelForm.adm),
+                            step: true
+                        }];
+
+    draw_chart(organs_active, JSON.parse(ModelForm.json));
 }
 else if (ModelForm.edit || ModelForm.image) {
     var organs_active, model_source;
@@ -3089,24 +2926,23 @@ else if (ModelForm.edit || ModelForm.image) {
         success: function(data) {
             $("#id_mod-step_params").val(data);
             var admin_rate = JSON.parse($("#id_mod-step_params").val() );
-
             organs_active = [{
                             name: 'Administration rate',
-                            data: admin_rate,
+                            data: JSON.parse(admin_rate),
                             step: true
                         }];
 
-            $.ajax({
+		    }
+	});
+
+	 $.ajax({
             url: '/get_plot_params/' + ModelForm.pk,
             success: function(data) {
                 $("#id_mod-plot_params").val(data);
                 var c = JSON.parse($("#id_mod-plot_params").val());
-
                 draw_chart(organs_active, c);
             }
         });
-    }
-});
 
 }
 
@@ -3447,3 +3283,174 @@ if (ModelForm.t_create) {
         });
 }
 });
+
+var p = $( "#Blood2" );
+            var BloodPos = p.position();
+            var p1 = $( "#skin" );
+            var SkinPos = p1.position();
+            var p2 = $( "#kidney" );
+            var KidPos = p2.position();
+            var p3 = $( "#bladder" );
+            var BlPos = p3.position();
+            var p4 = $( "#liver" );
+            var LivPos = p4.position();
+            var p5 = $( "#lung" );
+            var LungPos = p5.position();
+            var p6 = $( "#residual" );
+            var ResPos = p6.position();
+            var p7 = $( "#blood" );
+            var BloPos = p7.position();
+            var p8= $("#div-placental");
+            var Org1Pos= p8.position();
+            var p9 = $( "#heart" );
+            var HeartPos = p9.position();
+            var p10 = $( "#muscle" );
+            var MusclePos = p10.position();
+            var p11 = $( "#spleen" );
+            var SplPos = p11.position();
+            var p13 = $( "#placental" );
+            var PlPos = p13.position();
+
+
+//Canvas-Position of darts\
+
+            //Add darts
+            //Lung
+			var c = document.getElementById("canvas");
+			var ctx1 = c.getContext("2d");
+
+            //Lung darts
+			function lung(){
+
+			    var c = document.getElementById("canvas");
+			    var ctx1 = c.getContext("2d");
+
+                ctx1.moveTo((p.width()/2)+BloodPos.left,LungPos.top+p2.height()-92);
+                ctx1.lineTo((p.width()/2)+BloodPos.left,BloodPos.top-92);
+                ctx1.stroke();
+
+                var ctx1 = c.getContext("2d");
+                ctx1.moveTo(LungPos.left,LungPos.top+p2.height()-92);
+                ctx1.lineTo((p.width()/2)+BloodPos.left,LungPos.top+p2.height()-92);
+                ctx1.stroke();
+
+                var ctx1 = c.getContext("2d");
+                ctx1.moveTo(LungPos.left-10,LungPos.top+p2.height()-92);
+                ctx1.lineTo(LungPos.left-20,LungPos.top+p2.height()-5-92);
+                ctx1.stroke();
+
+                var ctx1 = c.getContext("2d");
+                ctx1.moveTo(LungPos.left-10,LungPos.top+p2.height()-92);
+                ctx1.lineTo(LungPos.left-20,LungPos.top+p2.height()+5-92);
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left+12+(p7.width()/2),LungPos.top-92+p2.height());
+                ctx1.lineTo(LungPos.left+12+p2.width(),LungPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left+12+(p7.width()/2),BloodPos.top-92);
+                ctx1.lineTo(BloPos.left+12+(p7.width()/2),LungPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left+12+(p7.width()/2)-5,BloodPos.top-10-92);
+                ctx1.lineTo(BloPos.left+12+(p7.width()/2),BloodPos.top-92);
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left+12+(p7.width()/2)+5,BloodPos.top-10-92);
+                ctx1.lineTo(BloPos.left+12+(p7.width()/2),BloodPos.top-92);
+                ctx1.stroke();
+            }
+
+            //Darts for kidney, bladder, skin, residual
+            function organ_dart(organ){
+
+                ctx1.moveTo(organ.position().left,organ.position().top-92+organ.height());
+                ctx1.lineTo(BloodPos.left+p1.width(),organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left,organ.position().top-92+organ.height());
+                ctx1.lineTo(organ.position().left+14+p1.width(),organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                //belos
+
+                ctx1.moveTo(organ.position().left+24+p1.width(),organ.position().top-92+organ.height()+5);
+                ctx1.lineTo(organ.position().left+14+p1.width(),organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(organ.position().left+24+p1.width(),organ.position().top-92+organ.height()-5);
+                ctx1.lineTo(organ.position().left+14+p1.width(),organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloodPos.left+p1.width()+13,organ.position().top-92+organ.height()+5);
+                ctx1.lineTo(BloodPos.left+p1.width()+3,organ.position().top-92+organ.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloodPos.left+p1.width()+13,organ.position().top-92+organ.height()-5);
+                ctx1.lineTo(BloodPos.left+p1.width()+3,organ.position().top-92+organ.height());
+                ctx1.stroke();
+                }
+
+
+
+            //Liver Darts
+            function liver(){
+                ctx1.moveTo(LivPos.left,LivPos.top-92+p3.height());
+                ctx1.lineTo(BloodPos.left+p1.width(),LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloPos.left,LivPos.top-92+p3.height());
+                ctx1.lineTo(LivPos.left+14+p4.width(),LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                //liver-belos
+
+                ctx1.moveTo(LivPos.left+24+p4.width(),LivPos.top-92+p2.height()+5);
+                ctx1.lineTo(LivPos.left+14+p4.width(),LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(LivPos.left+24+p4.width(),LivPos.top-92+p2.height()-5);
+                ctx1.lineTo(LivPos.left+14+p4.width(),LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloodPos.left+p1.width()+13,LivPos.top-92+p2.height()+5);
+                ctx1.lineTo(BloodPos.left+p1.width()+3,LivPos.top-92+p2.height());
+                ctx1.stroke();
+
+                ctx1.moveTo(BloodPos.left+p1.width()+13,LivPos.top-92+p2.height()-5);
+                ctx1.lineTo(BloodPos.left+p1.width()+3,LivPos.top-92+p2.height());
+                ctx1.stroke();
+                }
+
+                // Added organs darts
+
+			function neworgan(left,top){
+
+					ctx1.moveTo(left,top-92+p3.height());
+					ctx1.lineTo(BloodPos.left+p1.width(),top-92+p2.height());
+					ctx1.stroke();
+
+					ctx1.moveTo(BloPos.left,top-92+p3.height());
+					ctx1.lineTo(BlPos.left+19+p1.width(),top-92+p2.height());
+					ctx1.stroke();
+
+					//residual-belos
+
+					ctx1.moveTo(BlPos.left+29+p1.width(),top-92+p2.height()-5);
+					ctx1.lineTo(BlPos.left+19+p1.width(),top-92+p2.height());
+					ctx1.stroke();
+
+					ctx1.moveTo(BlPos.left+29+p1.width(),top-92+p2.height()+5);
+					ctx1.lineTo(BlPos.left+19+p1.width(),top-92+p2.height());
+					ctx1.stroke();
+
+					ctx1.moveTo(BloodPos.left+p1.width()+13, top-92+p2.height()+5);
+					ctx1.lineTo(BloodPos.left+p1.width()+3, top-92+p2.height());
+					ctx1.stroke();
+
+					ctx1.moveTo(BloodPos.left+p1.width()+13, top-92+p2.height()-5);
+					ctx1.lineTo(BloodPos.left+p1.width()+3, top-92+p2.height());
+					ctx1.stroke();
+
+					}
+

@@ -324,7 +324,6 @@ def InitPage(request):
                             return render(request, "model_form.html", params)
 
                         new_model.drugs.add(new_drug)
-                        import pdb;pdb.set_trace()
                         return render(request, "model_form.html", params)
                 elif meth == "OpenLoop":
                     new_drug = dform.save(commit=False)
@@ -1136,19 +1135,23 @@ def Edit(request):
                     k_bile4 = float(k_bile4)
                     k_met5 = float(k_met5)
                     k_bile5 = float(k_bile5)
-                '''model = Models.objects.get(pk=model_item.id)
-                print model
-                if model_item.step_params == "":
-                    form.fields['step_params'].initial =model.step_params
-                if model_item.plot_params == "":
-                    form.fields['plot_params'].initial =model.plot_params
-                print form
-                print form.has_changed()'''
 
+                model = Models.objects.get(pk=model_item.id)
                 if (not form.has_changed()) and (not dform.has_changed()) and model_item.plot_params:
                     # if model & drug haven't changed, load from database
                     json_object_plot = json.loads(model_item.plot_params)
                     adm_j = json.loads(model_item.step_params)
+                    params = {'form': form, 'dform': dform, 'edit': True, 'image': True, "drugid": drugid,
+                              "modelid": modelid, 'send': True, 'counter': counter, 'adm': adm_j,
+                              'json': json_object_plot}
+                    if request.is_ajax():
+                        return HttpResponse(json_object_plot, 'application/json')
+                    return render(request, "model_form.html", params)
+                #If user hasn't change the model but plot & step params hasn't value on post but are saved in dataset.
+                elif form.changed_data == ['plot_params', 'step_params'] and (not dform.has_changed()) and model.plot_params:
+                    # if model & drug haven't changed, load from database
+                    json_object_plot = json.loads(model.plot_params)
+                    adm_j = json.loads(model.step_params)
                     params = {'form': form, 'dform': dform, 'edit': True, 'image': True, "drugid": drugid,
                               "modelid": modelid, 'send': True, 'counter': counter, 'adm': adm_j,
                               'json': json_object_plot}
@@ -1399,7 +1402,7 @@ def Edit(request):
                         time2.append(t)
                     #add the end time of simulation (time consists of initial times. For correct plotting it should be added one more couple)
                     time2.append(total_time)
-
+                model = Models.objects.get(pk=model_item.id)
                 if (not form.has_changed()) and (not dform.has_changed()) and model_item.plot_params:
                     # if model & drug haven't changed, load from database
                     json_object_plot = json.loads(model_item.plot_params)
@@ -1407,6 +1410,17 @@ def Edit(request):
                     params = {'form': form, 'dform': dform, 'edit': True, 'image': True, "drugid": drugid,
                               "modelid": modelid, 'send': True, 'counter': counter, 'json': json_object_plot,
                               'adm': adm_j}
+                    if request.is_ajax():
+                        return HttpResponse(json_object_plot, 'application/json')
+                    return render(request, "model_form.html", params)
+                #If user hasn't change the model but plot & step params hasn't value on post but are saved in dataset.
+                elif form.changed_data == ['plot_params', 'step_params'] and (not dform.has_changed()) and model.plot_params:
+                    # if model & drug haven't changed, load from database
+                    json_object_plot = json.loads(model.plot_params)
+                    adm_j = json.loads(model.step_params)
+                    params = {'form': form, 'dform': dform, 'edit': True, 'image': True, "drugid": drugid,
+                              "modelid": modelid, 'send': True, 'counter': counter, 'adm': adm_j,
+                              'json': json_object_plot}
                     if request.is_ajax():
                         return HttpResponse(json_object_plot, 'application/json')
                     return render(request, "model_form.html", params)

@@ -60,9 +60,9 @@ class Simulator:
         inp = np.zeros((t.shape[0]))
         n = len(tlist) - 1
         m = len(t) - 1
-        inp[0:round(m * tlist[1]/T)] = ulist[0]
+        inp[0:int(round(m * tlist[1]/T) )] = ulist[0]
         for i in range(1, n):  # Before: range(1, n)
-            inp[round(m * tlist[i]/T): round(m * tlist[i+1]/T) + 1] = ulist[i]
+            inp[int(round(m * tlist[i]/T)):int(round(m * tlist[i+1]/T) + 1)] = ulist[i]
         return t, inp
 
     def Simulate(self, step, end):
